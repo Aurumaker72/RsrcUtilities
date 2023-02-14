@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities", "RsrcUtilit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Views.Console", "RsrcUtilities.Views.Console\RsrcUtilities.Views.Console.csproj", "{0FF3AECE-4B0F-4EF3-B9DA-3A9F6386DC15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Controls", "RsrcUtilities.Controls\RsrcUtilities.Controls.csproj", "{D794107B-56E9-4DFF-BE9B-2FC4A79B2897}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{0FF3AECE-4B0F-4EF3-B9DA-3A9F6386DC15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FF3AECE-4B0F-4EF3-B9DA-3A9F6386DC15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FF3AECE-4B0F-4EF3-B9DA-3A9F6386DC15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D794107B-56E9-4DFF-BE9B-2FC4A79B2897}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D794107B-56E9-4DFF-BE9B-2FC4A79B2897}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D794107B-56E9-4DFF-BE9B-2FC4A79B2897}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D794107B-56E9-4DFF-BE9B-2FC4A79B2897}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

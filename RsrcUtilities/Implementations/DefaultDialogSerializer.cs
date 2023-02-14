@@ -9,8 +9,8 @@ namespace RsrcUtilities.Implementations;
 /// </summary>
 public class DefaultDialogSerializer : IDialogSerializer
 {
-    /// <inheritdoc />
-    public bool TrySerialize(Dialog dialog, out string? serialized)
+    /// <inheritdoc/>
+    public string Serialize(Dialog dialog)
     {
         StringBuilder stringBuilder = new();
         stringBuilder.AppendLine($"{dialog.Identifier} DIALOGEX 0, 0, {dialog.Width}, {dialog.Height}");
@@ -36,6 +36,11 @@ public class DefaultDialogSerializer : IDialogSerializer
         stringBuilder.AppendLine("BEGIN");
 
         foreach (var control in dialog.Controls)
+        {
+            if (control.Identifier.Any(char.IsWhiteSpace))
+            {
+                throw new Exception($"Whitespace is not allowed in identifier strings");
+            }
             switch (control)
             {
                 case Button button:
@@ -59,10 +64,9 @@ public class DefaultDialogSerializer : IDialogSerializer
                 default:
                     throw new Exception($"Failed to serialize {control.GetType()}");
             }
+        }
 
         stringBuilder.AppendLine("END");
-
-        serialized = stringBuilder.ToString();
-        return true;
+        return stringBuilder.ToString();
     }
 }

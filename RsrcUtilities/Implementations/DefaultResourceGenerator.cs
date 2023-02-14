@@ -10,7 +10,7 @@ namespace RsrcUtilities.Implementations;
 public class DefaultResourceGenerator : IResourceGenerator
 {
     /// <inheritdoc />
-    public bool TryGenerate(List<Control> controls, out string? generated)
+    public string Generate(List<Control> controls)
     {
         StringBuilder resourceStringBuilder = new();
         var identifiers = controls.Select(x => x.Identifier).ToImmutableList();
@@ -23,7 +23,6 @@ public class DefaultResourceGenerator : IResourceGenerator
             identifierIndex++;
         }
 
-        generated = resourceStringBuilder.ToString();
-        return true;
+        return resourceStringBuilder.ToString();
     }
 }

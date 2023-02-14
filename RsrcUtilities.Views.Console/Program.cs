@@ -23,14 +23,14 @@ dialog.Controls.Add(new TextBox()
 {
     Identifier = "IDC_TEXTBOX",
     X = 20,
-    Y = 20,
+    Y = 50,
     Width = 80,
     Height = 25,
 });
 
 
-new DefaultDialogSerializer().TrySerialize(dialog, out var serializedDialog);
-new DefaultResourceGenerator().TryGenerate(dialog.Controls, out var generatedResource);
+var serializedDialog = new DefaultDialogSerializer().Serialize(dialog);
+var generatedResource = new DefaultResourceGenerator().Generate(dialog.Controls);
 
 File.WriteAllText("Resource.h", generatedResource);
 File.WriteAllText("rsrc.rc", serializedDialog);

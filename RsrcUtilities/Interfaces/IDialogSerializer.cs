@@ -6,10 +6,9 @@
 public interface IDialogSerializer
 {
     /// <summary>
-    ///     Tries to serialize the dialog into an .rc snippet
+    /// Serializes the dialog into an .rc snippet
     /// </summary>
     /// <param name="dialog">The dialog to serialize</param>
-    /// <param name="serialized">The serialized dialog</param>
-    /// <returns><see langword="true" />, if succeeded</returns>
-    bool TrySerialize(Dialog dialog, out string? serialized);
+    /// <returns>The serialized dialog</returns>
+    string Serialize(Dialog dialog);
 }
