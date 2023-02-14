@@ -42,12 +42,14 @@ public class DefaultDialogSerializer : IDialogSerializer
             if (control.Identifier.Any(char.IsWhiteSpace))
                 throw new Exception("Whitespace is not allowed in identifier strings");
 
-
+            int absoluteControlLeft = node.GetParents().Sum(x => x.Data.MarginLeft) + control.MarginLeft;
+            int absoluteControlTop = node.GetParents().Sum(x => x.Data.MarginTop) + control.MarginTop;
+            
             switch (control)
             {
                 case Button button:
                     stringBuilder.AppendLine(
-                        $"CONTROL \"{button.Caption}\", {button.Identifier}, \"Button\", WS_TABSTOP, {button.X}, {button.Y}, {button.Width}, {button.Height}");
+                        $"CONTROL \"{button.Caption}\", {button.Identifier}, \"Button\", WS_TABSTOP, {absoluteControlLeft}, {absoluteControlTop}, {button.Width}, {button.Height}");
                     break;
                 case TextBox textBox:
                 {
@@ -57,7 +59,7 @@ public class DefaultDialogSerializer : IDialogSerializer
                     if (textBox.AllowHorizontalScroll) textBoxStyles.Add("ES_AUTOHSCROLL");
 
                     var textBoxLine =
-                        $"EDITTEXT {textBox.Identifier}, {textBox.X}, {textBox.Y}, {textBox.Width}, {textBox.Height}";
+                        $"EDITTEXT {textBox.Identifier}, {absoluteControlLeft}, {absoluteControlTop}, {textBox.Width}, {textBox.Height}";
                     if (textBoxStyles.Count > 0) textBoxLine += $", {string.Join(" | ", textBoxStyles)}";
                     stringBuilder.AppendLine(textBoxLine);
 

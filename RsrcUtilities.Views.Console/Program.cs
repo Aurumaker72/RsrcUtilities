@@ -7,23 +7,27 @@ var dialog = new Dialog
     Identifier = "IDD_ABOUTBOX"
 };
 
-var root = new TreeNode<Control>(new Panel());
+var root = new TreeNode<Control>(new Panel()
+{
+    MarginLeft = 80,
+    MarginTop = 20,
+});
 root.AddChild(new Button
 {
     Identifier = "IDC_BUTTON",
-    X = 20,
-    Y = 20,
+    MarginLeft = 0,
+    MarginTop = 0,
     Width = 80,
-    Height = 25,
+    Height = 20,
     Caption = "Hello World!"
 });
 root.AddChild(new TextBox
 {
     Identifier = "IDC_TEXTBOX",
-    X = 20,
-    Y = 50,
+    MarginLeft = 0,
+    MarginTop = 40,
     Width = 80,
-    Height = 25
+    Height = 20
 });
 
 dialog.Root = root;

@@ -11,14 +11,14 @@ public abstract class Control
     public string Identifier { get; set; } = "IDC_UNKNOWN";
 
     /// <summary>
-    ///     The X position in pixels
+    ///     The margin from the parent's left in pixels
     /// </summary>
-    public int X { get; set; }
+    public int MarginLeft { get; set; }
 
     /// <summary>
-    ///     The Y position in pixels
+    ///     The margin from the parent's top in pixels
     /// </summary>
-    public int Y { get; set; }
+    public int MarginTop { get; set; }
 
     /// <summary>
     ///     The width in pixels
