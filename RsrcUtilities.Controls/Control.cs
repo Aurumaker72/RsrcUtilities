@@ -1,4 +1,6 @@
-﻿namespace RsrcUtilities;
+﻿using RsrcUtilities.Controls.Enums;
+
+namespace RsrcUtilities;
 
 /// <summary>
 ///     Represents a base for visual elements inside a dialog
@@ -29,4 +31,24 @@ public abstract class Control
     ///     The height in pixels
     /// </summary>
     public int Height { get; set; }
+
+    /// <summary>
+    ///  The horizontal alignment relative to the parent
+    /// </summary>
+    public HorizontalAlignments HorizontalAlignment { get; set; } = HorizontalAlignments.Left;
+    
+    /// <summary>
+    ///  The vertical alignment relative to the parent
+    /// </summary>
+    public VerticalAlignments VerticalAlignment { get; set; } = VerticalAlignments.Top;
+    
+    /// <summary>
+    /// The padding from the inner rectangle's left in pixels
+    /// </summary>
+    public virtual int RequiredPaddingLeft { get; } = 0;
+
+    /// <summary>
+    /// The padding from the inner rectangle's top in pixels
+    /// </summary>
+    public virtual int RequiredPaddingTop { get; } = 0;
 }

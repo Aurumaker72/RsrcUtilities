@@ -20,4 +20,12 @@ public interface IDialogSerializer
     /// <returns>The serialized dialog</returns>
     [Pure]
     string Serialize(Dialog dialog);
+
+    /// <summary>
+    ///     Deserializes the .rc snippet into a dialog
+    /// </summary>
+    /// <param name="serialized">The .rc snippet</param>
+    /// <returns>The deserialized dialog</returns>
+    [Pure]
+    Dialog Deserialize(string serialized);
 }

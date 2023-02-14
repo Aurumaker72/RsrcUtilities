@@ -6,7 +6,7 @@
 public class Button : Control
 {
     /// <summary>
-    ///     The default text displayed by the button
+    ///     The default text displayed in the center
     /// </summary>
     public string Caption { get; set; } = "Hello World!";
 }

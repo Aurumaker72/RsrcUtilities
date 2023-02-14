@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Text;
+using System.Text.RegularExpressions;
 using RsrcUtilities.Controls;
 using RsrcUtilities.Extensions;
 using RsrcUtilities.Interfaces;
@@ -19,6 +20,66 @@ public class DefaultDialogSerializer : IDialogSerializer
         return DoSerialize(dialog.Copy());
     }
 
+    /// <inheritdoc />
+    [Pure]
+    public Dialog Deserialize(string serialized)
+    {
+        var dialog = new Dialog();
+
+        var lines = serialized.Split(Environment.NewLine);
+
+        // resolve the simple dialog info first
+        
+        // IDD_ABOUTBOX DIALOGEX 0, 0, 300, 200
+        // [0]          [1]     [2][3][4]  [5]
+        var bareDialogDefinition = Regex.Replace(lines[0].Replace(',', ' '), @"\s+", " ").Split(' ');
+        
+        dialog.Identifier = bareDialogDefinition[0];
+        dialog.Width = int.Parse(bareDialogDefinition[4]);
+        dialog.Height = int.Parse(bareDialogDefinition[5]);
+
+        var styleDefinition = lines[1];
+        var styles = styleDefinition.Replace("STYLE", "").Split('|');
+        for (int i = 0; i < styles.LongLength; i++)
+        {
+            styles[i] = styles[i].Replace(" ", "");
+        }
+
+        if (styles.OrderBy(s => s).SequenceEqual(new []
+            {
+                "DS_SETFONT",
+                "DS_MODALFRAME",
+                "DS_FIXEDSYS",
+                "WS_POPUP",
+                "WS_CAPTION",
+                "WS_SYSMENU",
+            }.OrderBy(t => t)))
+        {
+            dialog.Chrome = Dialog.Chromes.Default;
+        }
+        else
+        {
+            throw new Exception($"Style sequence couldn't be reversed into known type");
+        }
+
+        var caption = lines[2].Replace("CAPTION", "");
+        var quoteStartIndex = caption.IndexOf('"') + 1;
+        var quoteEndIndex = caption.LastIndexOf('"');
+        caption = caption.Substring(quoteStartIndex, quoteEndIndex - quoteStartIndex);
+
+        var fontSize = int.Parse(lines[3].Split(' ')[1].Replace(",", ""));
+        var fontFamily = lines[3];
+        quoteStartIndex = fontFamily.IndexOf('"') + 1;
+        quoteEndIndex = fontFamily.LastIndexOf('"');
+        fontFamily = fontFamily.Substring(quoteStartIndex, quoteEndIndex - quoteStartIndex);
+
+        var controlDefinitionLines = new ArraySegment<string>(lines, 5, lines.Length - (5 + 2));
+        
+        
+        
+        throw new NotImplementedException();
+    }
+
     private static string DoSerialize(Dialog dialog)
     {
         StringBuilder stringBuilder = new();
@@ -33,12 +94,15 @@ public class DefaultDialogSerializer : IDialogSerializer
         {
             // default "thick", no-maximize, no-minimize
             // DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-            dialogStyles.Add("DS_SETFONT");
-            dialogStyles.Add("DS_MODALFRAME");
-            dialogStyles.Add("DS_FIXEDSYS");
-            dialogStyles.Add("WS_POPUP");
-            dialogStyles.Add("WS_CAPTION");
-            dialogStyles.Add("WS_SYSMENU");
+            dialogStyles.AddRange(new []
+            {
+                "DS_SETFONT",
+                "DS_MODALFRAME",
+                "DS_FIXEDSYS",
+                "WS_POPUP",
+                "WS_CAPTION",
+                "WS_SYSMENU",
+            });
         }
 
         stringBuilder.AppendLine($"STYLE {string.Join(" | ", dialogStyles)}");
@@ -61,8 +125,8 @@ public class DefaultDialogSerializer : IDialogSerializer
         {
             var control = node.Data;
 
-            control.MarginLeft = node.GetParents().Sum(x => x.Data.MarginLeft) + control.MarginLeft;
-            control.MarginTop = node.GetParents().Sum(x => x.Data.MarginTop) + control.MarginTop;
+            control.MarginLeft = node.GetParents().Sum(x => x.Data.MarginLeft + x.Data.RequiredPaddingLeft) + control.MarginLeft;
+            control.MarginTop = node.GetParents().Sum(x => x.Data.MarginTop + x.Data.RequiredPaddingTop) + control.MarginTop;
         }
         
         // layout done, generate rc now
@@ -74,7 +138,7 @@ public class DefaultDialogSerializer : IDialogSerializer
             {
                 case Button button:
                     stringBuilder.AppendLine(
-                        $"CONTROL \"{button.Caption}\", {button.Identifier}, \"Button\", WS_TABSTOP, {control.MarginLeft}, {control.MarginTop}, {button.Width}, {button.Height}");
+                        $"CONTROL \"{button.Caption}\", {control.Identifier}, \"Button\", WS_TABSTOP, {control.MarginLeft}, {control.MarginTop}, {control.Width}, {control.Height}");
                     break;
                 case TextBox textBox:
                 {
@@ -84,7 +148,7 @@ public class DefaultDialogSerializer : IDialogSerializer
                     if (textBox.AllowHorizontalScroll) textBoxStyles.Add("ES_AUTOHSCROLL");
 
                     var textBoxLine =
-                        $"EDITTEXT {textBox.Identifier}, {control.MarginLeft}, {control.MarginTop}, {textBox.Width}, {textBox.Height}";
+                        $"EDITTEXT {control.Identifier}, {control.MarginLeft}, {control.MarginTop}, {textBox.Width}, {textBox.Height}";
                     if (textBoxStyles.Count > 0) textBoxLine += $", {string.Join(" | ", textBoxStyles)}";
                     stringBuilder.AppendLine(textBoxLine);
 
@@ -93,6 +157,14 @@ public class DefaultDialogSerializer : IDialogSerializer
                 case Panel panel:
                 {
                     // no-op, for now
+                    break;
+                }
+                case GroupBox groupBox:
+                {
+                    // GROUPBOX        "Static",IDC_STATIC,179,42,75,103
+                    stringBuilder.AppendLine(
+                        $"GROUPBOX \"{groupBox.Caption}\", {control.Identifier}, {control.MarginLeft}, {control.MarginTop}, {control.Width}, {control.Height}");
+
                     break;
                 }
                 default:
