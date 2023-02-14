@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics.Contracts;
 using System.Text;
 using RsrcUtilities.Controls;
 using RsrcUtilities.Interfaces;
@@ -11,6 +12,7 @@ namespace RsrcUtilities.Implementations;
 public class DefaultResourceGenerator : IResourceGenerator
 {
     /// <inheritdoc />
+    [Pure]
     public string Generate(TreeNode<Control> root)
     {
         StringBuilder resourceStringBuilder = new();

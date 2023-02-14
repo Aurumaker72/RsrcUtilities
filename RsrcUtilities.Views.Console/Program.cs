@@ -7,10 +7,10 @@ var dialog = new Dialog
     Identifier = "IDD_ABOUTBOX"
 };
 
-var root = new TreeNode<Control>(new Panel()
+var root = new TreeNode<Control>(new Panel
 {
     MarginLeft = 80,
-    MarginTop = 20,
+    MarginTop = 20
 });
 root.AddChild(new Button
 {
@@ -39,6 +39,5 @@ File.WriteAllText("Resource.h", generatedResource);
 File.WriteAllText("rsrc.rc", serializedDialog);
 
 Console.WriteLine(generatedResource);
-Console.WriteLine("----------------");
 Console.WriteLine(serializedDialog);
 Console.ReadLine();
