@@ -9,7 +9,7 @@ namespace RsrcUtilities.Implementations;
 /// </summary>
 public class DefaultDialogSerializer : IDialogSerializer
 {
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public string Serialize(Dialog dialog)
     {
         StringBuilder stringBuilder = new();
@@ -35,12 +35,14 @@ public class DefaultDialogSerializer : IDialogSerializer
         stringBuilder.AppendLine($"FONT {dialog.FontSize}, \"{dialog.FontFamily}\", 0, 0, 0x1");
         stringBuilder.AppendLine("BEGIN");
 
-        foreach (var control in dialog.Controls)
+        foreach (var node in dialog.Root)
         {
+            var control = node.Data;
+
             if (control.Identifier.Any(char.IsWhiteSpace))
-            {
-                throw new Exception($"Whitespace is not allowed in identifier strings");
-            }
+                throw new Exception("Whitespace is not allowed in identifier strings");
+
+
             switch (control)
             {
                 case Button button:
@@ -59,6 +61,11 @@ public class DefaultDialogSerializer : IDialogSerializer
                     if (textBoxStyles.Count > 0) textBoxLine += $", {string.Join(" | ", textBoxStyles)}";
                     stringBuilder.AppendLine(textBoxLine);
 
+                    break;
+                }
+                case Panel panel:
+                {
+                    // no-op, for now
                     break;
                 }
                 default:

@@ -10,5 +10,5 @@ public interface IResourceGenerator
     /// </summary>
     /// <param name="controls">The controls to generate a snippet for</param>
     /// <returns>The generated resource header snippet</returns>
-    string Generate(IReadOnlyCollection<Control> controls);
+    string Generate(TreeNode<Control> root);
 }

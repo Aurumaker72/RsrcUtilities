@@ -14,7 +14,7 @@ public class TextBox : Control
         /// <summary>
         ///     Only numbers can be inputted
         /// </summary>
-        Numbers = 1 << 0,
+        Numbers = 1 << 0
     }
 
     /// <summary>

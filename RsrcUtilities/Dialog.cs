@@ -57,7 +57,7 @@ public class Dialog
     public Chromes Chrome { get; set; } = Chromes.Default;
 
     /// <summary>
-    ///     The list of all child controls
+    ///     The root control node, under which all other controls should be ordered
     /// </summary>
-    public IReadOnlyCollection<Control> Controls { get; set; }
+    public TreeNode<Control> Root { get; set; }
 }
