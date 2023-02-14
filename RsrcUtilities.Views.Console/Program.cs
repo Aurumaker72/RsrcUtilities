@@ -9,25 +9,27 @@ var dialog = new Dialog()
     Identifier = "IDD_ABOUTBOX"
 };
 
-dialog.Controls.Add(new Button()
+var controls = new Control[]
 {
-    Identifier = "IDC_BUTTON",
-    X = 20,
-    Y = 20,
-    Width = 80,
-    Height = 25,
-    Caption = "Hello World!"
-});
-
-dialog.Controls.Add(new TextBox()
-{
-    Identifier = "IDC_TEXTBOX",
-    X = 20,
-    Y = 50,
-    Width = 80,
-    Height = 25,
-});
-
+    new Button()
+    {
+        Identifier = "IDC_BUTTON",
+        X = 20,
+        Y = 20,
+        Width = 80,
+        Height = 25,
+        Caption = "Hello World!"
+    },
+    new TextBox()
+    {
+        Identifier = "IDC_TEXTBOX",
+        X = 20,
+        Y = 50,
+        Width = 80,
+        Height = 25,
+    }
+};
+dialog.Controls = controls;
 
 var serializedDialog = new DefaultDialogSerializer().Serialize(dialog);
 var generatedResource = new DefaultResourceGenerator().Generate(dialog.Controls);

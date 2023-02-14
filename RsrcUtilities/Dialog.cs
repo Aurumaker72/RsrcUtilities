@@ -59,5 +59,5 @@ public class Dialog
     /// <summary>
     ///     The list of all child controls
     /// </summary>
-    public List<Control> Controls { get; set; } = new();
+    public IReadOnlyCollection<Control> Controls { get; set; }
 }

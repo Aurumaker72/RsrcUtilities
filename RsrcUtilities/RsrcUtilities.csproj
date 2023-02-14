@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Controls" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\RsrcUtilities.Controls\RsrcUtilities.Controls.csproj" />
     </ItemGroup>
 

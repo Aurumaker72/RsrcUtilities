@@ -10,7 +10,7 @@ namespace RsrcUtilities.Implementations;
 public class DefaultResourceGenerator : IResourceGenerator
 {
     /// <inheritdoc />
-    public string Generate(List<Control> controls)
+    public string Generate(IReadOnlyCollection<Control> controls)
     {
         StringBuilder resourceStringBuilder = new();
         var identifiers = controls.Select(x => x.Identifier).ToImmutableList();
