@@ -9,7 +9,8 @@
   .NET class library for interacting with <tt>rc</tt> files
 </p>
 <p align="center">
-    <img src="https://img.shields.io/badge/Status-Work%20In%20Progress-orange?style=for-the-badge"/>
+    <img src="https://img.shields.io/badge/Serialization-Supported-green?style=for-the-badge"/>
+    <img src="https://img.shields.io/badge/Deserialization-WIP-red?style=for-the-badge"/>
 </p>
 
 ## What?
