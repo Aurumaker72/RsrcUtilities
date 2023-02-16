@@ -1,4 +1,5 @@
 ﻿using RsrcUtilities.Controls.Enums;
+using RsrcUtilities.Controls.Layout;
 
 namespace RsrcUtilities;
 
@@ -13,42 +14,17 @@ public abstract class Control
     public string Identifier { get; set; } = "IDC_UNKNOWN";
 
     /// <summary>
-    ///     The margin from the parent's left in pixels
+    ///     The margin relative to the parent frame
     /// </summary>
-    public int MarginLeft { get; set; }
+    public Thickness Margin;
 
     /// <summary>
-    ///     The margin from the parent's top in pixels
-    /// </summary>
-    public int MarginTop { get; set; }
-
-    /// <summary>
-    ///     The width in pixels
-    /// </summary>
-    public int Width { get; set; }
-
-    /// <summary>
-    ///     The height in pixels
-    /// </summary>
-    public int Height { get; set; }
-
-    /// <summary>
-    ///  The horizontal alignment relative to the parent
+    ///     The horizontal alignment relative to the parent
     /// </summary>
     public HorizontalAlignments HorizontalAlignment { get; set; } = HorizontalAlignments.Left;
-    
-    /// <summary>
-    ///  The vertical alignment relative to the parent
-    /// </summary>
-    public VerticalAlignments VerticalAlignment { get; set; } = VerticalAlignments.Top;
-    
-    /// <summary>
-    /// The padding from the inner rectangle's left in pixels
-    /// </summary>
-    public virtual int RequiredPaddingLeft { get; } = 0;
 
     /// <summary>
-    /// The padding from the inner rectangle's top in pixels
+    ///     The vertical alignment relative to the parent
     /// </summary>
-    public virtual int RequiredPaddingTop { get; } = 0;
+    public VerticalAlignments VerticalAlignment { get; set; } = VerticalAlignments.Top;
 }

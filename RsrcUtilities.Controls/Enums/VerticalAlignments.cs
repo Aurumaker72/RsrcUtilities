@@ -19,4 +19,9 @@ public enum VerticalAlignments
     /// The control aligns to the bottom side
     /// </summary>
     Bottom,
+    
+    /// <summary>
+    /// The control stretches to its parent
+    /// </summary>
+    Stretch,
 }

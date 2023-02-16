@@ -14,7 +14,7 @@ public class TreeNode<T> : IEnumerable<TreeNode<T>>
     }
 
     public T Data { get; set; }
-    public TreeNode<T> Parent { get; set; }
+    public TreeNode<T>? Parent { get; set; }
     public ICollection<TreeNode<T>> Children { get; set; }
 
     /// <summary>

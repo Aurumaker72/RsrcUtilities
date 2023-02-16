@@ -19,4 +19,9 @@ public enum HorizontalAlignments
     /// The control aligns to the right side
     /// </summary>
     Right,
+    
+    /// <summary>
+    /// The control stretches to its parent
+    /// </summary>
+    Stretch,
 }

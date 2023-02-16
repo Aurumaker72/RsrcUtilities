@@ -2,6 +2,8 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using RsrcUtilities.Controls;
+using RsrcUtilities.Controls.Enums;
+using RsrcUtilities.Controls.Layout;
 using RsrcUtilities.Extensions;
 using RsrcUtilities.Interfaces;
 
@@ -108,7 +110,7 @@ public class DefaultDialogSerializer : IDialogSerializer
         stringBuilder.AppendLine($"STYLE {string.Join(" | ", dialogStyles)}");
 
         // syntax error avoidance
-        if (dialog.Caption.Contains('"')) throw new ArgumentException("Default caption contains illegal characters");
+        if (dialog.Caption.Contains('"')) throw new Exception($"Dialog caption contained quotation marks");
 
         stringBuilder.AppendLine($"CAPTION \"{dialog.Caption}\"");
 
@@ -119,26 +121,63 @@ public class DefaultDialogSerializer : IDialogSerializer
         stringBuilder.AppendLine("BEGIN");
 
         // do layout pass on controls first
-        // [1] -> flatten margins
-        // TODO: [2] -> process horizontal and vertical alignment modes
         foreach (var node in dialog.Root)
         {
             var control = node.Data;
+            Thickness parentMargin = node.Parent == null ? Thickness.Zero : node.GetParents().Aggregate(Thickness.Zero, (current, parent) =>
+            {
+                return new Thickness(parent.Data.Margin.Left + current.Left, parent.Data.Margin.Top + current.Top,
+                    parent.Data.Margin.Right - current.Right, parent.Data.Margin.Bottom - current.Bottom);
+                //return (parent.Data.Margin + parent.Data.RecommendedPadding) + current;
+            });
+            
+            Thickness margin = Thickness.Zero;
+            
+            switch (control.HorizontalAlignment)
+            {
+                case HorizontalAlignments.Left:
+                    margin = margin.WithLeft(parentMargin.Left);
+                    break;
+                case HorizontalAlignments.Stretch:
+                    margin = margin.WithLeft(parentMargin.Left);
+                    margin = margin.WithRight(parentMargin.Right);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+            
+            switch (control.VerticalAlignment)
+            {
+                case VerticalAlignments.Top:
+                    margin = margin.WithTop(parentMargin.Top);
+                    break;
+                case VerticalAlignments.Stretch:
+                    margin = margin.WithTop(parentMargin.Bottom);
+                    margin = margin.WithBottom(parentMargin.Bottom);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
 
-            control.MarginLeft = node.GetParents().Sum(x => x.Data.MarginLeft + x.Data.RequiredPaddingLeft) + control.MarginLeft;
-            control.MarginTop = node.GetParents().Sum(x => x.Data.MarginTop + x.Data.RequiredPaddingTop) + control.MarginTop;
+            control.Margin = margin + control.Margin;
         }
-        
+
+
         // layout done, generate rc now
         foreach (var node in dialog.Root)
         {
             var control = node.Data;
 
+            var x = control.Margin.Left;
+            var y = control.Margin.Top;
+            var width = dialog.Width - (control.Margin.Right + control.Margin.Left);
+            var height = dialog.Height - (control.Margin.Bottom + control.Margin.Top);
+            
             switch (control)
             {
                 case Button button:
                     stringBuilder.AppendLine(
-                        $"CONTROL \"{button.Caption}\", {control.Identifier}, \"Button\", WS_TABSTOP, {control.MarginLeft}, {control.MarginTop}, {control.Width}, {control.Height}");
+                        $"CONTROL \"{button.Caption}\", {control.Identifier}, \"Button\", WS_TABSTOP, {x}, {y}, {width}, {height}");
                     break;
                 case TextBox textBox:
                 {
@@ -148,7 +187,7 @@ public class DefaultDialogSerializer : IDialogSerializer
                     if (textBox.AllowHorizontalScroll) textBoxStyles.Add("ES_AUTOHSCROLL");
 
                     var textBoxLine =
-                        $"EDITTEXT {control.Identifier}, {control.MarginLeft}, {control.MarginTop}, {textBox.Width}, {textBox.Height}";
+                        $"EDITTEXT {control.Identifier}, {x}, {y}, {width}, {height}";
                     if (textBoxStyles.Count > 0) textBoxLine += $", {string.Join(" | ", textBoxStyles)}";
                     stringBuilder.AppendLine(textBoxLine);
 
@@ -163,7 +202,7 @@ public class DefaultDialogSerializer : IDialogSerializer
                 {
                     // GROUPBOX        "Static",IDC_STATIC,179,42,75,103
                     stringBuilder.AppendLine(
-                        $"GROUPBOX \"{groupBox.Caption}\", {control.Identifier}, {control.MarginLeft}, {control.MarginTop}, {control.Width}, {control.Height}");
+                        $"GROUPBOX \"{groupBox.Caption}\", {control.Identifier}, {x}, {y}, {width}, {height}");
 
                     break;
                 }
