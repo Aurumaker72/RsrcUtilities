@@ -15,10 +15,10 @@ var dialog = new Dialog
 var root = new TreeNode<Control>(new Button
 {
     Identifier = "IDC_BUTTON",
-    Margin = new Thickness(20, 20, 20, 20),
+    Margin = new Thickness(20, 20, 160, 60),
     Caption = "Hello World!",
-    HorizontalAlignment = HorizontalAlignments.Left,
-    VerticalAlignment = VerticalAlignments.Top
+    HorizontalAlignment = HorizontalAlignments.Stretch,
+    VerticalAlignment = VerticalAlignments.Stretch
 });
 
 dialog.Root = root;

@@ -28,34 +28,20 @@ public class DefaultLayoutEngine : ILayoutEngine
             
             switch (control.HorizontalAlignment)
             {
-                case HorizontalAlignments.Left:
+                case HorizontalAlignments.Stretch:
                     finalMargin = finalMargin.WithLeft(control.Margin.Left + parentMargin.Left);
                     break;
-                case HorizontalAlignments.Center:
-                    break;
-                case HorizontalAlignments.Right:
-                    break;
-                case HorizontalAlignments.Stretch:
-                    finalMargin = finalMargin.WithLeft(parentMargin.Left).WithRight(parentMargin.Right);
-                    break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new NotImplementedException();
             }
 
             switch (control.VerticalAlignment)
             {
-                case VerticalAlignments.Top:
+                case VerticalAlignments.Stretch:
                     finalMargin = finalMargin.WithTop(control.Margin.Top + parentMargin.Top);
                     break;
-                case VerticalAlignments.Center:
-                    break;
-                case VerticalAlignments.Bottom:
-                    break;
-                case VerticalAlignments.Stretch:
-                    finalMargin = finalMargin.WithTop(parentMargin.Top).WithBottom(parentMargin.Bottom);
-                    break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new NotImplementedException();
             }
             
             
