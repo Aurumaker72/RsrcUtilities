@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
-namespace RsrcUtilities.Serializers.Extensions;
+namespace RsrcUtilities.Extensions;
 
-internal static class ObjectExtensions
+public static class ObjectExtensions
 {
     private static readonly MethodInfo CloneMethod =
         typeof(object).GetMethod("MemberwiseClone", BindingFlags.NonPublic | BindingFlags.Instance);

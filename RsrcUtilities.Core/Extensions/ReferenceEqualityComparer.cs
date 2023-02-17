@@ -1,4 +1,4 @@
-﻿namespace RsrcUtilities.Serializers.Extensions;
+﻿namespace RsrcUtilities.Extensions;
 
 public class ReferenceEqualityComparer : EqualityComparer<object>
 {

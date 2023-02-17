@@ -17,8 +17,8 @@ var root = new TreeNode<Control>(new Button
     Identifier = "IDC_BUTTON",
     Margin = new Thickness(20, 20, 20, 20),
     Caption = "Hello World!",
-    HorizontalAlignment = HorizontalAlignments.Stretch,
-    VerticalAlignment = VerticalAlignments.Stretch
+    HorizontalAlignment = HorizontalAlignments.Left,
+    VerticalAlignment = VerticalAlignments.Top
 });
 
 dialog.Root = root;
@@ -28,8 +28,6 @@ var generatedResource = new DefaultResourceGenerator().Generate(dialog.Root);
 
 File.WriteAllText("Resource.h", generatedResource);
 File.WriteAllText("rsrc.rc", serializedDialog);
-
-// new DefaultDialogSerializer().Deserialize(serializedDialog);
 
 Console.WriteLine(generatedResource);
 Console.WriteLine(serializedDialog);

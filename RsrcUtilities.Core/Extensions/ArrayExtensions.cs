@@ -1,6 +1,6 @@
-﻿namespace RsrcUtilities.Serializers.Extensions;
+﻿namespace RsrcUtilities.Extensions;
 
-internal static class ArrayExtensions
+public static class ArrayExtensions
 {
     public static void ForEach(this Array array, Action<Array, int[]> action)
     {

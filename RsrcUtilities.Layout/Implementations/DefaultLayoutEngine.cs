@@ -24,40 +24,45 @@ public class DefaultLayoutEngine : ILayoutEngine
                         parent.Data.Margin.Right - current.Right, parent.Data.Margin.Bottom - current.Bottom);
                 });
 
-            Thickness margin = Thickness.Zero;
-
+            Thickness finalMargin = control.Margin;
+            
             switch (control.HorizontalAlignment)
             {
                 case HorizontalAlignments.Left:
-                    margin = margin.WithLeft(parentMargin.Left);
+                    finalMargin = finalMargin.WithLeft(control.Margin.Left + parentMargin.Left);
+                    break;
+                case HorizontalAlignments.Center:
+                    break;
+                case HorizontalAlignments.Right:
                     break;
                 case HorizontalAlignments.Stretch:
-                    margin = margin.WithLeft(parentMargin.Left);
-                    margin = margin.WithRight(parentMargin.Right);
+                    finalMargin = finalMargin.WithLeft(parentMargin.Left).WithRight(parentMargin.Right);
                     break;
                 default:
-                    throw new NotImplementedException();
+                    throw new ArgumentOutOfRangeException();
             }
 
             switch (control.VerticalAlignment)
             {
                 case VerticalAlignments.Top:
-                    margin = margin.WithTop(parentMargin.Top);
+                    finalMargin = finalMargin.WithTop(control.Margin.Top + parentMargin.Top);
+                    break;
+                case VerticalAlignments.Center:
+                    break;
+                case VerticalAlignments.Bottom:
                     break;
                 case VerticalAlignments.Stretch:
-                    margin = margin.WithTop(parentMargin.Bottom);
-                    margin = margin.WithBottom(parentMargin.Bottom);
+                    finalMargin = finalMargin.WithTop(parentMargin.Top).WithBottom(parentMargin.Bottom);
                     break;
                 default:
-                    throw new NotImplementedException();
+                    throw new ArgumentOutOfRangeException();
             }
-
-            control.Margin = margin + control.Margin;
             
-            var x = control.Margin.Left;
-            var y = control.Margin.Top;
-            var width = dialog.Width - (control.Margin.Right + control.Margin.Left);
-            var height = dialog.Height - (control.Margin.Bottom + control.Margin.Top);
+            
+            var x = finalMargin.Left;
+            var y = finalMargin.Top;
+            var width = dialog.Width - (finalMargin.Right + finalMargin.Left);
+            var height = dialog.Height - (finalMargin.Bottom + finalMargin.Top);
 
             dictionary[control] = new Rectangle(x, y, width, height);
         }
