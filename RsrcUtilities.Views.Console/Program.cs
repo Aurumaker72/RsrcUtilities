@@ -1,14 +1,15 @@
-﻿using RsrcUtilities;
+﻿
+using RsrcUtilities;
 using RsrcUtilities.Controls;
-using RsrcUtilities.Controls.Enums;
-using RsrcUtilities.Controls.Layout;
-using RsrcUtilities.Implementations;
+using RsrcUtilities.Geometry.Enums;
+using RsrcUtilities.Geometry.Structs;
+using RsrcUtilities.Serializers.Implementations;
 
 var dialog = new Dialog
 {
     Identifier = "IDD_ABOUTBOX",
     Width = 100,
-    Height = 100,
+    Height = 100
 };
 var root = new TreeNode<Control>(new Button
 {

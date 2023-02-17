@@ -6,9 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\RsrcUtilities.Core\RsrcUtilities.Core.csproj" />
-      <ProjectReference Include="..\RsrcUtilities.Geometry\RsrcUtilities.Geometry.csproj" />
-    </ItemGroup>
-
 </Project>

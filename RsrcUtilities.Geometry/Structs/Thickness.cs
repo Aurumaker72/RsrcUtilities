@@ -1,34 +1,35 @@
 ﻿using System.Numerics;
 
-namespace RsrcUtilities.Controls.Layout;
+namespace RsrcUtilities.Geometry.Structs;
 
 /// <summary>
-/// Represents the thickness of a frame around a rectangle
+///     Represents the thickness of a frame around a rectangle
 /// </summary>
-public readonly struct Thickness : IEquatable<Thickness>, IAdditionOperators<Thickness, Thickness, Thickness>, ISubtractionOperators<Thickness, Thickness, Thickness>
+public readonly struct Thickness : IEquatable<Thickness>, IAdditionOperators<Thickness, Thickness, Thickness>,
+    ISubtractionOperators<Thickness, Thickness, Thickness>
 {
     /// <summary>
-    /// A zero-initialized <see cref="Thickness"/>
+    ///     A zero-initialized <see cref="Thickness" />
     /// </summary>
-    public static Thickness Zero => new Thickness(0, 0, 0, 0);
-    
+    public static Thickness Zero => new(0, 0, 0, 0);
+
     /// <summary>
-    /// The margin from the rectangle's left side 
+    ///     The margin from the rectangle's left side
     /// </summary>
     public readonly int Left;
-    
+
     /// <summary>
-    /// The margin from the rectangle's top side 
+    ///     The margin from the rectangle's top side
     /// </summary>
     public readonly int Top;
-    
+
     /// <summary>
-    /// The margin from the rectangle's right side 
+    ///     The margin from the rectangle's right side
     /// </summary>
     public readonly int Right;
-    
+
     /// <summary>
-    /// The margin from the rectangle's bottom side 
+    ///     The margin from the rectangle's bottom side
     /// </summary>
     public readonly int Bottom;
 
@@ -61,17 +62,17 @@ public readonly struct Thickness : IEquatable<Thickness>, IAdditionOperators<Thi
     {
         return new Thickness(left, Top, Right, Bottom);
     }
-    
+
     public Thickness WithTop(int top)
     {
         return new Thickness(Left, top, Right, Bottom);
     }
-    
+
     public Thickness WithRight(int right)
     {
         return new Thickness(Left, Top, right, Bottom);
     }
-    
+
     public Thickness WithBottom(int bottom)
     {
         return new Thickness(Left, Top, Right, bottom);

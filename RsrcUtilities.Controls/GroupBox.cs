@@ -1,6 +1,4 @@
-﻿using RsrcUtilities.Controls.Layout;
-
-namespace RsrcUtilities.Controls;
+﻿namespace RsrcUtilities.Controls;
 
 /// <summary>
 ///     Represents a group-box control, used for grouping contextually related items

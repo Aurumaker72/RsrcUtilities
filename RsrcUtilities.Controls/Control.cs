@@ -1,7 +1,7 @@
-﻿using RsrcUtilities.Controls.Enums;
-using RsrcUtilities.Controls.Layout;
+﻿using RsrcUtilities.Geometry.Enums;
+using RsrcUtilities.Geometry.Structs;
 
-namespace RsrcUtilities;
+namespace RsrcUtilities.Controls;
 
 /// <summary>
 ///     Represents a base for visual elements inside a dialog
@@ -9,14 +9,14 @@ namespace RsrcUtilities;
 public abstract class Control
 {
     /// <summary>
-    ///     The unique identifier
-    /// </summary>
-    public string Identifier { get; set; } = "IDC_UNKNOWN";
-
-    /// <summary>
     ///     The margin relative to the parent frame
     /// </summary>
     public Thickness Margin;
+
+    /// <summary>
+    ///     The unique identifier
+    /// </summary>
+    public string Identifier { get; set; } = "IDC_UNKNOWN";
 
     /// <summary>
     ///     The horizontal alignment relative to the parent

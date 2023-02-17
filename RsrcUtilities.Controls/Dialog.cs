@@ -1,4 +1,4 @@
-﻿namespace RsrcUtilities;
+﻿namespace RsrcUtilities.Controls;
 
 /// <summary>
 ///     Represents a Win32 dialog

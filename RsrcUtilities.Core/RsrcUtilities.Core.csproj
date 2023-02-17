@@ -4,10 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TargetFramework>net7.0</TargetFramework>
+        <RootNamespace>RsrcUtilities</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\RsrcUtilities.Controls\RsrcUtilities.Controls.csproj" />
-    </ItemGroup>
 
 </Project>

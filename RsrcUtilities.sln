@@ -1,10 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities", "RsrcUtilities\RsrcUtilities.csproj", "{8BB39A31-1945-4D1F-853A-5FEF2870C644}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Core", "RsrcUtilities.Core\RsrcUtilities.Core.csproj", "{8BB39A31-1945-4D1F-853A-5FEF2870C644}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Views.Console", "RsrcUtilities.Views.Console\RsrcUtilities.Views.Console.csproj", "{0FF3AECE-4B0F-4EF3-B9DA-3A9F6386DC15}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Controls", "RsrcUtilities.Controls\RsrcUtilities.Controls.csproj", "{D794107B-56E9-4DFF-BE9B-2FC4A79B2897}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Layout", "RsrcUtilities.Layout\RsrcUtilities.Layout.csproj", "{35CA9DC8-FE35-4830-82FF-7AEFC5171E2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Serializers", "RsrcUtilities.Serializers\RsrcUtilities.Serializers.csproj", "{0A9F4A3B-1C44-4955-8ADE-8390D869D09C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Geometry", "RsrcUtilities.Geometry\RsrcUtilities.Geometry.csproj", "{7E58949B-DE85-45AB-BCBF-3651F8648EDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +30,17 @@ Global
 		{D794107B-56E9-4DFF-BE9B-2FC4A79B2897}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D794107B-56E9-4DFF-BE9B-2FC4A79B2897}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D794107B-56E9-4DFF-BE9B-2FC4A79B2897}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35CA9DC8-FE35-4830-82FF-7AEFC5171E2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35CA9DC8-FE35-4830-82FF-7AEFC5171E2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35CA9DC8-FE35-4830-82FF-7AEFC5171E2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35CA9DC8-FE35-4830-82FF-7AEFC5171E2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A9F4A3B-1C44-4955-8ADE-8390D869D09C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A9F4A3B-1C44-4955-8ADE-8390D869D09C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A9F4A3B-1C44-4955-8ADE-8390D869D09C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A9F4A3B-1C44-4955-8ADE-8390D869D09C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E58949B-DE85-45AB-BCBF-3651F8648EDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E58949B-DE85-45AB-BCBF-3651F8648EDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E58949B-DE85-45AB-BCBF-3651F8648EDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E58949B-DE85-45AB-BCBF-3651F8648EDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

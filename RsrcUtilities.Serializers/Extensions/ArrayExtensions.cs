@@ -1,4 +1,4 @@
-﻿namespace RsrcUtilities.Extensions;
+﻿namespace RsrcUtilities.Serializers.Extensions;
 
 internal static class ArrayExtensions
 {

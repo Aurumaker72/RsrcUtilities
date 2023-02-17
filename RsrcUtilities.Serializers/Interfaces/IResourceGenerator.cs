@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
+using RsrcUtilities.Controls;
 
-namespace RsrcUtilities.Interfaces;
+namespace RsrcUtilities.Serializers.Interfaces;
 
 /// <summary>
 ///     Represents a resource generator contract

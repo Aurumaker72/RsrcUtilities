@@ -2,9 +2,9 @@
 using System.Diagnostics.Contracts;
 using System.Text;
 using RsrcUtilities.Controls;
-using RsrcUtilities.Interfaces;
+using RsrcUtilities.Serializers.Interfaces;
 
-namespace RsrcUtilities.Implementations;
+namespace RsrcUtilities.Serializers.Implementations;
 
 /// <summary>
 ///     The default resource generator
