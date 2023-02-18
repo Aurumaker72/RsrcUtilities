@@ -41,24 +41,49 @@ public class Game1 : Game
         _dialogPainter = new DialogPainter(GraphicsDevice, Content);
         _orthographicCamera = new OrthographicCamera(GraphicsDevice)
         {
-            MinimumZoom = 0.01f,
-            MaximumZoom = 5f,
+            MinimumZoom = 0.5f,
+            MaximumZoom = 2f,
             Origin = Vector2.Zero
         };
 
         _dialog = new Dialog
         {
             Identifier = "IDD_ABOUTBOX",
-            Width = 200,
+            Width = 100,
             Height = 100
         };
-        var root = new TreeNode<Control>(new Button
+
+        var root = new TreeNode<Control>(new GroupBox
         {
-            Identifier = "IDC_BUTTON",
-            Rectangle = new Rectangle(10, 10, 80, 30),
-            Caption = "Hello World!",
+            Identifier = "IDC_GROUPBOX",
+            Caption = "Look at me!",
+            Rectangle = new Rectangle(0, 0, 0, 0),
             HorizontalAlignment = HorizontalAlignments.Stretch,
             VerticalAlignment = VerticalAlignments.Stretch
+        });
+
+        root.AddChild(new TextBox
+        {
+            Identifier = "IDC_CENTER_CENTER_TEXTBOX",
+            Rectangle = new Rectangle(0, 0, 40, 20),
+            HorizontalAlignment = HorizontalAlignments.Center,
+            VerticalAlignment = VerticalAlignments.Center
+        });
+        root.AddChild(new Button
+        {
+            Identifier = "IDC_LEFT_TOP_BUTTON",
+            Caption = "Left Top",
+            Rectangle = new Rectangle(0, 0, 40, 20),
+            HorizontalAlignment = HorizontalAlignments.Left,
+            VerticalAlignment = VerticalAlignments.Top
+        });
+        root.AddChild(new Button
+        {
+            Identifier = "IDC_RIGHT_BOTTOM_BUTTON",
+            Caption = "Right Bottom",
+            Rectangle = new Rectangle(0, 0, 40, 20),
+            HorizontalAlignment = HorizontalAlignments.Right,
+            VerticalAlignment = VerticalAlignments.Bottom
         });
 
         _dialog.Root = root;
@@ -74,6 +99,8 @@ public class Game1 : Game
 
         if (_keyboardState.IsKeyDown(Keys.Up)) _orthographicCamera.ZoomIn(10f * deltaSeconds);
         if (_keyboardState.IsKeyDown(Keys.Down)) _orthographicCamera.ZoomIn(-10f * deltaSeconds);
+
+        _allowPanning = _keyboardState.IsKeyDown(Keys.Z);
 
         _lastMouseState = _mouseState;
         _lastKeyboardState = _keyboardState;

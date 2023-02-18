@@ -48,6 +48,14 @@ public class DialogPainter
                 _spriteBatch.DrawString(_spriteFont, button.Caption, rectangleF.Center.ToVector2() - captionSize / 2,
                     Color.Black);
             }
+            else if (pair.Key is TextBox textBox)
+            {
+                _spriteBatch.FillRectangle(rectangleF.InflateCopy(1), new Color(122, 122, 122));
+                _spriteBatch.FillRectangle(rectangleF, new Color(255, 255, 255));
+                var captionSize = _spriteFont.MeasureString("Text");
+                _spriteBatch.DrawString(_spriteFont, "Text", rectangleF.Center.ToVector2() - captionSize / 2,
+                    Color.Black);
+            }
             else
             {
                 ;
