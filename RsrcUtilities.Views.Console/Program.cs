@@ -21,9 +21,9 @@ var root = new TreeNode<Control>(new GroupBox
     VerticalAlignment = VerticalAlignments.Stretch
 });
 
-root.AddChild(new Button
+root.AddChild(new CheckBox()
 {
-    Identifier = "IDC_CENTER_CENTER_BUTTON",
+    Identifier = "IDC_CENTER_CENTER_CHECKBOX",
     Caption = "Center Center",
     Rectangle = new Rectangle(0, 0, 40, 20),
     HorizontalAlignment = HorizontalAlignments.Center,

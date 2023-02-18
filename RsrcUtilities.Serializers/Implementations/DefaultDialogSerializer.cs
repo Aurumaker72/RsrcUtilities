@@ -124,6 +124,10 @@ public class DefaultDialogSerializer : IDialogSerializer
                     stringBuilder.AppendLine(
                         $"CONTROL \"{button.Caption}\", {control.Identifier}, \"Button\", WS_TABSTOP, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}");
                     break;
+                case CheckBox checkBox:
+                    stringBuilder.AppendLine(
+                        $"CONTROL \"{checkBox.Caption}\", {control.Identifier}, \"Button\", BS_AUTOCHECKBOX | WS_TABSTOP, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}");
+                    break;
                 case TextBox textBox:
                 {
                     List<string> textBoxStyles = new();
