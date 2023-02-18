@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using RsrcUtilities.Controls;
 using RsrcUtilities.Geometry.Enums;
+using RsrcUtilities.Geometry.Structs;
 using Rectangle = RsrcUtilities.Geometry.Structs.Rectangle;
 
 namespace RsrcUtilities.Views.MonoGame;
@@ -58,6 +59,7 @@ public class Game1 : Game
             Identifier = "IDC_GROUPBOX",
             Caption = "Look at me!",
             Rectangle = new Rectangle(0, 0, 0, 0),
+            Padding =  new Vector2Int(10, 10),
             HorizontalAlignment = HorizontalAlignments.Stretch,
             VerticalAlignment = VerticalAlignments.Stretch
         });
@@ -99,6 +101,11 @@ public class Game1 : Game
 
         if (_keyboardState.IsKeyDown(Keys.Up)) _orthographicCamera.ZoomIn(10f * deltaSeconds);
         if (_keyboardState.IsKeyDown(Keys.Down)) _orthographicCamera.ZoomIn(-10f * deltaSeconds);
+        if (_keyboardState.IsKeyDown(Keys.R))
+        {
+            _orthographicCamera.Zoom = 1f;
+            _orthographicCamera.Position = Vector2.Zero;
+        }
 
         _allowPanning = _keyboardState.IsKeyDown(Keys.Z);
 

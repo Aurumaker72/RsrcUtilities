@@ -56,6 +56,13 @@ public class DialogPainter
                 _spriteBatch.DrawString(_spriteFont, "Text", rectangleF.Center.ToVector2() - captionSize / 2,
                     Color.Black);
             }
+            else if (pair.Key is GroupBox groupBox)
+            {
+                _spriteBatch.DrawRectangle(rectangleF, new Color(220, 220, 220));
+                var captionSize = _spriteFont.MeasureString(groupBox.Caption);
+                _spriteBatch.DrawString(_spriteFont, groupBox.Caption, rectangleF.GetCorners()[0],
+                    Color.Black);
+            }
             else
             {
                 ;

@@ -14,6 +14,11 @@ public abstract class Control
     public Rectangle Rectangle;
 
     /// <summary>
+    ///     The internal padding, which children are equilateraly offset by
+    /// </summary>
+    public Vector2Int Padding;
+
+    /// <summary>
     ///     The unique identifier
     /// </summary>
     public string Identifier { get; set; } = "IDC_UNKNOWN";

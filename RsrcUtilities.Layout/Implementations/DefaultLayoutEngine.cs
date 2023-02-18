@@ -21,6 +21,14 @@ public class DefaultLayoutEngine : ILayoutEngine
                 // parent wasn't computed yet, this is logically impossible unless the parent is the dialog
                 parentRectangle = new Rectangle(0, 0, dialog.Width, dialog.Height);
 
+            if (node.Parent != null)
+            {
+                parentRectangle = new Rectangle(parentRectangle.X + node.Parent.Data.Padding.X,
+                    parentRectangle.Y + node.Parent.Data.Padding.Y,
+                    parentRectangle.Width - node.Parent.Data.Padding.X * 2,
+                    parentRectangle.Height - node.Parent.Data.Padding.Y * 2);
+            }
+            
             var finalRectangle = control.Rectangle;
 
             switch (control.HorizontalAlignment)
