@@ -11,7 +11,7 @@ public readonly struct Thickness : IEquatable<Thickness>, IAdditionOperators<Thi
     /// <summary>
     ///     A zero-initialized <see cref="Thickness" />
     /// </summary>
-    public static Thickness Zero => new(0, 0, 0, 0);
+    public static Thickness Zero = new(0, 0, 0, 0);
 
     /// <summary>
     ///     The margin from the rectangle's left side

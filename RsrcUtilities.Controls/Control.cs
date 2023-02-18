@@ -9,9 +9,9 @@ namespace RsrcUtilities.Controls;
 public abstract class Control
 {
     /// <summary>
-    ///     The margin relative to the parent frame
+    ///     The logical rectangle, relative in (X, Y) to the parent
     /// </summary>
-    public Thickness Margin;
+    public Rectangle Rectangle;
 
     /// <summary>
     ///     The unique identifier

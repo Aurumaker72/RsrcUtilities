@@ -5,31 +5,40 @@ using RsrcUtilities.Layout.Interfaces;
 
 namespace RsrcUtilities.Layout.Implementations;
 
-/// <inheritdoc/>
+/// <inheritdoc />
 public class DefaultLayoutEngine : ILayoutEngine
 {
-    /// <inheritdoc/>
-    public Dictionary<Control, Rectangle> DoLayout(Dialog dialog, TreeNode<Control> root)
+    /// <inheritdoc />
+    public Dictionary<Control, Rectangle> DoLayout(Dialog dialog)
     {
         Dictionary<Control, Rectangle> dictionary = new();
-        
+
         foreach (var node in dialog.Root)
         {
             var control = node.Data;
-            Thickness parentMargin = node.Parent == null
-                ? Thickness.Zero
-                : node.GetParents().Aggregate(Thickness.Zero, (current, parent) =>
-                {
-                    return new Thickness(parent.Data.Margin.Left + current.Left, parent.Data.Margin.Top + current.Top,
-                        parent.Data.Margin.Right - current.Right, parent.Data.Margin.Bottom - current.Bottom);
-                });
 
-            Thickness finalMargin = control.Margin;
-            
+            if (node.Parent == null || !dictionary.TryGetValue(node.Parent.Data, out var parentRectangle))
+                // parent wasn't computed yet, this is logically impossible unless the parent is the dialog
+                parentRectangle = new Rectangle(0, 0, dialog.Width, dialog.Height);
+
+            var finalRectangle = control.Rectangle;
+
             switch (control.HorizontalAlignment)
             {
+                case HorizontalAlignments.Left:
+                    finalRectangle = finalRectangle.WithX(parentRectangle.X + control.Rectangle.X);
+                    break;
                 case HorizontalAlignments.Stretch:
-                    finalMargin = finalMargin.WithLeft(control.Margin.Left + parentMargin.Left);
+                    finalRectangle = finalRectangle.WithX(parentRectangle.X + control.Rectangle.X);
+                    finalRectangle = finalRectangle.WithWidth(parentRectangle.Width - control.Rectangle.X * 2);
+                    break;
+                case HorizontalAlignments.Right:
+                    finalRectangle = finalRectangle.WithX(parentRectangle.Right - control.Rectangle.Right);
+                    break;
+                case HorizontalAlignments.Center:
+                    finalRectangle =
+                        finalRectangle.WithX(
+                            parentRectangle.X + parentRectangle.Width / 2 - control.Rectangle.Width / 2);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -37,20 +46,25 @@ public class DefaultLayoutEngine : ILayoutEngine
 
             switch (control.VerticalAlignment)
             {
+                case VerticalAlignments.Top:
+                    finalRectangle = finalRectangle.WithY(parentRectangle.Y + control.Rectangle.Y);
+                    break;
                 case VerticalAlignments.Stretch:
-                    finalMargin = finalMargin.WithTop(control.Margin.Top + parentMargin.Top);
+                    finalRectangle = finalRectangle.WithY(parentRectangle.Y + control.Rectangle.Y);
+                    finalRectangle = finalRectangle.WithHeight(parentRectangle.Height - control.Rectangle.Y * 2);
+                    break;
+                case VerticalAlignments.Bottom:
+                    finalRectangle = finalRectangle.WithY(parentRectangle.Bottom - control.Rectangle.Bottom);
+                    break;
+                case VerticalAlignments.Center:
+                    finalRectangle = finalRectangle.WithY(parentRectangle.Y + parentRectangle.Height / 2 -
+                                                          control.Rectangle.Height / 2);
                     break;
                 default:
                     throw new NotImplementedException();
             }
-            
-            
-            var x = finalMargin.Left;
-            var y = finalMargin.Top;
-            var width = dialog.Width - (finalMargin.Right + finalMargin.Left);
-            var height = dialog.Height - (finalMargin.Bottom + finalMargin.Top);
 
-            dictionary[control] = new Rectangle(x, y, width, height);
+            dictionary[control] = finalRectangle;
         }
 
         return dictionary;

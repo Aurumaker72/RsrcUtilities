@@ -3,8 +3,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using RsrcUtilities.Controls;
 using RsrcUtilities.Extensions;
-using RsrcUtilities.Geometry.Enums;
-using RsrcUtilities.Geometry.Structs;
 using RsrcUtilities.Layout.Interfaces;
 using RsrcUtilities.Serializers.Interfaces;
 
@@ -80,7 +78,7 @@ public class DefaultDialogSerializer : IDialogSerializer
         StringBuilder stringBuilder = new();
 
         // IDD_ABOUTBOX DIALOGEX 0, 0, 300,  200
-        // Identifier   Type     X  Y  Width Height
+        // Identifier   Type     X  Y  X Y
         stringBuilder.AppendLine($"{dialog.Identifier} DIALOGEX 0, 0, {dialog.Width}, {dialog.Height}");
 
         List<string> dialogStyles = new();
@@ -111,8 +109,8 @@ public class DefaultDialogSerializer : IDialogSerializer
 
         stringBuilder.AppendLine("BEGIN");
 
-        var controlsDictionary = layoutEngine.DoLayout(dialog, dialog.Root);
-    
+        var controlsDictionary = layoutEngine.DoLayout(dialog);
+
         // layout done, generate rc now
         foreach (var node in dialog.Root)
         {

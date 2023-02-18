@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RsrcUtilities.Controls\RsrcUtilities.Controls.csproj" />
-      <ProjectReference Include="..\RsrcUtilities.Layout\RsrcUtilities.Layout.csproj" />
+        <ProjectReference Include="..\RsrcUtilities.Controls\RsrcUtilities.Controls.csproj"/>
+        <ProjectReference Include="..\RsrcUtilities.Layout\RsrcUtilities.Layout.csproj"/>
     </ItemGroup>
 
 </Project>

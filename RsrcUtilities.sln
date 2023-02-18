@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Serializers",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Geometry", "RsrcUtilities.Geometry\RsrcUtilities.Geometry.csproj", "{7E58949B-DE85-45AB-BCBF-3651F8648EDE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Views.MonoGame", "RsrcUtilities.Views.MonoGame\RsrcUtilities.Views.MonoGame.csproj", "{5F713768-25DD-43A9-88B9-2C885B9665E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{7E58949B-DE85-45AB-BCBF-3651F8648EDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E58949B-DE85-45AB-BCBF-3651F8648EDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E58949B-DE85-45AB-BCBF-3651F8648EDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F713768-25DD-43A9-88B9-2C885B9665E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F713768-25DD-43A9-88B9-2C885B9665E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F713768-25DD-43A9-88B9-2C885B9665E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F713768-25DD-43A9-88B9-2C885B9665E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

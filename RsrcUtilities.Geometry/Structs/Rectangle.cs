@@ -5,40 +5,44 @@ namespace RsrcUtilities.Geometry.Structs;
 /// <summary>
 ///     Represents a rectangle by its top-left position and dimensions
 /// </summary>
-public readonly struct Rectangle: IEquatable<Rectangle>, IAdditionOperators<Rectangle, Rectangle, Rectangle>,
+public readonly struct Rectangle : IEquatable<Rectangle>, IAdditionOperators<Rectangle, Rectangle, Rectangle>,
     ISubtractionOperators<Rectangle, Rectangle, Rectangle>
 {
-    
     /// <summary>
-    /// The X position in pixels
+    ///     A zero-initialized <see cref="Rectangle" />
+    /// </summary>
+    public static Rectangle Zero = new(0, 0, 0, 0);
+
+    /// <summary>
+    ///     The X position
     /// </summary>
     public readonly int X;
-    
+
     /// <summary>
-    /// The Y position in pixels
+    ///     The Y position
     /// </summary>
     public readonly int Y;
-    
+
     /// <summary>
-    /// The width in pixels
+    ///     The width
     /// </summary>
     public readonly int Width;
-    
+
     /// <summary>
-    /// The height in pixels
+    ///     The height
     /// </summary>
     public readonly int Height;
 
     /// <summary>
-    /// The right side in pixels
+    ///     The right side
     /// </summary>
     public int Right => X + Width;
-    
+
     /// <summary>
-    /// The bottom side in pixels
+    ///     The bottom side
     /// </summary>
     public int Bottom => Y + Height;
-    
+
     public Rectangle(int x, int y, int width, int height)
     {
         X = x;
@@ -60,5 +64,25 @@ public readonly struct Rectangle: IEquatable<Rectangle>, IAdditionOperators<Rect
     public static Rectangle operator -(Rectangle left, Rectangle right)
     {
         return new Rectangle(left.X - right.X, left.Y - right.Y, left.Width - right.Width, left.Height - right.Height);
+    }
+
+    public Rectangle WithX(int x)
+    {
+        return new Rectangle(x, Y, Width, Height);
+    }
+
+    public Rectangle WithY(int y)
+    {
+        return new Rectangle(X, y, Width, Height);
+    }
+
+    public Rectangle WithWidth(int width)
+    {
+        return new Rectangle(X, Y, width, Height);
+    }
+
+    public Rectangle WithHeight(int height)
+    {
+        return new Rectangle(X, Y, Width, height);
     }
 }
