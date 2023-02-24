@@ -5,7 +5,7 @@ namespace RsrcUtilities.Geometry.Structs;
 /// <summary>
 ///     Represents a 2-dimentsional vector by its X and Y
 /// </summary>
-public readonly struct Vector2Int : IEquatable<Vector2Int>, IAdditionOperators<Vector2Int, Vector2Int, Vector2Int>
+public readonly struct Vector2Int : IEquatable<Vector2Int>
 {
     /// <summary>
     ///     A zero-initialized <see cref="Vector2Int" />

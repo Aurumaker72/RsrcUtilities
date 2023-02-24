@@ -5,8 +5,7 @@ namespace RsrcUtilities.Geometry.Structs;
 /// <summary>
 ///     Represents the thickness of a frame around a rectangle
 /// </summary>
-public readonly struct Thickness : IEquatable<Thickness>, IAdditionOperators<Thickness, Thickness, Thickness>,
-    ISubtractionOperators<Thickness, Thickness, Thickness>
+public readonly struct Thickness : IEquatable<Thickness>
 {
     /// <summary>
     ///     A zero-initialized <see cref="Thickness" />

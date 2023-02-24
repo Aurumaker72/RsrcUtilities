@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net7.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SkiaSharp.Views.WPF" Version="2.88.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\RsrcUtilities.Controls\RsrcUtilities.Controls.csproj" />
+      <ProjectReference Include="..\RsrcUtilities.Layout\RsrcUtilities.Layout.csproj" />
+    </ItemGroup>
+
+</Project>

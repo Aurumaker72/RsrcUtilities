@@ -5,8 +5,7 @@ namespace RsrcUtilities.Geometry.Structs;
 /// <summary>
 ///     Represents a rectangle by its top-left position and dimensions
 /// </summary>
-public readonly struct Rectangle : IEquatable<Rectangle>, IAdditionOperators<Rectangle, Rectangle, Rectangle>,
-    ISubtractionOperators<Rectangle, Rectangle, Rectangle>
+public readonly struct Rectangle : IEquatable<Rectangle>
 {
     /// <summary>
     ///     A zero-initialized <see cref="Rectangle" />

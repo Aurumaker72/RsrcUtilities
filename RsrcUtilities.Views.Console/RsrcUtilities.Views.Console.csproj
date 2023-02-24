@@ -2,14 +2,14 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\RsrcUtilities.Controls\RsrcUtilities.Controls.csproj"/>
-        <ProjectReference Include="..\RsrcUtilities.Serializers\RsrcUtilities.Serializers.csproj"/>
+        <ProjectReference Include="..\RsrcUtilities.Controls\RsrcUtilities.Controls.csproj" />
+        <ProjectReference Include="..\RsrcUtilities.Serializers\RsrcUtilities.Serializers.csproj" />
     </ItemGroup>
 
 </Project>
