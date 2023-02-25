@@ -27,25 +27,49 @@
             Title="RsrcArchitect" />
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
 
 
             <Grid Grid.Column="0" Margin="5">
                 <ItemsControl>
-                    <Button Content="Button" CommandParameter="Button"
+                    <Button CommandParameter="Button"
                             Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
-                            Margin="0 0 0 5" />
-                    <Button Content="TextBox" CommandParameter="TextBox"
+                            Margin="0 0 0 5" 
+                            HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="ControlButton24"/>
+                            <TextBlock Text="Button"/>
+                        </StackPanel>
+                    </Button>
+                    <Button CommandParameter="TextBox"
                             Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
-                            Margin="0 0 0 5" />
-                    <Button Content="CheckBox" CommandParameter="CheckBox"
+                            Margin="0 0 0 5" 
+                            HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Textbox24"/>
+                            <TextBlock Text="TextBox"/>
+                        </StackPanel>
+                    </Button>
+                    <Button CommandParameter="CheckBox"
                             Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
-                            Margin="0 0 0 5" />
-                    <Button Content="GroupBox" CommandParameter="GroupBox"
+                            Margin="0 0 0 5" 
+                            HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="CheckboxChecked24"/>
+                            <TextBlock Text="CheckBox"/>
+                        </StackPanel>
+                    </Button>
+                    <Button CommandParameter="GroupBox"
                             Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
-                            Margin="0 0 0 5" />
+                            Margin="0 0 0 5" 
+                            HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Group24"/>
+                            <TextBlock Text="GroupBox"/>
+                        </StackPanel>
+                    </Button>
                 </ItemsControl>
 
                 <Button HorizontalAlignment="Left" VerticalAlignment="Bottom"
