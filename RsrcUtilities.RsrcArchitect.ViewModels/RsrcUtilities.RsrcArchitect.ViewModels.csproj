@@ -10,4 +10,10 @@
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\RsrcUtilities.Controls\RsrcUtilities.Controls.csproj" />
+      <ProjectReference Include="..\RsrcUtilities.Layout\RsrcUtilities.Layout.csproj" />
+      <ProjectReference Include="..\RsrcUtilities.RsrcArchitect.Services\RsrcUtilities.RsrcArchitect.Services.csproj" />
+    </ItemGroup>
+
 </Project>

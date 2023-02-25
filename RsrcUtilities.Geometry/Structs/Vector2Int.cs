@@ -27,6 +27,12 @@ public readonly struct Vector2Int : IEquatable<Vector2Int>
         X = x;
         Y = y;
     }
+    
+    public Vector2Int(Vector2 vector2)
+    {
+        X = (int)vector2.X;
+        Y = (int)vector2.Y;
+    }
 
     public bool Equals(Vector2Int other)
     {

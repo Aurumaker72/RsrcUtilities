@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using RsrcUtilities.Controls;
 using RsrcUtilities.Extensions;
 using RsrcUtilities.Geometry.Structs;
-using RsrcUtilities.Layout.Interfaces;
 using RsrcUtilities.Serializers.Interfaces;
 
 namespace RsrcUtilities.Serializers.Implementations;

@@ -84,4 +84,9 @@ public readonly struct Rectangle : IEquatable<Rectangle>
     {
         return new Rectangle(X, Y, Width, height);
     }
+
+    public bool Contains(Vector2Int vector2Int)
+    {
+        return vector2Int.X > X && vector2Int.X < Right && vector2Int.Y > Y && vector2Int.Y < Bottom;
+    }
 }

@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace RsrcUtilities.Geometry.Structs;
+﻿namespace RsrcUtilities.Geometry.Structs;
 
 /// <summary>
 ///     Represents the thickness of a frame around a rectangle
