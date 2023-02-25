@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace RsrcUtilities.Views.WPF
+namespace RsrcUtilities.RsrcArchitect.Views.WPF
 {
     /// <summary>
     /// Interaction logic for App.xaml

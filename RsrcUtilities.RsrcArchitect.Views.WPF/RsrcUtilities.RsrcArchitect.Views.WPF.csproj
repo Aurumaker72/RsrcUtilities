@@ -14,6 +14,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\RsrcUtilities.Controls\RsrcUtilities.Controls.csproj" />
+      <ProjectReference Include="..\RsrcUtilities.Core\RsrcUtilities.Core.csproj" />
+      <ProjectReference Include="..\RsrcUtilities.Geometry\RsrcUtilities.Geometry.csproj" />
       <ProjectReference Include="..\RsrcUtilities.Layout\RsrcUtilities.Layout.csproj" />
       <ProjectReference Include="..\RsrcUtilities.Serializers\RsrcUtilities.Serializers.csproj" />
     </ItemGroup>

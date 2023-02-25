@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace RsrcUtilities.Views.WinUI;
+namespace RsrcUtilities.RsrcArchitect.Views.WPF;
 
 public static class SkRectExtensions
 {

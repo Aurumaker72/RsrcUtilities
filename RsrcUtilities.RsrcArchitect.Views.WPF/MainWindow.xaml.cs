@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,12 +10,11 @@ using RsrcUtilities.Geometry.Structs;
 using RsrcUtilities.Layout.Implementations;
 using RsrcUtilities.Layout.Interfaces;
 using RsrcUtilities.Serializers.Implementations;
-using RsrcUtilities.Views.WinUI;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
 
-namespace RsrcUtilities.Views.WPF;
+namespace RsrcUtilities.RsrcArchitect.Views.WPF;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml
