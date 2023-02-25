@@ -8,7 +8,8 @@
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         x:Name="Window"
-        Title="MainWindow" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainWindow}">
+        Title="MainWindow" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainWindow}"
+        KeyDown="MainWindow_OnKeyDown">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -20,25 +21,23 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type system:String}">
-                    <Button Content="{Binding}" Command="{Binding ElementName=Window, Path=MainViewModel.DialogEditorViewModel.CreateControlFromToolCommand}" CommandParameter="{Binding}"/>
+                    <Button Content="{Binding}"
+                            Command="{Binding ElementName=Window, Path=MainViewModel.DialogEditorViewModel.CreateControlFromToolCommand}"
+                            CommandParameter="{Binding}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <Grid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Button>Generate</Button>
-        </Grid>
+        <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Command="{Binding MainViewModel.SaveCommand}">
+            Save
+        </Button>
 
         <wpf:SKElement x:Name="SkElement" Grid.Column="1" SnapsToDevicePixels="True"
                        UseLayoutRounding="True"
                        PaintSurface="SkElement_OnPaintSurface"
                        MouseDown="SkElement_OnMouseDown"
                        MouseUp="SkElement_OnMouseUp"
-                       MouseMove="SkElement_OnMouseMove"/>
+                       MouseMove="SkElement_OnMouseMove" />
 
     </Grid>
 </Window>

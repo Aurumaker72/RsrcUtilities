@@ -32,23 +32,23 @@ public partial class DialogEditorViewModel : ObservableObject
 
     public Dialog Dialog { get; }
 
-    public Control? SelectedControl
+    public TreeNode<Control>? SelectedNode
     {
-        get => _selectedControl;
-        private set => SetProperty(ref _selectedControl, value);
+        get => _selectedNode;
+        private set { SetProperty(ref _selectedNode, value); OnPropertyChanged(nameof(IsNodeSelected)); }
     }
 
+    public bool IsNodeSelected => SelectedNode != null;
     private Grips? _currentGrip;
     private Rectangle _gripStartControlRectangle;
     private Vector2 _gripStartPointerPosition;
 
     [ObservableProperty] private float _gripDistance = 10f;
 
-    private Control? _selectedControl;
+    private TreeNode<Control>? _selectedNode;
 
     public string[] Tools => new[]
     {
-        "Cursor",
         "Button",
         "TextBox",
         "CheckBox",
@@ -119,17 +119,17 @@ public partial class DialogEditorViewModel : ObservableObject
 
         // do grip-test first, because clicks outside of control bounds can grip too
         var isGripHit = false;
-        if (SelectedControl != null)
+        if (SelectedNode != null)
         {
-            isGripHit = GetGrip(SelectedControl, position) != null;
+            isGripHit = GetGrip(SelectedNode.Data, position) != null;
         }
 
-        if (!isGripHit) SelectedControl = GetControlNodeAtPosition(position)?.Data;
+        if (!isGripHit) SelectedNode = GetControlNodeAtPosition(position);
 
-        if (SelectedControl != null)
+        if (SelectedNode != null)
         {
-            _currentGrip = GetGrip(SelectedControl, position);
-            _gripStartControlRectangle = SelectedControl.Rectangle;
+            _currentGrip = GetGrip(SelectedNode.Data, position);
+            _gripStartControlRectangle = SelectedNode.Data.Rectangle;
             _gripStartPointerPosition = position;
         }
 
@@ -145,56 +145,64 @@ public partial class DialogEditorViewModel : ObservableObject
     [RelayCommand]
     private void PointerMove(Vector2 position)
     {
-        if (SelectedControl != null)
+        if (SelectedNode != null)
             switch (_currentGrip)
             {
                 case Grips.TopLeft:
                     position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
                     position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithX((int)position.X);
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithY((int)position.Y);
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithWidth(
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithX((int)position.X);
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithY((int)position.Y);
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithWidth(
                         (int)(_gripStartControlRectangle.Width +
                               (_gripStartPointerPosition.X - position.X)));
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithHeight(
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithHeight(
                         (int)(_gripStartControlRectangle.Height +
                               (_gripStartPointerPosition.Y - position.Y)));
                     break;
                 case Grips.BottomLeft:
                     position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithX((int)position.X);
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithWidth(
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithX((int)position.X);
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithWidth(
                         (int)(_gripStartControlRectangle.Width + (_gripStartPointerPosition.X - position.X)));
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithHeight((int)Math.Max(0,
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithHeight((int)Math.Max(0,
                         _gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y)));
                     break;
                 case Grips.BottomRight:
                     position.X = Math.Max(position.X, _gripStartControlRectangle.X);
                     position.Y = Math.Max(position.Y, _gripStartControlRectangle.Y);
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithWidth(
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithWidth(
                         (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X)));
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithHeight(
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithHeight(
                         (int)(_gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y)));
                     break;
                 case Grips.TopRight:
                     position.X = Math.Max(position.X, _gripStartControlRectangle.X);
                     position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithWidth(
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithWidth(
                         (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X)));
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithY((int)position.Y);
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithHeight(
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithY((int)position.Y);
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithHeight(
                         (int)(_gripStartControlRectangle.Height + (_gripStartPointerPosition.Y - position.Y)));
                     break;
                 case Grips.Move:
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithX(
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithX(
                         (int)(_gripStartControlRectangle.X + (position.X - _gripStartPointerPosition.X)));
-                    SelectedControl.Rectangle = SelectedControl.Rectangle.WithY(
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithY(
                         (int)(_gripStartControlRectangle.Y + (position.Y - _gripStartPointerPosition.Y)));
                     break;
                 case null:
                     break;
             }
 
+        _canvasInvalidationService.Invalidate();
+    }
+
+    [RelayCommand(CanExecute = nameof(IsNodeSelected))]
+    private void DeleteSelectedNode()
+    {
+        Dialog.Root.Children.Remove(SelectedNode!);
+        SelectedNode = null;
         _canvasInvalidationService.Invalidate();
     }
 

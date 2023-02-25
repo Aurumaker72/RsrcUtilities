@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CookieCore.Views.WPF.Services;
 using RsrcUtilities.Controls;
 using RsrcUtilities.RsrcArchitect.Services;
 using RsrcUtilities.RsrcArchitect.ViewModels;
@@ -36,7 +37,7 @@ public partial class MainWindow : Window, ICanvasInvalidationService
     public MainWindow()
     {
         InitializeComponent();
-        MainViewModel = new MainViewModel(this);
+        MainViewModel = new MainViewModel(new FilesService(), this);
 
         DataContext = this;
     }
@@ -109,35 +110,35 @@ public partial class MainWindow : Window, ICanvasInvalidationService
             }
         }
 
-        if (MainViewModel.DialogEditorViewModel.SelectedControl != null)
+        if (MainViewModel.DialogEditorViewModel.SelectedNode != null)
         {
             var rectangle = SKRect.Create(0, 0,
-                MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Width,
-                MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Height);
+                MainViewModel.DialogEditorViewModel.SelectedNode.Data.Rectangle.Width,
+                MainViewModel.DialogEditorViewModel.SelectedNode.Data.Rectangle.Height);
             e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(
-                MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.X,
-                MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Y));
-            
+                MainViewModel.DialogEditorViewModel.SelectedNode.Data.Rectangle.X,
+                MainViewModel.DialogEditorViewModel.SelectedNode.Data.Rectangle.Y));
+
             e.Surface.Canvas.DrawRect(rectangle,
                 new SKPaint
                 {
                     Style = SKPaintStyle.Fill,
                     Color = new SKColor(201, 224, 247, 128)
                 });
-            
+
             e.Surface.Canvas.DrawRect(rectangle,
                 new SKPaint
                 {
                     Style = SKPaintStyle.Stroke,
                     Color = new SKColor(98, 162, 228)
                 });
-            
+
             e.Surface.Canvas.DrawPoints(SKPointMode.Points, new SKPoint[]
             {
                 new(0, 0),
                 new(0, rectangle.Height),
                 new(rectangle.Width, 0),
-                new(rectangle.Width, rectangle.Height),
+                new(rectangle.Width, rectangle.Height)
             }, new SKPaint
             {
                 StrokeWidth = MainViewModel.DialogEditorViewModel.GripDistance,
@@ -166,5 +167,10 @@ public partial class MainWindow : Window, ICanvasInvalidationService
         var position = e.GetPosition((IInputElement)sender);
         MainViewModel.DialogEditorViewModel.PointerMoveCommand.Execute(new Vector2((float)position.X,
             (float)position.Y));
+    }
+
+    private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Delete) MainViewModel.DialogEditorViewModel.DeleteSelectedNodeCommand.Execute(null);
     }
 }

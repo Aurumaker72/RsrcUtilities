@@ -1,10 +1,15 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Text;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using RsrcUtilities.Layout.Implementations;
 using RsrcUtilities.RsrcArchitect.Services;
+using RsrcUtilities.Serializers.Implementations;
 
 namespace RsrcUtilities.RsrcArchitect.ViewModels;
 
-public class MainViewModel : ObservableObject
+public partial class MainViewModel : ObservableObject
 {
+    private readonly IFilesService _filesService;
     private DialogEditorViewModel _dialogEditorViewModel;
 
     public DialogEditorViewModel DialogEditorViewModel
@@ -13,8 +18,29 @@ public class MainViewModel : ObservableObject
         internal set => SetProperty(ref _dialogEditorViewModel, value);
     }
 
-    public MainViewModel(ICanvasInvalidationService canvasInvalidationService)
+    public MainViewModel(IFilesService filesService, ICanvasInvalidationService canvasInvalidationService)
     {
-        DialogEditorViewModel = new(canvasInvalidationService);
+        _filesService = filesService;
+        DialogEditorViewModel = new DialogEditorViewModel(canvasInvalidationService);
+    }
+
+    [RelayCommand]
+    private async Task Save()
+    {
+        var serializedDialog = new DefaultDialogSerializer().Serialize(
+            new DefaultLayoutEngine().DoLayout(DialogEditorViewModel.Dialog), DialogEditorViewModel.Dialog);
+        var generatedHeader = new DefaultResourceGenerator().Generate(DialogEditorViewModel.Dialog.Root);
+
+        var resourceFile = await _filesService.TryPickSaveFileAsync("rsrc_snippet.rc", ("Resource File", new[] { "rc" }));
+        var headerFile = await _filesService.TryPickSaveFileAsync("resource.h", ("C/C++ Header File", new[] { "h" }));
+
+        await using var resourceStream = await resourceFile.OpenStreamForWriteAsync();
+        await using var headerStream = await headerFile.OpenStreamForWriteAsync();
+
+        resourceStream.Write(Encoding.Default.GetBytes(serializedDialog));
+        await resourceStream.FlushAsync();
+        
+        headerStream.Write(Encoding.Default.GetBytes(generatedHeader));
+        await headerStream.FlushAsync();
     }
 }
