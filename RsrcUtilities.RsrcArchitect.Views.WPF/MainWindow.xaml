@@ -85,6 +85,7 @@
                            MouseDown="SkElement_OnMouseDown"
                            MouseUp="SkElement_OnMouseUp"
                            MouseMove="SkElement_OnMouseMove" />
+            <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Opacity="0.5" Foreground="Red" Text="Win32 DPI scaling might cause the generated dialog to appear at a different size" MaxWidth="320" TextWrapping="Wrap"/>
 
         </Grid>
     </Grid>

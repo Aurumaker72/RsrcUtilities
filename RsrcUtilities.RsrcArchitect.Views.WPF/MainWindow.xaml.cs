@@ -152,6 +152,8 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
     private void SkElement_OnMouseDown(object sender, MouseButtonEventArgs e)
     {
+        ((IInputElement)sender).CaptureMouse();
+
         var position = e.GetPosition((IInputElement)sender);
 
         MainViewModel.DialogEditorViewModel.PointerPressCommand.Execute(new Vector2((float)position.X,
@@ -160,6 +162,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
     private void SkElement_OnMouseUp(object sender, MouseButtonEventArgs e)
     {
+        ((IInputElement)sender).ReleaseMouseCapture();
         MainViewModel.DialogEditorViewModel.PointerReleaseCommand.Execute(null);
     }
 
