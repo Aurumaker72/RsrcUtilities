@@ -47,14 +47,6 @@ public partial class DialogEditorViewModel : ObservableObject
 
     private TreeNode<Control>? _selectedNode;
 
-    public string[] Tools => new[]
-    {
-        "Button",
-        "TextBox",
-        "CheckBox",
-        "GroupBox"
-    };
-
     private enum Grips
     {
         Move,
@@ -64,7 +56,7 @@ public partial class DialogEditorViewModel : ObservableObject
         BottomRight
     }
 
-    private bool TryCreateControlFromTool(out Control? control, string tool)
+    private bool TryCreateControlFromName(out Control? control, string tool)
     {
         control = tool switch
         {
@@ -100,9 +92,9 @@ public partial class DialogEditorViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void CreateControlFromTool(string tool)
+    private void CreateControl(string name)
     {
-        if (TryCreateControlFromTool(out var control, tool))
+        if (TryCreateControlFromName(out var control, name))
         {
             control.Identifier = StringHelper.GetRandomAlphabeticString(16);
             control.Rectangle = new Rectangle(10, 10, 90, 25);

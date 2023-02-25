@@ -8,6 +8,7 @@ using RsrcUtilities.RsrcArchitect.Services;
 using RsrcUtilities.RsrcArchitect.ViewModels;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using Wpf.Ui.Controls.Window;
 
 namespace RsrcUtilities.RsrcArchitect.Views.WPF;
 
@@ -15,7 +16,7 @@ namespace RsrcUtilities.RsrcArchitect.Views.WPF;
 ///     Interaction logic for MainWindow.xaml
 /// </summary>
 [INotifyPropertyChanged]
-public partial class MainWindow : Window, ICanvasInvalidationService
+public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 {
     public MainViewModel MainViewModel { get; }
 

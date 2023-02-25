@@ -34,6 +34,11 @@ public partial class MainViewModel : ObservableObject
         var resourceFile = await _filesService.TryPickSaveFileAsync("rsrc_snippet.rc", ("Resource File", new[] { "rc" }));
         var headerFile = await _filesService.TryPickSaveFileAsync("resource.h", ("C/C++ Header File", new[] { "h" }));
 
+        if (resourceFile == null || headerFile == null)
+        {
+            return;
+        }
+        
         await using var resourceStream = await resourceFile.OpenStreamForWriteAsync();
         await using var headerStream = await headerFile.OpenStreamForWriteAsync();
 

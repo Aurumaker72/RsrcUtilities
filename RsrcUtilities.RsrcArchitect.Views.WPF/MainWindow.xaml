@@ -1,43 +1,67 @@
-﻿<Window x:Class="RsrcUtilities.RsrcArchitect.Views.WPF.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:RsrcUtilities.RsrcArchitect.Views.WPF"
-        xmlns:wpf="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime"
-        mc:Ignorable="d"
-        x:Name="Window"
-        Title="MainWindow" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainWindow}"
-        KeyDown="MainWindow_OnKeyDown">
+﻿<ui:FluentWindow x:Class="RsrcUtilities.RsrcArchitect.Views.WPF.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:local="clr-namespace:RsrcUtilities.RsrcArchitect.Views.WPF"
+                 xmlns:wpf="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 mc:Ignorable="d"
+                 x:Name="Window"
+                 Title="MainWindow" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainWindow}"
+                 ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+                 ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                 ExtendsContentIntoTitleBar="True"
+                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                 WindowBackdropType="Mica"
+                 WindowCornerPreference="Round"
+                 WindowStartupLocation="CenterScreen"
+                 KeyDown="MainWindow_OnKeyDown">
+
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="2*" />
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ui:TitleBar
+            Title="RsrcArchitect" />
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
 
-        <ItemsControl Grid.Column="0"
-                      ItemsSource="{Binding Path=MainViewModel.DialogEditorViewModel.Tools}">
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type system:String}">
-                    <Button Content="{Binding}"
-                            Command="{Binding ElementName=Window, Path=MainViewModel.DialogEditorViewModel.CreateControlFromToolCommand}"
-                            CommandParameter="{Binding}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+            <Grid Grid.Column="0" Margin="5">
+                <ItemsControl>
+                    <Button Content="Button" CommandParameter="Button"
+                            Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
+                            Margin="0 0 0 5" />
+                    <Button Content="TextBox" CommandParameter="TextBox"
+                            Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
+                            Margin="0 0 0 5" />
+                    <Button Content="CheckBox" CommandParameter="CheckBox"
+                            Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
+                            Margin="0 0 0 5" />
+                    <Button Content="GroupBox" CommandParameter="GroupBox"
+                            Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
+                            Margin="0 0 0 5" />
+                </ItemsControl>
 
-        <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Command="{Binding MainViewModel.SaveCommand}">
-            Save
-        </Button>
+                <Button HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                        Command="{Binding MainViewModel.SaveCommand}">
+                    <ui:SymbolIcon Symbol="Save24" />
+                </Button>
+            </Grid>
 
-        <wpf:SKElement x:Name="SkElement" Grid.Column="1" SnapsToDevicePixels="True"
-                       UseLayoutRounding="True"
-                       PaintSurface="SkElement_OnPaintSurface"
-                       MouseDown="SkElement_OnMouseDown"
-                       MouseUp="SkElement_OnMouseUp"
-                       MouseMove="SkElement_OnMouseMove" />
 
+            <wpf:SKElement x:Name="SkElement" Grid.Column="1" SnapsToDevicePixels="True"
+                           UseLayoutRounding="True"
+                           PaintSurface="SkElement_OnPaintSurface"
+                           MouseDown="SkElement_OnMouseDown"
+                           MouseUp="SkElement_OnMouseUp"
+                           MouseMove="SkElement_OnMouseMove" />
+
+        </Grid>
     </Grid>
-</Window>
+</ui:FluentWindow>
