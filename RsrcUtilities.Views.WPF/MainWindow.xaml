@@ -6,20 +6,34 @@
         xmlns:local="clr-namespace:RsrcUtilities.Views.WPF"
         xmlns:skia="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainWindow}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
 
-        <ListView x:Name="ControlSelection_ListView" Grid.Column="0" SelectedIndex="0">
-            <ListViewItem Content="Button" Tag="Button"/>
-            <ListViewItem Content="TextBox" Tag="TextBox"/>
-            <ListViewItem Content="CheckBox" Tag="CheckBox"/>
-            <ListViewItem Content="GroupBox" Tag="GroupBox"/>
+        <ListView Grid.Column="0" SelectedValue="{Binding Path=SelectedItem, Mode=OneWayToSource}"
+                  SelectedValuePath="Tag">
+            <ListViewItem Content="Cursor" Tag="Cursor" IsSelected="True" />
+            <ListViewItem Content="Button" Tag="Button" />
+            <ListViewItem Content="TextBox" Tag="TextBox" />
+            <ListViewItem Content="CheckBox" Tag="CheckBox" />
+            <ListViewItem Content="GroupBox" Tag="GroupBox" />
         </ListView>
-        
-        <skia:SKElement x:Name="Main_CanvasControl" Grid.Column="1" PaintSurface="Main_CanvasControl_OnPaintSurface" MouseDown="Main_CanvasControl_OnMouseDown" MouseUp="Main_CanvasControl_OnMouseUp" MouseMove="Main_CanvasControl_OnMouseMove" />
+        <Grid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="GenerateButton" Click="GenerateButton_OnClick">Generate</Button>
+        </Grid>
+
+        <skia:SKElement x:Name="MainCanvasControl" Grid.Column="1"
+                        PaintSurface="MainCanvasControl_OnPaintSurface"
+                        MouseDown="MainCanvasControl_OnMouseDown"
+                        MouseUp="MainCanvasControl_OnMouseUp"
+                        MouseMove="MainCanvasControl_OnMouseMove" />
+
     </Grid>
 </Window>

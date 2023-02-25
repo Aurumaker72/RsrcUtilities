@@ -8,12 +8,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
       <PackageReference Include="SkiaSharp.Views.WPF" Version="2.88.3" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\RsrcUtilities.Controls\RsrcUtilities.Controls.csproj" />
       <ProjectReference Include="..\RsrcUtilities.Layout\RsrcUtilities.Layout.csproj" />
+      <ProjectReference Include="..\RsrcUtilities.Serializers\RsrcUtilities.Serializers.csproj" />
     </ItemGroup>
 
 </Project>

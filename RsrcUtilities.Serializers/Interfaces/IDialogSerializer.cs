@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using RsrcUtilities.Controls;
-using RsrcUtilities.Layout.Interfaces;
+using RsrcUtilities.Geometry.Structs;
 
 namespace RsrcUtilities.Serializers.Interfaces;
 
@@ -18,11 +18,11 @@ public interface IDialogSerializer
     /// <summary>
     ///     Serializes the dialog into an .rc snippet
     /// </summary>
-    /// <param name="layoutEngine">The layout engine to run pre-serialization</param>
+    /// <param name="flattenedControls">A dictionary of laid out controls</param>
     /// <param name="dialog">The dialog to serialize</param>
     /// <returns>The serialized dialog</returns>
     [Pure]
-    string Serialize(ILayoutEngine layoutEngine, Dialog dialog);
+    string Serialize(Dictionary<Control, Rectangle> flattenedControls, Dialog dialog);
 
     /// <summary>
     ///     Deserializes the .rc snippet into a dialog

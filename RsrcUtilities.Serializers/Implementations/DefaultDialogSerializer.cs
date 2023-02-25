@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using RsrcUtilities.Controls;
 using RsrcUtilities.Extensions;
+using RsrcUtilities.Geometry.Structs;
 using RsrcUtilities.Layout.Interfaces;
 using RsrcUtilities.Serializers.Interfaces;
 
@@ -15,10 +16,10 @@ public class DefaultDialogSerializer : IDialogSerializer
 {
     /// <inheritdoc />
     [Pure]
-    public string Serialize(ILayoutEngine layoutEngine, Dialog dialog)
+    public string Serialize(Dictionary<Control, Rectangle> flattenedControls, Dialog dialog)
     {
         // deep-copy the dialog and all of its contents, because we overwrite it with nonsense in the layout pass
-        return DoSerialize(layoutEngine, dialog.Copy());
+        return DoSerialize(flattenedControls, dialog.Copy());
     }
 
     /// <inheritdoc />
@@ -73,7 +74,7 @@ public class DefaultDialogSerializer : IDialogSerializer
         throw new NotImplementedException();
     }
 
-    private static string DoSerialize(ILayoutEngine layoutEngine, Dialog dialog)
+    private static string DoSerialize(Dictionary<Control, Rectangle> flattenedControls, Dialog dialog)
     {
         StringBuilder stringBuilder = new();
 
@@ -108,16 +109,13 @@ public class DefaultDialogSerializer : IDialogSerializer
         stringBuilder.AppendLine($"FONT {dialog.FontSize}, \"{dialog.FontFamily}\", 0, 0, 0x1");
 
         stringBuilder.AppendLine("BEGIN");
-
-        var controlsDictionary = layoutEngine.DoLayout(dialog);
-
+        
         // layout done, generate rc now
-        foreach (var node in dialog.Root)
+        foreach (var pair in flattenedControls)
         {
-            var control = node.Data;
-
-            var rectangle = controlsDictionary[control];
-
+            var control = pair.Key;
+            var rectangle = pair.Value;
+            
             switch (control)
             {
                 case Button button:

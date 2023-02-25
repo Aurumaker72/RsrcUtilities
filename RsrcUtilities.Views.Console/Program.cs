@@ -48,7 +48,7 @@ root.AddChild(new Button
 
 dialog.Root = root;
 
-var serializedDialog = new DefaultDialogSerializer().Serialize(new DefaultLayoutEngine(), dialog);
+var serializedDialog = new DefaultDialogSerializer().Serialize(new DefaultLayoutEngine().DoLayout(dialog), dialog);
 var generatedResource = new DefaultResourceGenerator().Generate(dialog.Root);
 
 File.WriteAllText("Resource.h", generatedResource);
