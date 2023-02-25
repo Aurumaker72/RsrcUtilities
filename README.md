@@ -47,5 +47,4 @@ The goal is to create an intuitive dialog designer, to speed up production of `r
 
 
 ![grafik](https://user-images.githubusercontent.com/48759429/221355392-01f1b5d0-7754-44e1-b187-a919c54c5ed7.png)
-![grafik](https://user-images.githubusercontent.com/48759429/221355412-f87fac0b-a55f-4518-abc2-a0e550fff0c9.png)
-
+![grafik](https://user-images.githubusercontent.com/48759429/221374112-1fa4fe7b-4bbb-4484-b253-43af02011dfb.png)
