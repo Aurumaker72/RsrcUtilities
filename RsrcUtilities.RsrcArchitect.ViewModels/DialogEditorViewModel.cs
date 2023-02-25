@@ -200,6 +200,7 @@ public partial class DialogEditorViewModel : ObservableObject
 
     private TreeNode<Control>? GetControlNodeAtPosition(Vector2 position)
     {
+        // TODO: make special case for groupboxes; the center is clickthrough
         return Dialog.Root.Reverse().FirstOrDefault(node =>
             position.X > node.Data.Rectangle.X && position.Y > node.Data.Rectangle.Y &&
             position.X < node.Data.Rectangle.Right && position.Y < node.Data.Rectangle.Bottom);

@@ -18,6 +18,21 @@ public partial class MainWindow : Window, ICanvasInvalidationService
 {
     public MainViewModel MainViewModel { get; }
 
+    private static readonly SKPaint SkBlackFontPaint = new()
+    {
+        Color = SKColors.Black,
+        IsAntialias = true,
+        Style = SKPaintStyle.Fill,
+        TextAlign = SKTextAlign.Center,
+        TextSize = 12
+    };
+
+    private static readonly SKFont SkFont = new()
+    {
+        Edging = SKFontEdging.SubpixelAntialias,
+        Size = 12
+    };
+
     public MainWindow()
     {
         InitializeComponent();
@@ -43,30 +58,19 @@ public partial class MainWindow : Window, ICanvasInvalidationService
         var flattenedControlDictionary =
             MainViewModel.DialogEditorViewModel.LayoutEngine.DoLayout(MainViewModel.DialogEditorViewModel.Dialog);
 
+        SKSize GetTextSize(string text)
+        {
+            var skRect = SKRect.Empty;
+            SkBlackFontPaint.MeasureText(text, ref skRect);
+            return new SKSize(skRect.Width, skRect.Height);
+        }
+
         foreach (var pair in flattenedControlDictionary)
         {
-            var rectangle = SKRect.Create(pair.Value.X, pair.Value.Y, pair.Value.Width, pair.Value.Height);
+            var rectangle = SKRect.Create(0, 0, pair.Value.Width, pair.Value.Height);
 
-            SKPaint textSkPaint = new()
-            {
-                TextSize = 11f,
-                Typeface = SKTypeface.Default
-            };
+            e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(pair.Value.X, pair.Value.Y));
 
-            SKSize GetTextSize(string text)
-            {
-                var skRect = SKRect.Empty;
-                textSkPaint.MeasureText(text, ref skRect);
-                return new SKSize(skRect.Width, skRect.Height);
-            }
-
-            SKPoint GetRectangleTextCenter(SKRect rectangle, string text)
-            {
-                var skSize = GetTextSize(text);
-                return new SKPoint(rectangle.Left + rectangle.Width / 2 - skSize.Width / 2,
-                    rectangle.Top + rectangle.Height / 2 +
-                    skSize.Height / 2); // age-old skia quirk: vertical text positioning is fucked
-            }
 
             if (pair.Key is Button button)
             {
@@ -74,8 +78,10 @@ public partial class MainWindow : Window, ICanvasInvalidationService
                     new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(173, 173, 173) });
                 e.Surface.Canvas.DrawRect(rectangle,
                     new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(225, 225, 225) });
-                e.Surface.Canvas.DrawText(button.Caption, GetRectangleTextCenter(rectangle, button.Caption),
-                    textSkPaint);
+
+                e.Surface.Canvas.DrawText(button.Caption,
+                    rectangle.MidX,
+                    rectangle.MidY + GetTextSize(button.Caption).Height / 2, SkFont, SkBlackFontPaint);
             }
             else if (pair.Key is TextBox textBox)
             {
@@ -89,8 +95,8 @@ public partial class MainWindow : Window, ICanvasInvalidationService
                 e.Surface.Canvas.DrawRect(rectangle,
                     new SKPaint { Style = SKPaintStyle.Stroke, Color = new SKColor(180, 180, 180) });
                 e.Surface.Canvas.DrawText(groupBox.Caption,
-                    new SKPoint(groupBox.Rectangle.X + 10,
-                        groupBox.Rectangle.Y + GetTextSize(groupBox.Caption).Height * 1.5f), textSkPaint);
+                    GetTextSize(groupBox.Caption).Width / 2 + 10f,
+                    GetTextSize(groupBox.Caption).Height / 2, SkFont, SkBlackFontPaint);
             }
             else if (pair.Key is Panel)
             {
@@ -105,34 +111,39 @@ public partial class MainWindow : Window, ICanvasInvalidationService
 
         if (MainViewModel.DialogEditorViewModel.SelectedControl != null)
         {
-            var rectangle = SKRect.Create(MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.X,
-                MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Y,
+            var rectangle = SKRect.Create(0, 0,
                 MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Width,
                 MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Height);
-
+            e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(
+                MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.X,
+                MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Y));
+            
+            e.Surface.Canvas.DrawRect(rectangle,
+                new SKPaint
+                {
+                    Style = SKPaintStyle.Fill,
+                    Color = new SKColor(201, 224, 247, 128)
+                });
+            
             e.Surface.Canvas.DrawRect(rectangle,
                 new SKPaint
                 {
                     Style = SKPaintStyle.Stroke,
-                    PathEffect = SKPathEffect.CreateDash(new[] { 5f, 5f }, 0),
-                    StrokeWidth = 2f,
-                    Color = new SKColor(0, 0, 255, 255)
+                    Color = new SKColor(98, 162, 228)
                 });
+            
             e.Surface.Canvas.DrawPoints(SKPointMode.Points, new SKPoint[]
             {
-                new(MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.X,
-                    MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Y),
-                new(MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Right,
-                    MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Y),
-                new(MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.X,
-                    MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Bottom),
-                new(MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Right,
-                    MainViewModel.DialogEditorViewModel.SelectedControl.Rectangle.Bottom)
+                new(0, 0),
+                new(0, rectangle.Height),
+                new(rectangle.Width, 0),
+                new(rectangle.Width, rectangle.Height),
             }, new SKPaint
             {
                 StrokeWidth = MainViewModel.DialogEditorViewModel.GripDistance,
-                Color = new SKColor(0, 0, 255, 255),
-                StrokeCap = SKStrokeCap.Round
+                Color = new SKColor(0, 0, 255, 128),
+                StrokeCap = SKStrokeCap.Round,
+                IsAntialias = true
             });
         }
     }
@@ -143,20 +154,17 @@ public partial class MainWindow : Window, ICanvasInvalidationService
 
         MainViewModel.DialogEditorViewModel.PointerPressCommand.Execute(new Vector2((float)position.X,
             (float)position.Y));
-    } 
+    }
+
     private void SkElement_OnMouseUp(object sender, MouseButtonEventArgs e)
     {
         MainViewModel.DialogEditorViewModel.PointerReleaseCommand.Execute(null);
     }
 
     private void SkElement_OnMouseMove(object sender, MouseEventArgs e)
-    {        
+    {
         var position = e.GetPosition((IInputElement)sender);
         MainViewModel.DialogEditorViewModel.PointerMoveCommand.Execute(new Vector2((float)position.X,
             (float)position.Y));
-        
-        
     }
-
-   
 }
