@@ -50,10 +50,14 @@ public partial class DialogEditorViewModel : ObservableObject
     private enum Grips
     {
         Move,
+        Left,
+        Top,
+        Right,
+        Bottom,
         TopLeft,
         TopRight,
         BottomLeft,
-        BottomRight
+        BottomRight,
     }
 
     private bool TryCreateControlFromName(out Control? control, string tool)
@@ -86,6 +90,22 @@ public partial class DialogEditorViewModel : ObservableObject
                 new Vector2(control.Rectangle.Right, control.Rectangle.Bottom)) <
             GripDistance)
             return Grips.BottomRight;
+        if (Vector2.Distance(position,
+                new Vector2(control.Rectangle.X, control.Rectangle.MidY)) <
+            GripDistance)
+            return Grips.Left;
+        if (Vector2.Distance(position,
+                new Vector2(control.Rectangle.MidX, control.Rectangle.Y)) <
+            GripDistance)
+            return Grips.Top;
+        if (Vector2.Distance(position,
+                new Vector2(control.Rectangle.MidX, control.Rectangle.Bottom)) <
+            GripDistance)
+            return Grips.Bottom;
+        if (Vector2.Distance(position,
+                new Vector2(control.Rectangle.Right, control.Rectangle.MidY)) <
+            GripDistance)
+            return Grips.Right;
         if (control.Rectangle.Contains(new Vector2Int(position)))
             return Grips.Move;
         return null;
@@ -107,6 +127,8 @@ public partial class DialogEditorViewModel : ObservableObject
     [RelayCommand]
     private void PointerPress(Vector2 position)
     {
+        position = new Vector2((float)Math.Floor(position.X), (float)Math.Floor(position.Y));
+
         // TODO: transform canvas-space position to dialog-space position?
 
         // do grip-test first, because clicks outside of control bounds can grip too
@@ -137,6 +159,8 @@ public partial class DialogEditorViewModel : ObservableObject
     [RelayCommand]
     private void PointerMove(Vector2 position)
     {
+        position = new Vector2((float)Math.Floor(position.X), (float)Math.Floor(position.Y));
+        
         if (SelectedNode != null)
             switch (_currentGrip)
             {
@@ -176,6 +200,30 @@ public partial class DialogEditorViewModel : ObservableObject
                     SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithY((int)position.Y);
                     SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithHeight(
                         (int)(_gripStartControlRectangle.Height + (_gripStartPointerPosition.Y - position.Y)));
+                    break;
+                case Grips.Left:
+                    position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithX((int)position.X);
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithWidth(
+                        (int)(_gripStartControlRectangle.Width +
+                              (_gripStartPointerPosition.X - position.X)));
+                    break;
+                case Grips.Right:
+                    position.X = Math.Max(position.X, _gripStartControlRectangle.X);
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithWidth(
+                        (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X)));
+                    break;
+                case Grips.Bottom:
+                    position.Y = Math.Max(position.Y, _gripStartControlRectangle.Y);
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithHeight(
+                        (int)(_gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y)));
+                    break;
+                case Grips.Top:
+                    position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithY((int)position.Y);
+                    SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithHeight(
+                        (int)(_gripStartControlRectangle.Height +
+                              (_gripStartPointerPosition.Y - position.Y)));
                     break;
                 case Grips.Move:
                     SelectedNode.Data.Rectangle = SelectedNode.Data.Rectangle.WithX(

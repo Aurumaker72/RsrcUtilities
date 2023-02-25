@@ -73,6 +73,8 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
             e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(pair.Value.X, pair.Value.Y));
 
+            e.Surface.Canvas.Save();
+            e.Surface.Canvas.ClipRect(rectangle.InflateCopy(5, 5));
 
             if (pair.Key is Button button)
             {
@@ -109,6 +111,8 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                 e.Surface.Canvas.DrawRect(rectangle,
                     new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(255, 0, 255) });
             }
+            
+            e.Surface.Canvas.Restore();
         }
 
         if (MainViewModel.DialogEditorViewModel.SelectedNode != null)
@@ -139,12 +143,16 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                 new(0, 0),
                 new(0, rectangle.Height),
                 new(rectangle.Width, 0),
-                new(rectangle.Width, rectangle.Height)
+                new(rectangle.Width, rectangle.Height),
+                new(rectangle.MidX, 0),
+                new(0, rectangle.MidY),
+                new(rectangle.Right, rectangle.MidY),
+                new(rectangle.MidX, rectangle.Bottom),
             }, new SKPaint
             {
                 StrokeWidth = MainViewModel.DialogEditorViewModel.GripDistance,
-                Color = new SKColor(0, 0, 255, 128),
-                StrokeCap = SKStrokeCap.Round,
+                Color = new SKColor(90, 90, 90),
+                // StrokeCap = SKStrokeCap.Round,
                 IsAntialias = true
             });
         }

@@ -42,6 +42,16 @@ public readonly struct Rectangle : IEquatable<Rectangle>
     /// </summary>
     public int Bottom => Y + Height;
 
+    /// <summary>
+    ///     The horizontal middle 
+    /// </summary>
+    public int MidX => X + Width / 2;
+    
+    /// <summary>
+    ///     The vertical middle 
+    /// </summary>
+    public int MidY => Y + Height / 2;
+    
     public Rectangle(int x, int y, int width, int height)
     {
         X = x;
