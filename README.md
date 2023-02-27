@@ -14,18 +14,17 @@
     <img src="https://img.shields.io/badge/Serialization-Supported-green?style=for-the-badge"/>
     <img src="https://img.shields.io/badge/Deserialization-WIP-red?style=for-the-badge"/>
 </p>
-<p align="center">
-    <img width="128" src="https://user-images.githubusercontent.com/48759429/219862142-1b938737-050a-45c5-83aa-bc5762e1df70.svg"/>
-</p>
 
 
 
 
 
+
+<details>
+<summary><h4>RsrcArchitect Dialog Editor</h4></summary>
 <p align="center">
   <img width="128" align="center" src="https://user-images.githubusercontent.com/48759429/221374035-7500c631-3984-433e-9200-145391f4cbbe.svg">
 </p>
-
 <h1 align="center">
   RsrcArchitect
 </h1>
@@ -37,6 +36,7 @@
 <p align="center">
     <img src="https://img.shields.io/badge/Requires-RsrcUtilities-gray?style=for-the-badge"/>
 </p>
+</details>
 
 ## Why?
 
