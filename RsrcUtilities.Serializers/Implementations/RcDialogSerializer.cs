@@ -9,9 +9,9 @@ using RsrcUtilities.Serializers.Interfaces;
 namespace RsrcUtilities.Serializers.Implementations;
 
 /// <summary>
-///     The default dialog serializer
+///     A dialog serializer specialized in the .rc format
 /// </summary>
-public class DefaultDialogSerializer : IDialogSerializer
+public class RcDialogSerializer : IDialogSerializer
 {
     /// <inheritdoc />
     [Pure]

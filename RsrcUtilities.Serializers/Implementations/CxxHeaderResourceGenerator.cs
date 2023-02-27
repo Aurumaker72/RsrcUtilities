@@ -7,9 +7,9 @@ using RsrcUtilities.Serializers.Interfaces;
 namespace RsrcUtilities.Serializers.Implementations;
 
 /// <summary>
-///     The default resource generator
+///     A resource generator specialized in .h(pp) files
 /// </summary>
-public class DefaultResourceGenerator : IResourceGenerator
+public class CxxHeaderResourceGenerator : IResourceGenerator
 {
     /// <inheritdoc />
     [Pure]

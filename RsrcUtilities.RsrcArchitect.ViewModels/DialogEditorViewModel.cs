@@ -35,7 +35,13 @@ public partial class DialogEditorViewModel : ObservableObject
     public TreeNode<Control>? SelectedNode
     {
         get => _selectedNode;
-        private set { SetProperty(ref _selectedNode, value); OnPropertyChanged(nameof(IsNodeSelected)); }
+        private set
+        {
+            SetProperty(ref _selectedNode, value); 
+            OnPropertyChanged(nameof(IsNodeSelected));
+            DeleteSelectedNodeCommand.NotifyCanExecuteChanged();
+            BringSelectedNodeToFrontCommand.NotifyCanExecuteChanged();
+        }
     }
 
     public bool IsNodeSelected => SelectedNode != null;
@@ -243,6 +249,14 @@ public partial class DialogEditorViewModel : ObservableObject
     {
         Dialog.Root.Children.Remove(SelectedNode!);
         SelectedNode = null;
+        _canvasInvalidationService.Invalidate();
+    }
+    
+    [RelayCommand(CanExecute = nameof(IsNodeSelected))]
+    private void BringSelectedNodeToFront()
+    {
+        Dialog.Root.Children.Remove(SelectedNode!);
+        Dialog.Root.Children.Add(SelectedNode!);
         _canvasInvalidationService.Invalidate();
     }
 

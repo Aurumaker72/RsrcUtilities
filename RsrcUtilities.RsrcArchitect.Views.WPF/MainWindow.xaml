@@ -84,7 +84,22 @@
                            PaintSurface="SkElement_OnPaintSurface"
                            MouseDown="SkElement_OnMouseDown"
                            MouseUp="SkElement_OnMouseUp"
-                           MouseMove="SkElement_OnMouseMove" />
+                           MouseMove="SkElement_OnMouseMove" >
+                    <wpf:SKElement.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Delete Selected" Command="{Binding MainViewModel.DialogEditorViewModel.DeleteSelectedNodeCommand}">
+                                <MenuItem.Icon>
+                                    <ui:SymbolIcon Symbol="Delete24"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Bring Selected To Front" Command="{Binding MainViewModel.DialogEditorViewModel.BringSelectedNodeToFrontCommand}">
+                                <MenuItem.Icon>
+                                    <ui:SymbolIcon Symbol="PositionToFront24"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </wpf:SKElement.ContextMenu>
+                </wpf:SKElement>
             <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Opacity="0.5" Foreground="Red" Text="Win32 DPI scaling might cause the generated dialog to appear at a different size" MaxWidth="320" TextWrapping="Wrap"/>
 
         </Grid>
