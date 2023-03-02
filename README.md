@@ -42,6 +42,15 @@ dialog.Root.AddChild(new CheckBox()
     VerticalAlignment = VerticalAlignments.Center
 });
 ```
+**Step 5:** Serialize it to the format of your liking
+```cs
+new RcDialogSerializer().Serialize(new DefaultLayoutEngine().DoLayout(dialog), dialog);
+```
+
+**(Optional) Step 6:** Generate additional information in the format of your liking
+```cs
+new CxxHeaderResourceGenerator().Generate(dialog.Root);
+```
 
 # :question: Why?
 
