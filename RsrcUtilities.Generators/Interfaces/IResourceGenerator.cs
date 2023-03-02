@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics.Contracts;
 using RsrcUtilities.Controls;
 
-namespace RsrcUtilities.Serializers.Interfaces;
+namespace RsrcUtilities.Generators.Interfaces;
 
 /// <summary>
-///     Represents a resource generator contract
+///     Represents a supplementary information generator contract
 /// </summary>
 /// <remarks>
 ///     <b>
@@ -15,7 +15,7 @@ namespace RsrcUtilities.Serializers.Interfaces;
 public interface IResourceGenerator
 {
     /// <summary>
-    ///     Generates a resource header snippet for the <paramref name="controls" />
+    ///     Generates additional resources for the <paramref name="controls" />
     /// </summary>
     /// <param name="controls">The controls to generate a snippet for</param>
     /// <returns>The generated resource header snippet</returns>

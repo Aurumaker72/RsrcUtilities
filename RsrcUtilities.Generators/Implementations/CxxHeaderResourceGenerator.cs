@@ -2,9 +2,9 @@
 using System.Diagnostics.Contracts;
 using System.Text;
 using RsrcUtilities.Controls;
-using RsrcUtilities.Serializers.Interfaces;
+using RsrcUtilities.Generators.Interfaces;
 
-namespace RsrcUtilities.Serializers.Implementations;
+namespace RsrcUtilities.Generators.Implementations;
 
 /// <summary>
 ///     A resource generator specialized in .h(pp) files

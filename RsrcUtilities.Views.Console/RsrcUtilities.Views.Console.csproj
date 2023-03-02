@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\RsrcUtilities.Controls\RsrcUtilities.Controls.csproj" />
+        <ProjectReference Include="..\RsrcUtilities.Generators\RsrcUtilities.Generators.csproj" />
         <ProjectReference Include="..\RsrcUtilities.Serializers\RsrcUtilities.Serializers.csproj" />
     </ItemGroup>
 

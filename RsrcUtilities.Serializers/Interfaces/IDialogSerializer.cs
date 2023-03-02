@@ -16,7 +16,7 @@ namespace RsrcUtilities.Serializers.Interfaces;
 public interface IDialogSerializer
 {
     /// <summary>
-    ///     Serializes the dialog into an .rc snippet
+    ///     Serializes the dialog into a format
     /// </summary>
     /// <param name="flattenedControls">A dictionary of laid out controls</param>
     /// <param name="dialog">The dialog to serialize</param>
@@ -25,9 +25,9 @@ public interface IDialogSerializer
     string Serialize(Dictionary<Control, Rectangle> flattenedControls, Dialog dialog);
 
     /// <summary>
-    ///     Deserializes the .rc snippet into a dialog
+    ///     Deserializes a dialog from the specified format
     /// </summary>
-    /// <param name="serialized">The .rc snippet</param>
+    /// <param name="serialized">The serialized dialog, in a specific format</param>
     /// <returns>The deserialized dialog</returns>
     [Pure]
     Dialog Deserialize(string serialized);

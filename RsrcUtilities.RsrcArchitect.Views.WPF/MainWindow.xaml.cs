@@ -2,10 +2,10 @@
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CookieCore.Views.WPF.Services;
 using RsrcUtilities.Controls;
 using RsrcUtilities.RsrcArchitect.Services;
 using RsrcUtilities.RsrcArchitect.ViewModels;
+using RsrcUtilities.RsrcArchitect.Views.WPF.Services;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using Wpf.Ui.Controls.Window;

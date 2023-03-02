@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using RsrcUtilities.RsrcArchitect.Services.Abstractions;
 
-namespace CookieCore.Views.WPF.Services.Abstractions;
+namespace RsrcUtilities.RsrcArchitect.Views.WPF.Services.Abstractions;
 
 /// <summary>
 ///     A <see langword="class" /> implementing a WPF version of <see cref="IFile" />.

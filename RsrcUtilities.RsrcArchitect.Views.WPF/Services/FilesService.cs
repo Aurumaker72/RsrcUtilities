@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using RsrcUtilities.RsrcArchitect.Services;
 using RsrcUtilities.RsrcArchitect.Services.Abstractions;
-using File = CookieCore.Views.WPF.Services.Abstractions.File;
+using File = RsrcUtilities.RsrcArchitect.Views.WPF.Services.Abstractions.File;
 
-namespace CookieCore.Views.WPF.Services;
+namespace RsrcUtilities.RsrcArchitect.Views.WPF.Services;
 
 /// <summary>
 ///     A <see langword="class" /> that implements the <see cref="IFilesService" /> <see langword="interface" /> using WPF
