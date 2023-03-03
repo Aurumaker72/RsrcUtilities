@@ -53,7 +53,7 @@ var serializedDialog = new RcDialogSerializer().Serialize(new DefaultLayoutEngin
 
 var deserializedDialog = new RcDialogSerializer().Deserialize(serializedDialog);
 
-var generatedResource = new CxxHeaderResourceGenerator().Generate(dialog.Root);
+var generatedResource = new CxxHeaderResourceGenerator().Generate(dialog.Root.Flatten());
 
 // File.WriteAllText("Resource.h", generatedResource);
 // File.WriteAllText("rsrc.rc", serializedDialog);

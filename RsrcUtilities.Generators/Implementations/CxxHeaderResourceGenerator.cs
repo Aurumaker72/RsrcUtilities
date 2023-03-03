@@ -13,13 +13,11 @@ public class CxxHeaderResourceGenerator : IResourceGenerator
 {
     /// <inheritdoc />
     [Pure]
-    public string Generate(TreeNode<Control> root)
+    public string Generate(IEnumerable<Control> controls)
     {
         StringBuilder resourceStringBuilder = new();
-
-        var flattened = root.Flatten();
-
-        var identifiers = flattened.Where(x => x is not Panel).Select(x => x.Identifier).ToImmutableList();
+        
+        var identifiers = controls.Where(x => x is not Panel).Select(x => x.Identifier).ToImmutableList();
 
         var identifierIndex = 2000;
         if (identifiers.Count != identifiers.Distinct().Count())
