@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.Collections;
+using System.Diagnostics.Contracts;
 using System.Text;
 using System.Text.RegularExpressions;
 using RsrcUtilities.Controls;
@@ -13,6 +14,76 @@ namespace RsrcUtilities.Serializers.Implementations;
 /// </summary>
 public class RcDialogSerializer : IDialogSerializer
 {
+    private readonly struct Token
+    {
+        public enum Types
+        {
+            Keyword,
+            BuiltinType,
+            Identifier,
+            LiteralString,
+            LiteralNumber,
+        }
+
+        public readonly Types Type;
+        public readonly string Text;
+
+        public Token(Types type, string text)
+        {
+            Type = type;
+            Text = text;
+        }
+    }
+    
+    private IEnumerable<Token> Tokenize(IEnumerable<string> lines)
+    {
+        List<Token> tokens = new();
+
+        var enumerable = lines as string[] ?? lines.ToArray();
+        
+        var preludes = Regex.Replace(enumerable.ElementAt(0).Replace(',', ' '), @"\s+", " ").Split(' ');
+        
+        tokens.Add(new Token(Token.Types.Identifier, preludes[0]));
+        tokens.Add(new Token(Token.Types.Keyword, preludes[1]));
+        tokens.Add(new Token(Token.Types.LiteralNumber, preludes[2]));
+        tokens.Add(new Token(Token.Types.LiteralNumber, preludes[3]));
+        tokens.Add(new Token(Token.Types.LiteralNumber, preludes[4]));
+        tokens.Add(new Token(Token.Types.LiteralNumber, preludes[5]));
+
+        var styles = enumerable.ElementAt(1).Replace("| ", "").Split(' ');
+        
+        tokens.Add(new Token(Token.Types.Keyword, styles[0]));
+        tokens.AddRange(styles[1..].Select(style => new Token(Token.Types.BuiltinType, style)));
+
+        var captions = enumerable.ElementAt(2).Replace("\"", "").Split(' ');
+        tokens.Add(new Token(Token.Types.Keyword, captions[0]));
+        tokens.Add(new Token(Token.Types.LiteralString, captions[1]));
+        
+        var fonts = enumerable.ElementAt(3).Replace("\"", "").Split(' ');
+        tokens.Add(new Token(Token.Types.Keyword, captions[0]));
+        tokens.Add(new Token(Token.Types.LiteralNumber, captions[1]));
+        tokens.Add(new Token(Token.Types.LiteralString, captions[2]));
+        tokens.Add(new Token(Token.Types.LiteralNumber, captions[3]));
+        tokens.Add(new Token(Token.Types.LiteralNumber, captions[4]));
+        tokens.Add(new Token(Token.Types.LiteralNumber, captions[5]));
+
+        var begin = enumerable.ElementAt(4);
+        tokens.Add(new Token(Token.Types.Keyword, begin));
+
+        var controls = enumerable[new Range(4, enumerable.Length - 1)];
+        foreach (var control in controls)
+        {
+            var parameters = enumerable.ElementAt(3).Replace("\"", "").Split(' ');
+            tokens.Add(new Token(Token.Types.Keyword, captions[0]));
+        }
+
+        
+        var end = enumerable.ElementAt(enumerable.Length - 1);
+        tokens.Add(new Token(Token.Types.Keyword, end));
+
+        return tokens;
+    }
+    
     /// <inheritdoc />
     [Pure]
     public string Serialize(Dictionary<Control, Rectangle> flattenedControls, Dialog dialog)
@@ -28,47 +99,7 @@ public class RcDialogSerializer : IDialogSerializer
         var dialog = new Dialog();
 
         var lines = serialized.Split(Environment.NewLine);
-
-        // resolve the simple dialog info first
-
-        // IDD_ABOUTBOX DIALOGEX 0, 0, 300, 200
-        // [0]          [1]     [2][3][4]  [5]
-        var bareDialogDefinition = Regex.Replace(lines[0].Replace(',', ' '), @"\s+", " ").Split(' ');
-
-        dialog.Identifier = bareDialogDefinition[0];
-        dialog.Width = int.Parse(bareDialogDefinition[4]);
-        dialog.Height = int.Parse(bareDialogDefinition[5]);
-
-        var styleDefinition = lines[1];
-        var styles = styleDefinition.Replace("STYLE", "").Split('|');
-        for (var i = 0; i < styles.LongLength; i++) styles[i] = styles[i].Replace(" ", "");
-
-        if (styles.OrderBy(s => s).SequenceEqual(new[]
-            {
-                "DS_SETFONT",
-                "DS_MODALFRAME",
-                "DS_FIXEDSYS",
-                "WS_POPUP",
-                "WS_CAPTION",
-                "WS_SYSMENU"
-            }.OrderBy(t => t)))
-            dialog.Chrome = Dialog.Chromes.Default;
-        else
-            throw new Exception("Style sequence couldn't be reversed into known type");
-
-        var caption = lines[2].Replace("CAPTION", "");
-        var quoteStartIndex = caption.IndexOf('"') + 1;
-        var quoteEndIndex = caption.LastIndexOf('"');
-        caption = caption.Substring(quoteStartIndex, quoteEndIndex - quoteStartIndex);
-
-        var fontSize = int.Parse(lines[3].Split(' ')[1].Replace(",", ""));
-        var fontFamily = lines[3];
-        quoteStartIndex = fontFamily.IndexOf('"') + 1;
-        quoteEndIndex = fontFamily.LastIndexOf('"');
-        fontFamily = fontFamily.Substring(quoteStartIndex, quoteEndIndex - quoteStartIndex);
-
-        var controlDefinitionLines = new ArraySegment<string>(lines, 5, lines.Length - (5 + 2));
-
+        var tokens = Tokenize(lines);
 
         throw new NotImplementedException();
     }

@@ -30,7 +30,7 @@ public partial class MainViewModel : ObservableObject
     {
         var serializedDialog = new RcDialogSerializer().Serialize(
             new DefaultLayoutEngine().DoLayout(DialogEditorViewModel.Dialog), DialogEditorViewModel.Dialog);
-        var generatedHeader = new CxxHeaderResourceGenerator().Generate(DialogEditorViewModel.Dialog.Root);
+        var generatedHeader = new CxxHeaderResourceGenerator().Generate(DialogEditorViewModel.Dialog.Root.Flatten());
 
         var resourceFile = await _filesService.TryPickSaveFileAsync("rsrc_snippet.rc", ("Resource File", new[] { "rc" }));
         var headerFile = await _filesService.TryPickSaveFileAsync("resource.h", ("C/C++ Header File", new[] { "h" }));
