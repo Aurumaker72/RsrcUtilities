@@ -4,8 +4,11 @@ using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RsrcUtilities.Controls;
+using RsrcUtilities.Layout.Implementations;
+using RsrcUtilities.Layout.Interfaces;
 using RsrcUtilities.RsrcArchitect.Services;
 using RsrcUtilities.RsrcArchitect.ViewModels;
+using RsrcUtilities.RsrcArchitect.ViewModels.Types;
 using RsrcUtilities.RsrcArchitect.Views.WPF.Services;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
@@ -44,9 +47,9 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
         DataContext = this;
 
-        MainViewModel.DialogEditorViewModel.PropertyChanged += (sender, args) =>
+        MainViewModel.SettingsViewModel.PropertyChanged += (sender, args) =>
         {
-            if (args.PropertyName == nameof(DialogEditorViewModel.PositioningMode))
+            if (args.PropertyName == nameof(SettingsViewModel.PositioningMode))
             {
                 UpdatePositioningModeSymbolIcon();
             }
@@ -56,12 +59,12 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
     private void UpdatePositioningModeSymbolIcon()
     {
-        switch (MainViewModel.DialogEditorViewModel.PositioningMode)
+        switch (MainViewModel.SettingsViewModel.PositioningMode)
         {
-            case DialogEditorViewModel.PositioningModes.Arbitrary:
+            case PositioningModes.Arbitrary:
                 PositioningModeSymbolIcon.Symbol = SymbolRegular.ArrowMove24;
                 break;
-            case DialogEditorViewModel.PositioningModes.Grid:
+            case PositioningModes.Grid:
                 PositioningModeSymbolIcon.Symbol = SymbolRegular.Grid24;
                 break;
             default:
@@ -74,8 +77,12 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         SkElement.InvalidateVisual();
     }
 
+    private readonly ILayoutEngine _layoutEngine = new DefaultLayoutEngine();
+    
     private void SkElement_OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
+        e.Surface.Canvas.Clear();
+        
         e.Surface.Canvas.DrawRect(0, 0, MainViewModel.DialogEditorViewModel.Dialog.Width,
             MainViewModel.DialogEditorViewModel.Dialog.Height, new SKPaint
             {
@@ -84,7 +91,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
             });
 
         var flattenedControlDictionary =
-            MainViewModel.DialogEditorViewModel.LayoutEngine.DoLayout(MainViewModel.DialogEditorViewModel.Dialog);
+            _layoutEngine.DoLayout(MainViewModel.DialogEditorViewModel.Dialog);
 
         SKSize GetTextSize(string text)
         {
@@ -141,14 +148,14 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
             e.Surface.Canvas.Restore();
         }
 
-        if (MainViewModel.DialogEditorViewModel.SelectedNode != null)
+        if (MainViewModel.DialogEditorViewModel.SelectedControlViewModel != null)
         {
             var rectangle = SKRect.Create(0, 0,
-                MainViewModel.DialogEditorViewModel.SelectedNode.Data.Rectangle.Width,
-                MainViewModel.DialogEditorViewModel.SelectedNode.Data.Rectangle.Height);
+                MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.Width,
+                MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.Height);
             e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(
-                MainViewModel.DialogEditorViewModel.SelectedNode.Data.Rectangle.X,
-                MainViewModel.DialogEditorViewModel.SelectedNode.Data.Rectangle.Y));
+                MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.X,
+                MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.Y));
 
             e.Surface.Canvas.DrawRect(rectangle,
                 new SKPaint
@@ -176,9 +183,8 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                 new(rectangle.MidX, rectangle.Bottom),
             }, new SKPaint
             {
-                StrokeWidth = MainViewModel.DialogEditorViewModel.GripDistance,
+                StrokeWidth = MainViewModel.SettingsViewModel.GripDistance,
                 Color = new SKColor(90, 90, 90),
-                // StrokeCap = SKStrokeCap.Round,
                 IsAntialias = true
             });
         }
@@ -214,10 +220,8 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
     private void PositioningModeButton_OnClick(object sender, RoutedEventArgs e)
     {
-        MainViewModel.DialogEditorViewModel.PositioningMode =
-            MainViewModel.DialogEditorViewModel.PositioningMode.Next();
-        
-        
+        MainViewModel.SettingsViewModel.PositioningMode =
+            MainViewModel.SettingsViewModel.PositioningMode.Next();
     }
     
     

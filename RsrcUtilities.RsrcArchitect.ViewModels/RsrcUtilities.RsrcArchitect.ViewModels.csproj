@@ -15,6 +15,7 @@
       <ProjectReference Include="..\RsrcUtilities.Generators\RsrcUtilities.Generators.csproj" />
       <ProjectReference Include="..\RsrcUtilities.Layout\RsrcUtilities.Layout.csproj" />
       <ProjectReference Include="..\RsrcUtilities.RsrcArchitect.Services\RsrcUtilities.RsrcArchitect.Services.csproj" />
+      <ProjectReference Include="..\RsrcUtilities.RsrcArchitect.ViewModels.Types\RsrcUtilities.RsrcArchitect.ViewModels.Types.csproj" />
       <ProjectReference Include="..\RsrcUtilities.Serializers\RsrcUtilities.Serializers.csproj" />
     </ItemGroup>
 

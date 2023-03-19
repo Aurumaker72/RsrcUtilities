@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using RsrcUtilities.Controls;
 using RsrcUtilities.Generators.Implementations;
 using RsrcUtilities.Layout.Implementations;
 using RsrcUtilities.RsrcArchitect.Services;
@@ -18,35 +19,26 @@ public partial class MainViewModel : ObservableObject
         get => _dialogEditorViewModel;
         internal set => SetProperty(ref _dialogEditorViewModel, value);
     }
+    private SettingsViewModel _settingsViewModel;
 
+    public SettingsViewModel SettingsViewModel
+    {
+        get => _settingsViewModel;
+        internal set => SetProperty(ref _settingsViewModel, value);
+    }
+    
     public MainViewModel(IFilesService filesService, ICanvasInvalidationService canvasInvalidationService)
     {
         _filesService = filesService;
-        DialogEditorViewModel = new DialogEditorViewModel(canvasInvalidationService);
-    }
-
-    [RelayCommand]
-    private async Task Save()
-    {
-        var serializedDialog = new RcDialogSerializer().Serialize(
-            new DefaultLayoutEngine().DoLayout(DialogEditorViewModel.Dialog), DialogEditorViewModel.Dialog);
-        var generatedHeader = new CxxHeaderResourceGenerator().Generate(DialogEditorViewModel.Dialog.Root.Flatten());
-
-        var resourceFile = await _filesService.TryPickSaveFileAsync("rsrc_snippet.rc", ("Resource File", new[] { "rc" }));
-        var headerFile = await _filesService.TryPickSaveFileAsync("resource.h", ("C/C++ Header File", new[] { "h" }));
-
-        if (resourceFile == null || headerFile == null)
+        SettingsViewModel = new();
+        DialogEditorViewModel = new DialogEditorViewModel(new Dialog
         {
-            return;
-        }
-        
-        await using var resourceStream = await resourceFile.OpenStreamForWriteAsync();
-        await using var headerStream = await headerFile.OpenStreamForWriteAsync();
-
-        resourceStream.Write(Encoding.Default.GetBytes(serializedDialog));
-        await resourceStream.FlushAsync();
-        
-        headerStream.Write(Encoding.Default.GetBytes(generatedHeader));
-        await headerStream.FlushAsync();
+            Identifier = "IDD_ABOUTBOX",
+            Width = 600,
+            Height = 400,
+            Root = new TreeNode<Control>(new Panel())
+        }, canvasInvalidationService, filesService, SettingsViewModel);
     }
+
+    
 }

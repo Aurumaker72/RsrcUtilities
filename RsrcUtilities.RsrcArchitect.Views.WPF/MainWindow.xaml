@@ -29,6 +29,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="0.5*" />
             </Grid.ColumnDefinitions>
 
 
@@ -74,11 +75,10 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                     <Button 
-                        Command="{Binding MainViewModel.SaveCommand}">
+                        Command="{Binding MainViewModel.DialogEditorViewModel.SaveCommand}">
                         <ui:SymbolIcon Symbol="Save24" />
                     </Button>
                     <Button 
-                        x:Name="PositioningModeButton"
                         Click="PositioningModeButton_OnClick">
                         <ui:SymbolIcon x:Name="PositioningModeSymbolIcon"/>
                     </Button>
@@ -109,8 +109,35 @@
                         </ContextMenu>
                     </wpf:SKElement.ContextMenu>
                 </wpf:SKElement>
-            <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Opacity="0.5" Foreground="Red" Text="Win32 DPI scaling might cause the generated dialog to appear at a different size" MaxWidth="320" TextWrapping="Wrap"/>
+            
+            <Grid Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="X"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Y"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Width"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Height"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+            </Grid>
+            <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Opacity="0.5" Foreground="Red" Text="Win32 DPI scaling might cause the generated dialog to appear at a different size" MaxWidth="320" TextWrapping="Wrap"/>
+            
+            
         </Grid>
     </Grid>
 </ui:FluentWindow>
