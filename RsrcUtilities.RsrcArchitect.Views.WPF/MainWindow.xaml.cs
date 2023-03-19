@@ -135,6 +135,25 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                     GetTextSize(groupBox.Caption).Width / 2 + 10f,
                     GetTextSize(groupBox.Caption).Height / 2, SkFont, SkBlackFontPaint);
             }
+            else if (pair.Key is CheckBox checkBox)
+            {
+                const float checkSize = 10f;
+                var paint = new SKPaint {
+                    Style = SKPaintStyle.Fill,
+                    Color = SKColors.White
+                };
+                var checkRectangle = SKRect.Create(0, rectangle.Height / 2 - checkSize / 2, checkSize, checkSize);
+
+                e.Surface.Canvas.DrawRect(checkRectangle, paint);
+
+                paint.Style = SKPaintStyle.Stroke;
+                paint.Color = new SKColor(51, 51, 51);
+                e.Surface.Canvas.DrawRect(checkRectangle.InflateCopy(1f, 1f), paint);
+                
+                e.Surface.Canvas.DrawText(checkBox.Caption,
+                    GetTextSize(checkBox.Caption).Width / 2 + checkSize + 6f,
+                    checkRectangle.Top + GetTextSize(checkBox.Caption).Height, SkFont, SkBlackFontPaint);
+            }
             else if (pair.Key is Panel)
             {
                 ; // panel is a nop for now 
