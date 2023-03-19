@@ -97,19 +97,19 @@ public partial class DialogEditorViewModel : ObservableObject
             GripDistance)
             return Grips.BottomRight;
         if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.X, control.Rectangle.MidY)) <
+                new Vector2(control.Rectangle.X, control.Rectangle.CenterX)) <
             GripDistance)
             return Grips.Left;
         if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.MidX, control.Rectangle.Y)) <
+                new Vector2(control.Rectangle.CenterX, control.Rectangle.Y)) <
             GripDistance)
             return Grips.Top;
         if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.MidX, control.Rectangle.Bottom)) <
+                new Vector2(control.Rectangle.CenterX, control.Rectangle.Bottom)) <
             GripDistance)
             return Grips.Bottom;
         if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.Right, control.Rectangle.MidY)) <
+                new Vector2(control.Rectangle.Right, control.Rectangle.CenterY)) <
             GripDistance)
             return Grips.Right;
         if (control.Rectangle.Contains(new Vector2Int(position)))

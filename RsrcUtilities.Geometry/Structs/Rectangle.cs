@@ -5,7 +5,7 @@ namespace RsrcUtilities.Geometry.Structs;
 /// <summary>
 ///     Represents a rectangle by its top-left position and dimensions
 /// </summary>
-public readonly struct Rectangle : IEquatable<Rectangle>
+public readonly struct Rectangle
 {
     /// <summary>
     ///     A zero-initialized <see cref="Rectangle" />
@@ -43,14 +43,14 @@ public readonly struct Rectangle : IEquatable<Rectangle>
     public int Bottom => Y + Height;
 
     /// <summary>
-    ///     The horizontal middle 
+    ///     The horizontal center 
     /// </summary>
-    public int MidX => X + Width / 2;
+    public int CenterX => X + Width / 2;
     
     /// <summary>
-    ///     The vertical middle 
+    ///     The vertical center 
     /// </summary>
-    public int MidY => Y + Height / 2;
+    public int CenterY => Y + Height / 2;
     
     public Rectangle(int x, int y, int width, int height)
     {
@@ -58,11 +58,6 @@ public readonly struct Rectangle : IEquatable<Rectangle>
         Y = y;
         Width = width;
         Height = height;
-    }
-
-    public bool Equals(Rectangle other)
-    {
-        return X == other.X && Y == other.Y && Width == other.Width && Height == other.Height;
     }
 
     public static Rectangle operator +(Rectangle left, Rectangle right)
@@ -98,5 +93,15 @@ public readonly struct Rectangle : IEquatable<Rectangle>
     public bool Contains(Vector2Int vector2Int)
     {
         return vector2Int.X > X && vector2Int.X < Right && vector2Int.Y > Y && vector2Int.Y < Bottom;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is Rectangle rectangle && GetHashCode() == rectangle.GetHashCode();
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(X, Y, Width, Height);
     }
 }

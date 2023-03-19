@@ -5,7 +5,7 @@ namespace RsrcUtilities.Geometry.Structs;
 /// <summary>
 ///     Represents a 2-dimentsional vector by its X and Y
 /// </summary>
-public readonly struct Vector2Int : IEquatable<Vector2Int>
+public readonly struct Vector2Int
 {
     /// <summary>
     ///     A zero-initialized <see cref="Vector2Int" />
@@ -34,13 +34,18 @@ public readonly struct Vector2Int : IEquatable<Vector2Int>
         Y = (int)vector2.Y;
     }
 
-    public bool Equals(Vector2Int other)
-    {
-        return X == other.X && Y == other.Y;
-    }
-
     public static Vector2Int operator +(Vector2Int left, Vector2Int right)
     {
         return new Vector2Int(left.X + right.X, left.Y + right.Y);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Vector2Int vector2Int && GetHashCode() == vector2Int.GetHashCode();
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(X, Y);
     }
 }
