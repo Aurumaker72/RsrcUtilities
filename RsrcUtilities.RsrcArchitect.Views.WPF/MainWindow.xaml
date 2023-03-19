@@ -72,10 +72,19 @@
                     </Button>
                 </ItemsControl>
 
-                <Button HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                    <Button 
                         Command="{Binding MainViewModel.SaveCommand}">
-                    <ui:SymbolIcon Symbol="Save24" />
-                </Button>
+                        <ui:SymbolIcon Symbol="Save24" />
+                    </Button>
+                    <Button 
+                        x:Name="PositioningModeButton"
+                        Click="PositioningModeButton_OnClick">
+                        <ui:SymbolIcon x:Name="PositioningModeSymbolIcon"/>
+                    </Button>
+                    
+                </StackPanel>
+              
             </Grid>
 
 
@@ -84,7 +93,7 @@
                            PaintSurface="SkElement_OnPaintSurface"
                            MouseDown="SkElement_OnMouseDown"
                            MouseUp="SkElement_OnMouseUp"
-                           MouseMove="SkElement_OnMouseMove" >
+                           MouseMove="SkElement_OnMouseMove">
                     <wpf:SKElement.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Delete Selected" Command="{Binding MainViewModel.DialogEditorViewModel.DeleteSelectedNodeCommand}">

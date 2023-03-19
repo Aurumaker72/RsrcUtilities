@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -8,6 +9,7 @@ using RsrcUtilities.RsrcArchitect.ViewModels;
 using RsrcUtilities.RsrcArchitect.Views.WPF.Services;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using Wpf.Ui.Common;
 using Wpf.Ui.Controls.Window;
 
 namespace RsrcUtilities.RsrcArchitect.Views.WPF;
@@ -41,6 +43,30 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         MainViewModel = new MainViewModel(new FilesService(), this);
 
         DataContext = this;
+
+        MainViewModel.DialogEditorViewModel.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(DialogEditorViewModel.PositioningMode))
+            {
+                UpdatePositioningModeSymbolIcon();
+            }
+        };
+        UpdatePositioningModeSymbolIcon();
+    }
+
+    private void UpdatePositioningModeSymbolIcon()
+    {
+        switch (MainViewModel.DialogEditorViewModel.PositioningMode)
+        {
+            case DialogEditorViewModel.PositioningModes.Arbitrary:
+                PositioningModeSymbolIcon.Symbol = SymbolRegular.ArrowMove24;
+                break;
+            case DialogEditorViewModel.PositioningModes.Grid:
+                PositioningModeSymbolIcon.Symbol = SymbolRegular.Grid24;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     void ICanvasInvalidationService.Invalidate()
@@ -185,4 +211,14 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     {
         if (e.Key == Key.Delete) MainViewModel.DialogEditorViewModel.DeleteSelectedNodeCommand.Execute(null);
     }
+
+    private void PositioningModeButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        MainViewModel.DialogEditorViewModel.PositioningMode =
+            MainViewModel.DialogEditorViewModel.PositioningMode.Next();
+        
+        
+    }
+    
+    
 }

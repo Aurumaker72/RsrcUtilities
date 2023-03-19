@@ -50,6 +50,7 @@ public partial class DialogEditorViewModel : ObservableObject
     private Vector2 _gripStartPointerPosition;
 
     [ObservableProperty] private float _gripDistance = 10f;
+    [ObservableProperty] private PositioningModes _positioningMode = PositioningModes.Arbitrary;
 
     private TreeNode<Control>? _selectedNode;
 
@@ -66,6 +67,12 @@ public partial class DialogEditorViewModel : ObservableObject
         BottomRight,
     }
 
+    public enum PositioningModes
+    {
+        Arbitrary,
+        Grid,
+    }
+    
     private bool TryCreateControlFromName(out Control? control, string tool)
     {
         control = tool switch
@@ -117,6 +124,21 @@ public partial class DialogEditorViewModel : ObservableObject
         return null;
     }
 
+    private Vector2 ProcessPosition(Vector2 vector2)
+    {
+        switch (PositioningMode)
+        {
+            case PositioningModes.Arbitrary:
+                return vector2;
+            case PositioningModes.Grid:
+                const int coarseness = 10;
+                return new Vector2((float)(Math.Round(vector2.X / coarseness) * coarseness),
+                    (float)(Math.Round(vector2.Y / coarseness) * coarseness));
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
     [RelayCommand]
     private void CreateControl(string name)
     {
@@ -133,7 +155,6 @@ public partial class DialogEditorViewModel : ObservableObject
     [RelayCommand]
     private void PointerPress(Vector2 position)
     {
-        position = new Vector2((float)Math.Floor(position.X), (float)Math.Floor(position.Y));
 
         // TODO: transform canvas-space position to dialog-space position?
 
@@ -150,7 +171,7 @@ public partial class DialogEditorViewModel : ObservableObject
         {
             _currentGrip = GetGrip(SelectedNode.Data, position);
             _gripStartControlRectangle = SelectedNode.Data.Rectangle;
-            _gripStartPointerPosition = position;
+            _gripStartPointerPosition = ProcessPosition(position);
         }
 
         _canvasInvalidationService.Invalidate();
@@ -165,7 +186,7 @@ public partial class DialogEditorViewModel : ObservableObject
     [RelayCommand]
     private void PointerMove(Vector2 position)
     {
-        position = new Vector2((float)Math.Floor(position.X), (float)Math.Floor(position.Y));
+        position = ProcessPosition(position);
         
         if (SelectedNode != null)
             switch (_currentGrip)
