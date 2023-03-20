@@ -9,6 +9,7 @@ using RsrcUtilities.Generators.Implementations;
 using RsrcUtilities.Geometry.Structs;
 using RsrcUtilities.Layout.Implementations;
 using RsrcUtilities.RsrcArchitect.Services;
+using RsrcUtilities.RsrcArchitect.ViewModels.Factories;
 using RsrcUtilities.RsrcArchitect.ViewModels.Helpers;
 using RsrcUtilities.RsrcArchitect.ViewModels.Messages;
 using RsrcUtilities.RsrcArchitect.ViewModels.Types;
@@ -42,7 +43,11 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
             OnPropertyChanged(nameof(IsNodeSelected));
             DeleteSelectedNodeCommand.NotifyCanExecuteChanged();
             BringSelectedNodeToFrontCommand.NotifyCanExecuteChanged();
-            SelectedControlViewModel = value != null ? new ControlViewModel(value.Data) : null;
+            // TODO: cache the viewmodels, since creation creates garbage
+            SelectedControlViewModel = value != null ? ControlViewModelFactory.Create(value.Data, s =>
+            {
+                return Dialog.Root.Flatten().Any(x => x.Identifier.Equals(s, StringComparison.InvariantCultureIgnoreCase));
+            }) : null;
             OnPropertyChanged(nameof(SelectedControlViewModel));
         }
     }
@@ -52,15 +57,15 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
     private Rectangle _gripStartControlRectangle;
     private Vector2 _gripStartPointerPosition;
     private TreeNode<Control>? _selectedNode;
-    private ObservableCollection<ControlViewModel> _controlViewModels = new();
+    // private ObservableCollection<ControlViewModel> _controlViewModels = new();
 
     public ControlViewModel? SelectedControlViewModel { get; private set; }
 
-    public ObservableCollection<ControlViewModel> ControlViewModels
-    {
-        get => _controlViewModels;
-        private set => SetProperty(ref _controlViewModels, value);
-    }
+    // public ObservableCollection<ControlViewModel> ControlViewModels
+    // {
+    //     get => _controlViewModels;
+    //     private set => SetProperty(ref _controlViewModels, value);
+    // }
 
     public Dialog Dialog { get; }
 
@@ -68,8 +73,8 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
 
     private void RebuildControlViewModels()
     {
-        ControlViewModels.Clear();
-        foreach (var control in Dialog.Root.Flatten()) ControlViewModels.Add(new ControlViewModel(control));
+        // ControlViewModels.Clear();
+        // foreach (var control in Dialog.Root.Flatten()) ControlViewModels.Add(ControlViewModelFactory.Create(control));
     }
 
     private bool TryCreateControlFromName(out Control? control, string tool)

@@ -23,7 +23,7 @@ public class TextBox : Control
     public bool IsWriteable { get; set; } = true;
 
     /// <summary>
-    ///     Whether horizontal scrolling is allowed, when avoiding overflows or wrapping
+    ///     Whether horizontal scrolling is allowed
     /// </summary>
     public bool AllowHorizontalScroll { get; set; }
 

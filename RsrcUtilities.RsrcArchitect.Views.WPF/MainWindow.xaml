@@ -6,6 +6,7 @@
                  xmlns:local="clr-namespace:RsrcUtilities.RsrcArchitect.Views.WPF"
                  xmlns:wpf="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:controls="clr-namespace:RsrcUtilities.RsrcArchitect.ViewModels.Controls;assembly=RsrcUtilities.RsrcArchitect.ViewModels"
                  mc:Ignorable="d"
                  x:Name="Window"
                  Title="MainWindow" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainWindow}"
@@ -37,54 +38,54 @@
                 <ItemsControl>
                     <Button CommandParameter="Button"
                             Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
-                            Margin="0 0 0 5" 
+                            Margin="0 0 0 5"
                             HorizontalAlignment="Stretch">
                         <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="ControlButton24"/>
-                            <TextBlock Text="Button"/>
+                            <ui:SymbolIcon Symbol="ControlButton24" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                     <Button CommandParameter="TextBox"
                             Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
-                            Margin="0 0 0 5" 
+                            Margin="0 0 0 5"
                             HorizontalAlignment="Stretch">
                         <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="Textbox24"/>
-                            <TextBlock Text="TextBox"/>
+                            <ui:SymbolIcon Symbol="Textbox24" />
+                            <TextBlock Text="TextBox" />
                         </StackPanel>
                     </Button>
                     <Button CommandParameter="CheckBox"
                             Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
-                            Margin="0 0 0 5" 
+                            Margin="0 0 0 5"
                             HorizontalAlignment="Stretch">
                         <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="CheckboxChecked24"/>
-                            <TextBlock Text="CheckBox"/>
+                            <ui:SymbolIcon Symbol="CheckboxChecked24" />
+                            <TextBlock Text="CheckBox" />
                         </StackPanel>
                     </Button>
                     <Button CommandParameter="GroupBox"
                             Command="{Binding MainViewModel.DialogEditorViewModel.CreateControlCommand}"
-                            Margin="0 0 0 5" 
+                            Margin="0 0 0 5"
                             HorizontalAlignment="Stretch">
                         <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="Group24"/>
-                            <TextBlock Text="GroupBox"/>
+                            <ui:SymbolIcon Symbol="Group24" />
+                            <TextBlock Text="GroupBox" />
                         </StackPanel>
                     </Button>
                 </ItemsControl>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                    <Button 
+                    <Button
                         Command="{Binding MainViewModel.DialogEditorViewModel.SaveCommand}">
                         <ui:SymbolIcon Symbol="Save24" />
                     </Button>
-                    <Button 
+                    <Button
                         Click="PositioningModeButton_OnClick">
-                        <ui:SymbolIcon x:Name="PositioningModeSymbolIcon"/>
+                        <ui:SymbolIcon x:Name="PositioningModeSymbolIcon" />
                     </Button>
-                    
+
                 </StackPanel>
-              
+
             </Grid>
 
 
@@ -94,50 +95,150 @@
                            MouseDown="SkElement_OnMouseDown"
                            MouseUp="SkElement_OnMouseUp"
                            MouseMove="SkElement_OnMouseMove">
-                    <wpf:SKElement.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Delete Selected" Command="{Binding MainViewModel.DialogEditorViewModel.DeleteSelectedNodeCommand}">
-                                <MenuItem.Icon>
-                                    <ui:SymbolIcon Symbol="Delete24"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Bring Selected To Front" Command="{Binding MainViewModel.DialogEditorViewModel.BringSelectedNodeToFrontCommand}">
-                                <MenuItem.Icon>
-                                    <ui:SymbolIcon Symbol="PositionToFront24"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </ContextMenu>
-                    </wpf:SKElement.ContextMenu>
-                </wpf:SKElement>
-            
+                <wpf:SKElement.ContextMenu>
+                    <ContextMenu>
+                        <!-- ReSharper disable Xaml.RedundantResource -->
+                        <MenuItem Header="Delete Selected" Command="{Binding MainViewModel.DialogEditorViewModel.DeleteSelectedNodeCommand}">
+                            <MenuItem.Icon>
+                                <ui:SymbolIcon Symbol="Delete24"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Bring Selected To Front" Command="{Binding MainViewModel.DialogEditorViewModel.BringSelectedNodeToFrontCommand}">
+                            <MenuItem.Icon>
+                                <ui:SymbolIcon Symbol="PositionToFront24"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <!-- ReSharper restore Xaml.RedundantResource -->
+                    </ContextMenu>
+                </wpf:SKElement.ContextMenu>
+            </wpf:SKElement>
+
             <Grid Grid.Column="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.5*"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                </Grid.RowDefinitions>
-                
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="X"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Y"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <StackPanel Orientation="Vertical">
+                    
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.5*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Width"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" />
+                        <TextBox Grid.Row="0" Grid.Column="1"
+                                 Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Height"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="X" />
+                        <TextBox Grid.Row="1" Grid.Column="1"
+                                 Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Y" />
+                        <TextBox Grid.Row="2" Grid.Column="1"
+                                 Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Width" />
+                        <TextBox Grid.Row="3" Grid.Column="1"
+                                 Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Height" />
+                        <TextBox Grid.Row="4" Grid.Column="1"
+                                 Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+                    <ContentControl Content="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel}">
+                        <ContentControl.Resources>
+                            <DataTemplate DataType="{x:Type controls:ButtonViewModel}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.5*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
+                                    <TextBox Grid.Row="0" Grid.Column="1"
+                                             Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                
+                                </Grid>
+                            </DataTemplate>
+                            
+                            
+                            <DataTemplate DataType="{x:Type controls:CheckBoxViewModel}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.5*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
+                                    <TextBox Grid.Row="0" Grid.Column="1"
+                                             Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                
+                                </Grid>
+                            </DataTemplate>
+                            
+                            <DataTemplate DataType="{x:Type controls:GroupBoxViewModel}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.5*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
+                                    <TextBox Grid.Row="0" Grid.Column="1"
+                                             Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                </Grid>
+                            </DataTemplate>
+                            
+                            <DataTemplate DataType="{x:Type controls:TextBoxViewModel}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.5*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Is Writable" />
+                                    <TextBox Grid.Row="0" Grid.Column="1"
+                                             Text="{Binding IsWritable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Allows Horizontal Scrolling" />
+                                    <TextBox Grid.Row="1" Grid.Column="1"
+                                             Text="{Binding AllowHorizontalScroll, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                </Grid>
+                            </DataTemplate>
+                        </ContentControl.Resources>
+                    </ContentControl>
+                </StackPanel>
+              
 
             </Grid>
-            <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Opacity="0.5" Foreground="Red" Text="Win32 DPI scaling might cause the generated dialog to appear at a different size" MaxWidth="320" TextWrapping="Wrap"/>
-            
-            
+            <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Opacity="0.5"
+                       Foreground="Red"
+                       Text="Win32 DPI scaling might cause the generated dialog to appear at a different size"
+                       MaxWidth="320" TextWrapping="Wrap" />
+
+
         </Grid>
     </Grid>
 </ui:FluentWindow>

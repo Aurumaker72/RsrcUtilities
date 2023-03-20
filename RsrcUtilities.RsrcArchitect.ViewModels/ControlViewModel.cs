@@ -1,28 +1,45 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using RsrcUtilities.Controls;
+using RsrcUtilities.Geometry.Enums;
 using RsrcUtilities.Geometry.Structs;
 using RsrcUtilities.RsrcArchitect.ViewModels.Messages;
 
 namespace RsrcUtilities.RsrcArchitect.ViewModels;
 
-public class ControlViewModel : ObservableObject
+public abstract class ControlViewModel : ObservableObject
 {
-    private readonly Control _control;
+    protected readonly Control Control;
+    private readonly Func<string, bool> _isIdentifierInUse;
 
-    public ControlViewModel(Control control)
+    public ControlViewModel(Control control, Func<string, bool> isIdentifierInUse)
     {
-        _control = control;
+        Control = control;
+        _isIdentifierInUse = isIdentifierInUse;
     }
 
-    public Rectangle Rectangle => _control.Rectangle;
+    public Rectangle Rectangle => Control.Rectangle;
+    
+    public string Identifier
+    {
+        get => Control.Identifier;
+        set
+        {
+            if (!_isIdentifierInUse(value))
+            {
+                Control.Identifier = value;
+            }
+
+            OnPropertyChanged();
+        }
+    }
     
     public int X
     {
-        get => _control.Rectangle.X;
+        get => Control.Rectangle.X;
         set
         {
-            _control.Rectangle = _control.Rectangle.WithX(value);
+            Control.Rectangle = Control.Rectangle.WithX(value);
             OnPropertyChanged();
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
         }
@@ -30,10 +47,10 @@ public class ControlViewModel : ObservableObject
     
     public int Y
     {
-        get => _control.Rectangle.Y;
+        get => Control.Rectangle.Y;
         set
         {
-            _control.Rectangle = _control.Rectangle.WithY(value);
+            Control.Rectangle = Control.Rectangle.WithY(value);
             OnPropertyChanged();
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
         }
@@ -41,10 +58,10 @@ public class ControlViewModel : ObservableObject
     
     public int Width
     {
-        get => _control.Rectangle.Width;
+        get => Control.Rectangle.Width;
         set
         {
-            _control.Rectangle = _control.Rectangle.WithWidth(value);
+            Control.Rectangle = Control.Rectangle.WithWidth(value);
             OnPropertyChanged();
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
         }
@@ -52,10 +69,32 @@ public class ControlViewModel : ObservableObject
     
     public int Height
     {
-        get => _control.Rectangle.Height;
+        get => Control.Rectangle.Height;
         set
         {
-            _control.Rectangle = _control.Rectangle.WithHeight(value);
+            Control.Rectangle = Control.Rectangle.WithHeight(value);
+            OnPropertyChanged();
+            WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
+        }
+    }
+    
+    public HorizontalAlignments HorizontalAlignment
+    {
+        get => Control.HorizontalAlignment;
+        set
+        {
+            Control.HorizontalAlignment = value;
+            OnPropertyChanged();
+            WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
+        }
+    }
+    
+    public VerticalAlignments VerticalAlignment
+    {
+        get => Control.VerticalAlignment;
+        set
+        {
+            Control.VerticalAlignment = value;
             OnPropertyChanged();
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
         }
