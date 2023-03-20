@@ -3,29 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcUtilities.Core", "RsrcUtilities.Core\RsrcUtilities.Core.csproj", "{8BB39A31-1945-4D1F-853A-5FEF2870C644}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcCore.Core", "RsrcCore.Core\RsrcCore.Core.csproj", "{8BB39A31-1945-4D1F-853A-5FEF2870C644}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcUtilities.Views.Console", "RsrcUtilities.Views.Console\RsrcUtilities.Views.Console.csproj", "{0FF3AECE-4B0F-4EF3-B9DA-3A9F6386DC15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcArchitect.Views.Console", "RsrcArchitect.Views.Console\RsrcArchitect.Views.Console.csproj", "{0FF3AECE-4B0F-4EF3-B9DA-3A9F6386DC15}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcUtilities.Controls", "RsrcUtilities.Controls\RsrcUtilities.Controls.csproj", "{D794107B-56E9-4DFF-BE9B-2FC4A79B2897}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcCore.Controls", "RsrcCore.Controls\RsrcCore.Controls.csproj", "{D794107B-56E9-4DFF-BE9B-2FC4A79B2897}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcUtilities.Layout", "RsrcUtilities.Layout\RsrcUtilities.Layout.csproj", "{35CA9DC8-FE35-4830-82FF-7AEFC5171E2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcCore.Layout", "RsrcCore.Layout\RsrcCore.Layout.csproj", "{35CA9DC8-FE35-4830-82FF-7AEFC5171E2E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcUtilities.Serializers", "RsrcUtilities.Serializers\RsrcUtilities.Serializers.csproj", "{0A9F4A3B-1C44-4955-8ADE-8390D869D09C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcCore.Serializers", "RsrcCore.Serializers\RsrcCore.Serializers.csproj", "{0A9F4A3B-1C44-4955-8ADE-8390D869D09C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcUtilities.Geometry", "RsrcUtilities.Geometry\RsrcUtilities.Geometry.csproj", "{7E58949B-DE85-45AB-BCBF-3651F8648EDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RsrcCore.Geometry", "RsrcCore.Geometry\RsrcCore.Geometry.csproj", "{7E58949B-DE85-45AB-BCBF-3651F8648EDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.RsrcArchitect.ViewModels", "RsrcUtilities.RsrcArchitect.ViewModels\RsrcUtilities.RsrcArchitect.ViewModels.csproj", "{DA3E3993-13B7-44E1-9AB2-EA51E1A034F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcArchitect.ViewModels", "RsrcArchitect.ViewModels\RsrcArchitect.ViewModels.csproj", "{DA3E3993-13B7-44E1-9AB2-EA51E1A034F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.RsrcArchitect.Views.WPF", "RsrcUtilities.RsrcArchitect.Views.WPF\RsrcUtilities.RsrcArchitect.Views.WPF.csproj", "{7396FCDB-F0B3-4140-A475-DC8A5173A19D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcArchitect.Views.WPF", "RsrcArchitect.Views.WPF\RsrcArchitect.Views.WPF.csproj", "{7396FCDB-F0B3-4140-A475-DC8A5173A19D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.RsrcArchitect.Services", "RsrcUtilities.RsrcArchitect.Services\RsrcUtilities.RsrcArchitect.Services.csproj", "{F4C4DE64-B266-4CDE-9BA9-92A1898BD307}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcArchitect.Services", "RsrcArchitect.Services\RsrcArchitect.Services.csproj", "{F4C4DE64-B266-4CDE-9BA9-92A1898BD307}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.Generators", "RsrcUtilities.Generators\RsrcUtilities.Generators.csproj", "{A0B37132-F7FB-4E05-A42C-45E6DA223EA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcCore.Generators", "RsrcCore.Generators\RsrcCore.Generators.csproj", "{A0B37132-F7FB-4E05-A42C-45E6DA223EA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.UnitTests.Serializers", "RsrcUtilities.UnitTests.Serializers\RsrcUtilities.UnitTests.Serializers.csproj", "{43E6037C-2C18-4E3D-BFC2-DDCDD0E7C7B7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcCore.Tests.Serializers", "RsrcCore.Tests.Serializers\RsrcCore.Tests.Serializers.csproj", "{43E6037C-2C18-4E3D-BFC2-DDCDD0E7C7B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcUtilities.RsrcArchitect.ViewModels.Types", "RsrcUtilities.RsrcArchitect.ViewModels.Types\RsrcUtilities.RsrcArchitect.ViewModels.Types.csproj", "{F1234D05-D1B6-47C9-A411-962715E0D138}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsrcArchitect.ViewModels.Types", "RsrcArchitect.ViewModels.Types\RsrcArchitect.ViewModels.Types.csproj", "{F1234D05-D1B6-47C9-A411-962715E0D138}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

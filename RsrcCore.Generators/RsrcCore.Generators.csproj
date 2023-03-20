@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+        <RootNamespace>RsrcCore.Generators</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\RsrcCore.Controls\RsrcCore.Controls.csproj"/>
+        <ProjectReference Include="..\RsrcCore.Core\RsrcCore.Core.csproj"/>
+    </ItemGroup>
+
+</Project>
