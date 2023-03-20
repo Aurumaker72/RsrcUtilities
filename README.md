@@ -52,13 +52,8 @@ new RcDialogSerializer().Serialize(new DefaultLayoutEngine().DoLayout(dialog), d
 new CxxHeaderResourceGenerator().Generate(dialog.Root);
 ```
 
-# :question: Why?
-
-The legacy Visual Studio dialog designer is questionable at best, and having slowly become fed up with it, I began working on a somewhat comprehensive `rc` editing suite. 
-
-The goal is to create an intuitive dialog designer, to speed up production of `rc`-based GUIs without the hassles of legacy abandonware.
-
-![grafik](https://user-images.githubusercontent.com/48759429/221355392-01f1b5d0-7754-44e1-b187-a919c54c5ed7.png)
+# :star: Goal
+The creation of infrastructure to facilitate the design of `rc` user interfaces without the hassles of legacy abandonware.
 
 <details>
 <summary><h4>RsrcArchitect Dialog Editor</h4></summary>
@@ -76,4 +71,14 @@ The goal is to create an intuitive dialog designer, to speed up production of `r
 <p align="center">
     <img src="https://img.shields.io/badge/Requires-RsrcUtilities-gray?style=for-the-badge"/>
 </p>
+
+# Key Features
+- Accurate control rendering
+- Smart hittesting
+- Flexible Z-Ordering
+
 </details>
+
+
+
+
