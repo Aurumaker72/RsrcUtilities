@@ -81,7 +81,9 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     private void SkElement_OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         e.Surface.Canvas.Clear();
-
+        e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(MainViewModel.DialogEditorViewModel.Translation.X, MainViewModel.DialogEditorViewModel.Translation.Y));
+        e.Surface.Canvas.Scale(MainViewModel.DialogEditorViewModel.Zoom);
+        
         e.Surface.Canvas.DrawRect(0, 0, MainViewModel.DialogEditorViewModel.Dialog.Width,
             MainViewModel.DialogEditorViewModel.Dialog.Height, new SKPaint
             {
@@ -103,11 +105,9 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         {
             var rectangle = SKRect.Create(0, 0, pair.Value.Width, pair.Value.Height);
 
-            e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(pair.Value.X, pair.Value.Y));
-
             e.Surface.Canvas.Save();
-            e.Surface.Canvas.ClipRect(rectangle.InflateCopy(5, 5));
-
+            e.Surface.Canvas.Translate(pair.Value.X, pair.Value.Y);
+            
             if (pair.Key is Button button)
             {
                 e.Surface.Canvas.DrawRect(rectangle.InflateCopy(1, 1),
@@ -163,7 +163,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                 e.Surface.Canvas.DrawRect(rectangle,
                     new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(255, 0, 255) });
             }
-
+            
             e.Surface.Canvas.Restore();
         }
 
@@ -172,9 +172,9 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
             var rectangle = SKRect.Create(0, 0,
                 MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.Width,
                 MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.Height);
-            e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(
+            e.Surface.Canvas.Translate(
                 MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.X,
-                MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.Y));
+                MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.Y);
 
             e.Surface.Canvas.DrawRect(rectangle,
                 new SKPaint
@@ -241,5 +241,27 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     {
         MainViewModel.SettingsViewModel.PositioningMode =
             MainViewModel.SettingsViewModel.PositioningMode.Next();
+    }
+    
+    private void ZoomOutButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        MainViewModel.DialogEditorViewModel.Zoom -= 0.25f;
+    }
+    
+    private void ZoomInButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        MainViewModel.DialogEditorViewModel.Zoom += 0.25f;
+    }
+
+    private void SkElement_OnMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (e.Delta > 0)
+        {
+            MainViewModel.DialogEditorViewModel.Zoom += 0.25f;
+        }
+        else
+        {
+            MainViewModel.DialogEditorViewModel.Zoom -= 0.25f;
+        }
     }
 }

@@ -83,7 +83,14 @@
                         Click="PositioningModeButton_OnClick">
                         <ui:SymbolIcon x:Name="PositioningModeSymbolIcon" />
                     </Button>
-
+                    <Button
+                        Click="ZoomOutButton_OnClick">
+                        <ui:SymbolIcon Symbol="ZoomOut24" />
+                    </Button>
+                    <Button
+                        Click="ZoomInButton_OnClick">
+                        <ui:SymbolIcon Symbol="ZoomIn24" />
+                    </Button>
                 </StackPanel>
 
             </Grid>
@@ -94,7 +101,8 @@
                            PaintSurface="SkElement_OnPaintSurface"
                            MouseDown="SkElement_OnMouseDown"
                            MouseUp="SkElement_OnMouseUp"
-                           MouseMove="SkElement_OnMouseMove">
+                           MouseMove="SkElement_OnMouseMove"
+                           MouseWheel="SkElement_OnMouseWheel">
                 <skia:SKElement.ContextMenu>
                     <ContextMenu>
                         <!-- ReSharper disable Xaml.RedundantResource -->
