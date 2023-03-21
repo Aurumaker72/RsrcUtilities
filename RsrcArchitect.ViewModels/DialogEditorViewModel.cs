@@ -147,7 +147,7 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
     {
         switch (_settingsViewModel.PositioningMode)
         {
-            case PositioningModes.Arbitrary:
+            case PositioningModes.Freeform:
                 return vector2;
             case PositioningModes.Grid:
                 const int coarseness = 10;

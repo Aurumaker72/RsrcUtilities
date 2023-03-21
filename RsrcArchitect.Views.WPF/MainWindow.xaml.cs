@@ -29,6 +29,14 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         TextAlign = SKTextAlign.Center,
         TextSize = 12
     };
+    private static readonly SKPaint SkWhiteFontPaint = new()
+    {
+        Color = SKColors.White,
+        IsAntialias = true,
+        Style = SKPaintStyle.Fill,
+        TextAlign = SKTextAlign.Center,
+        TextSize = 12
+    };
 
     private static readonly SKFont SkFont = new()
     {
@@ -63,7 +71,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     {
         switch (MainViewModel.SettingsViewModel.PositioningMode)
         {
-            case PositioningModes.Arbitrary:
+            case PositioningModes.Freeform:
                 PositioningModeSymbolIcon.Symbol = SymbolRegular.ArrowMove24;
                 break;
             case PositioningModes.Grid:
@@ -79,14 +87,31 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         e.Surface.Canvas.Clear();
         e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(MainViewModel.DialogEditorViewModel.Translation.X, MainViewModel.DialogEditorViewModel.Translation.Y));
         e.Surface.Canvas.Scale(MainViewModel.DialogEditorViewModel.Zoom);
+
+        var dialogRectangle = SKRect.Create(0, 0, MainViewModel.DialogEditorViewModel.DialogViewModel.Width,
+            MainViewModel.DialogEditorViewModel.DialogViewModel.Height);
         
-        e.Surface.Canvas.DrawRect(0, 0, MainViewModel.DialogEditorViewModel.DialogViewModel.Width,
-            MainViewModel.DialogEditorViewModel.DialogViewModel.Height, new SKPaint
+         
+        e.Surface.Canvas.DrawRect(dialogRectangle.InflateCopy(1f, 1f), new SKPaint
+        {
+            Style = SKPaintStyle.Fill,
+            Color = new SKColor(0, 120, 215)
+        });
+        e.Surface.Canvas.DrawRect(dialogRectangle, new SKPaint
             {
                 Style = SKPaintStyle.Fill,
                 Color = new SKColor(240, 240, 240)
             });
-
+       
+        e.Surface.Canvas.DrawRect(-1, -30, MainViewModel.DialogEditorViewModel.DialogViewModel.Width + 2, 30, new SKPaint()
+        {
+            Style = SKPaintStyle.Fill,
+            Color = new SKColor(0, 120, 215)
+        });
+        e.Surface.Canvas.DrawText(MainViewModel.DialogEditorViewModel.DialogViewModel.Caption,
+            40f,
+            -15 + GetTextSize(MainViewModel.DialogEditorViewModel.DialogViewModel.Caption).Height / 2, SkFont, SkWhiteFontPaint);
+        
         var flattenedControlDictionary = MainViewModel.DialogEditorViewModel.DialogViewModel.DoLayout();
 
         SKSize GetTextSize(string text)
@@ -95,7 +120,9 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
             SkBlackFontPaint.MeasureText(text, ref skRect);
             return new SKSize(skRect.Width, skRect.Height);
         }
-
+        
+        // e.Surface.Canvas.ClipRect(dialogRectangle.InflateCopy(1f, 1f));
+        
         foreach (var pair in flattenedControlDictionary)
         {
             var rectangle = SKRect.Create(0, 0, pair.Value.Width, pair.Value.Height);
