@@ -25,7 +25,7 @@ public abstract class ControlViewModel : ObservableObject
         get => Control.Identifier;
         set
         {
-            if (!_isIdentifierInUse(value)) Control.Identifier = value;
+            if (!_isIdentifierInUse(value) && !string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && !value.Any(char.IsDigit) && value.All(char.IsAscii)) Control.Identifier = value;
 
             OnPropertyChanged();
         }

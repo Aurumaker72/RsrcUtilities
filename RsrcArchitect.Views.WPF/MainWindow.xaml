@@ -7,6 +7,7 @@
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  xmlns:controls="clr-namespace:RsrcArchitect.ViewModels.Controls;assembly=RsrcArchitect.ViewModels"
                  xmlns:wpf="clr-namespace:RsrcArchitect.Views.WPF"
+                 xmlns:viewModels="clr-namespace:RsrcArchitect.ViewModels;assembly=RsrcArchitect.ViewModels"
                  mc:Ignorable="d"
                  x:Name="Window"
                  Title="MainWindow" Height="450" Width="800" d:DataContext="{d:DesignInstance wpf:MainWindow}"
@@ -125,42 +126,124 @@
 
             <Grid Grid.Column="2">
                 <StackPanel Orientation="Vertical">
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.5*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" />
-                        <TextBox Grid.Row="0" Grid.Column="1"
+                    <ContentControl>
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <StackPanel Orientation="Vertical">
+                                            <ui:Card Margin="10">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ui:SymbolIcon Symbol="Cursor24"/>
+                                                    <TextBlock>Control</TextBlock>
+                                                </StackPanel>
+                                            </ui:Card>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="0.5*" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" />
+                                                <TextBox Grid.Row="0" Grid.Column="1"
                                  Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="X" />
-                        <TextBox Grid.Row="1" Grid.Column="1"
+                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="X" />
+                                                <TextBox Grid.Row="1" Grid.Column="1"
                                  Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Y" />
-                        <TextBox Grid.Row="2" Grid.Column="1"
+                                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Y" />
+                                                <TextBox Grid.Row="2" Grid.Column="1"
                                  Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Width" />
-                        <TextBox Grid.Row="3" Grid.Column="1"
+                                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Width" />
+                                                <TextBox Grid.Row="3" Grid.Column="1"
                                  Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Height" />
-                        <TextBox Grid.Row="4" Grid.Column="1"
+                                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Height" />
+                                                <TextBox Grid.Row="4" Grid.Column="1"
                                  Text="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    </Grid>
-                    <ContentControl Content="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel}">
+
+                                            </Grid>
+                                        </StackPanel>
+                                       
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=MainViewModel.DialogEditorViewModel.SelectedControlViewModel}" Value="{x:Null}">
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <ui:Card Margin="10">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <ui:SymbolIcon Symbol="Window24"/>
+                                                        <TextBlock>Dialog</TextBlock>
+                                                    </StackPanel>
+                                                </ui:Card>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                        
+                       
+
+                    </ContentControl>
+                    <ContentControl>
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Setter Property="Content" Value="{Binding MainViewModel.DialogEditorViewModel.SelectedControlViewModel}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=MainViewModel.DialogEditorViewModel.SelectedControlViewModel}" Value="{x:Null}">
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <!-- dialog-scoped -->
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="0.5*" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" />
+                                                    <TextBox Grid.Row="0" Grid.Column="1"
+                                                             Text="{Binding MainViewModel.DialogEditorViewModel.DialogViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Caption" />
+                                                    <TextBox Grid.Row="1" Grid.Column="1"
+                                                             Text="{Binding MainViewModel.DialogEditorViewModel.DialogViewModel.Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Width" />
+                                                    <TextBox Grid.Row="2" Grid.Column="1"
+                                                             Text="{Binding MainViewModel.DialogEditorViewModel.DialogViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Height" />
+                                                    <TextBox Grid.Row="3" Grid.Column="1"
+                                                             Text="{Binding MainViewModel.DialogEditorViewModel.DialogViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+
+
+                                                </Grid>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
                         <ContentControl.Resources>
+                            
                             <DataTemplate DataType="{x:Type controls:ButtonViewModel}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -237,6 +320,9 @@
 
                                 </Grid>
                             </DataTemplate>
+                            
+                            
+                            
                         </ContentControl.Resources>
                     </ContentControl>
                 </StackPanel>

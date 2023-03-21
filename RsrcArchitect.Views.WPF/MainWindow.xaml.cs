@@ -8,8 +8,6 @@ using RsrcArchitect.ViewModels;
 using RsrcArchitect.ViewModels.Types;
 using RsrcArchitect.Views.WPF.Services;
 using RsrcCore.Controls;
-using RsrcCore.Layout.Implementations;
-using RsrcCore.Layout.Interfaces;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using Wpf.Ui.Common;
@@ -37,9 +35,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         Edging = SKFontEdging.SubpixelAntialias,
         Size = 12
     };
-
-    private readonly ILayoutEngine _layoutEngine = new DefaultLayoutEngine();
-
+    
     public MainWindow()
     {
         InitializeComponent();
@@ -84,15 +80,14 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(MainViewModel.DialogEditorViewModel.Translation.X, MainViewModel.DialogEditorViewModel.Translation.Y));
         e.Surface.Canvas.Scale(MainViewModel.DialogEditorViewModel.Zoom);
         
-        e.Surface.Canvas.DrawRect(0, 0, MainViewModel.DialogEditorViewModel.Dialog.Width,
-            MainViewModel.DialogEditorViewModel.Dialog.Height, new SKPaint
+        e.Surface.Canvas.DrawRect(0, 0, MainViewModel.DialogEditorViewModel.DialogViewModel.Width,
+            MainViewModel.DialogEditorViewModel.DialogViewModel.Height, new SKPaint
             {
                 Style = SKPaintStyle.Fill,
                 Color = new SKColor(240, 240, 240)
             });
 
-        var flattenedControlDictionary =
-            _layoutEngine.DoLayout(MainViewModel.DialogEditorViewModel.Dialog);
+        var flattenedControlDictionary = MainViewModel.DialogEditorViewModel.DialogViewModel.DoLayout();
 
         SKSize GetTextSize(string text)
         {

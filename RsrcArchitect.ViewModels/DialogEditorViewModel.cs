@@ -38,10 +38,12 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
         _canvasInvalidationService = canvasInvalidationService;
         _filesService = filesService;
         _settingsViewModel = settingsViewModel;
-        Dialog = dialog;
+        DialogViewModel = new(dialog);
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
-
+    
+    public DialogViewModel DialogViewModel { get; }
+    
     private TreeNode<Control>? SelectedNode
     {
         get => _selectedNode;
@@ -56,7 +58,7 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
                 ? ControlViewModelFactory.Create(value.Data,
                     s =>
                     {
-                        return Dialog.Root.Flatten().Any(x =>
+                        return DialogViewModel.Dialog.Root.Flatten().Any(x =>
                             x.Identifier.Equals(s, StringComparison.InvariantCultureIgnoreCase));
                     })
                 : null;
@@ -77,7 +79,6 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
     public bool IsNodeSelected => SelectedNode != null;
     public ControlViewModel? SelectedControlViewModel { get; private set; }
     public Vector2 Translation { get; private set; } = Vector2.Zero;
-    public Dialog Dialog { get; }
 
     #region Interface Methods
 
@@ -108,7 +109,6 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
 
     private Grips? GetGrip(Control control, Vector2 position)
     {
-        Debug.Print($"Position: {position} | Control X/Y: {control.Rectangle.X} {control.Rectangle.Y}");
         if (Vector2.Distance(position,
                 new Vector2(control.Rectangle.X, control.Rectangle.Y)) < _settingsViewModel.GripDistance)
             return Grips.TopLeft;
@@ -161,7 +161,7 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
     private TreeNode<Control>? GetControlNodeAtPosition(Vector2 position)
     {
         // TODO: make special case for groupboxes; the center is clickthrough
-        return Dialog.Root.Reverse().FirstOrDefault(node =>
+        return DialogViewModel.Dialog.Root.Reverse().FirstOrDefault(node =>
             position.X > node.Data.Rectangle.X && position.Y > node.Data.Rectangle.Y &&
             position.X < node.Data.Rectangle.Right && position.Y < node.Data.Rectangle.Bottom);
     }
@@ -183,9 +183,9 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
             control.Identifier = StringHelper.GetRandomAlphabeticString(16);
             var size = new Vector2Int(90, 25);
             
-            control.Rectangle = new Rectangle(Dialog.Width / 2 - size.X / 2, Dialog.Height / 2 - size.Y / 2, size.X, size.Y);
+            control.Rectangle = new Rectangle(DialogViewModel.Dialog.Width / 2 - size.X, DialogViewModel.Dialog.Height / 2 - size.Y, size.X, size.Y);
 
-            Dialog.Root.AddChild(control);
+            DialogViewModel.Dialog.Root.AddChild(control);
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
         }
     }
@@ -318,7 +318,7 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
     [RelayCommand(CanExecute = nameof(IsNodeSelected))]
     private void DeleteSelectedNode()
     {
-        Dialog.Root.Children.Remove(SelectedNode!);
+        DialogViewModel.Dialog.Root.Children.Remove(SelectedNode!);
         SelectedNode = null;
         WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
     }
@@ -326,8 +326,8 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
     [RelayCommand(CanExecute = nameof(IsNodeSelected))]
     private void BringSelectedNodeToFront()
     {
-        Dialog.Root.Children.Remove(SelectedNode!);
-        Dialog.Root.Children.Add(SelectedNode!);
+        DialogViewModel.Dialog.Root.Children.Remove(SelectedNode!);
+        DialogViewModel.Dialog.Root.Children.Add(SelectedNode!);
         WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
     }
 
@@ -335,8 +335,8 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
     private async Task Save()
     {
         var serializedDialog = new RcDialogSerializer().Serialize(
-            new DefaultLayoutEngine().DoLayout(Dialog), Dialog);
-        var generatedHeader = new CxxHeaderResourceGenerator().Generate(Dialog.Root.Flatten());
+            new DefaultLayoutEngine().DoLayout(DialogViewModel.Dialog), DialogViewModel.Dialog);
+        var generatedHeader = new CxxHeaderResourceGenerator().Generate(DialogViewModel.Dialog.Root.Flatten());
 
         var resourceFile =
             await _filesService.TryPickSaveFileAsync("rsrc_snippet.rc", ("Resource File", new[] { "rc" }));
