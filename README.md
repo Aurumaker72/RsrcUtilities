@@ -76,6 +76,9 @@ The creation of infrastructure to facilitate the design of `rc` user interfaces 
 - Accurate control rendering
 - Smart hittesting
 - Flexible Z-Ordering
+- Intuitive tabbed navigation system
+- Clever and dynamic inspector
+- Reactive everywhere (no legacy-style return key confirmation)
 
 </details>
 
