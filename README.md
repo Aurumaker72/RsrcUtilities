@@ -55,8 +55,6 @@ new CxxHeaderResourceGenerator().Generate(dialog.Root);
 # :star: Goal
 The creation of infrastructure to facilitate the design of `rc` user interfaces without the hassles of legacy abandonware.
 
-<details>
-<summary><h4>RsrcArchitect Dialog Editor</h4></summary>
 <p align="center">
   <img width="128" align="center" src="https://user-images.githubusercontent.com/48759429/221374035-7500c631-3984-433e-9200-145391f4cbbe.svg">
 </p>
@@ -69,7 +67,7 @@ The creation of infrastructure to facilitate the design of `rc` user interfaces 
   Design dialogs with an interactive, simple experience 
 </p>
 <p align="center">
-    <img src="https://img.shields.io/badge/Requires-RsrcUtilities-gray?style=for-the-badge"/>
+    <img src="https://img.shields.io/badge/Requires-RsrcUtilities-blue?style=for-the-badge"/>
 </p>
 
 # Key Features
@@ -79,8 +77,6 @@ The creation of infrastructure to facilitate the design of `rc` user interfaces 
 - Intuitive tabbed navigation system
 - Clever and dynamic inspector
 - Reactive everywhere (no legacy-style return key confirmation)
-
-</details>
 
 
 
