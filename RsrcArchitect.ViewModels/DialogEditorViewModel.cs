@@ -18,9 +18,8 @@ using RsrcCore.Serializers.Implementations;
 
 namespace RsrcArchitect.ViewModels;
 
-public partial class DialogEditorViewModel : ObservableObject, IRecipient<CanvasInvalidationMessage>
+public partial class DialogEditorViewModel : ObservableObject, IRecipient<ControlAddingMessage>
 {
-    private readonly ICanvasInvalidationService _canvasInvalidationService;
     private readonly IFilesService _filesService;
     private readonly SettingsViewModel _settingsViewModel;
     private Grips? _currentGrip;
@@ -32,17 +31,26 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
     private bool _isDragging;
     private TreeNode<Control>? _selectedNode;
 
-    public DialogEditorViewModel(Dialog dialog, ICanvasInvalidationService canvasInvalidationService,
-        IFilesService filesService, SettingsViewModel settingsViewModel)
+    public DialogEditorViewModel(Dialog dialog,
+        IFilesService filesService, SettingsViewModel settingsViewModel, string friendlyName)
     {
-        _canvasInvalidationService = canvasInvalidationService;
         _filesService = filesService;
         _settingsViewModel = settingsViewModel;
+        FriendlyName = friendlyName;
         DialogViewModel = new(dialog);
-        WeakReferenceMessenger.Default.RegisterAll(this);
-    }
+        ToolboxItemViewModels = new List<ToolboxItemViewModel>
+		{
+            new ToolboxItemViewModel("button", () => new Button()),
+            new ToolboxItemViewModel("textbox", () => new TextBox()),
+            new ToolboxItemViewModel("checkbox", () => new CheckBox()),
+            new ToolboxItemViewModel("groupbox", () => new GroupBox()),
+		};
+		WeakReferenceMessenger.Default.RegisterAll(this);
+	}
     
+    public List<ToolboxItemViewModel> ToolboxItemViewModels { get; }
     public DialogViewModel DialogViewModel { get; }
+    public string FriendlyName { get; }
     
     private TreeNode<Control>? SelectedNode
     {
@@ -80,32 +88,8 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
     public ControlViewModel? SelectedControlViewModel { get; private set; }
     public Vector2 Translation { get; private set; } = Vector2.Zero;
 
-    #region Interface Methods
-
-    void IRecipient<CanvasInvalidationMessage>.Receive(CanvasInvalidationMessage message)
-    {
-        _canvasInvalidationService.Invalidate();
-    }
-
-    #endregion
-    
 
     #region Private Methods
-
-    private bool TryCreateControlFromName(out Control? control, string tool)
-    {
-        control = tool switch
-        {
-            "Button" => new Button(),
-            "TextBox" => new TextBox(),
-            "CheckBox" => new CheckBox(),
-            "GroupBox" => new GroupBox(),
-            _ => null
-        };
-
-        return control != null;
-    }
-
 
     private Grips? GetGrip(Control control, Vector2 position)
     {
@@ -150,6 +134,7 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
             case PositioningModes.Freeform:
                 return vector2;
             case PositioningModes.Grid:
+                // TODO: make this adjustable in the SettingsViewModel
                 const int coarseness = 10;
                 return new Vector2((float)(Math.Round(vector2.X / coarseness) * coarseness),
                     (float)(Math.Round(vector2.Y / coarseness) * coarseness));
@@ -176,29 +161,16 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
     #region Commands
 
     [RelayCommand]
-    private void CreateControl(string tool)
-    {
-        if (TryCreateControlFromName(out var control, tool))
-        {
-            control.Identifier = StringHelper.GetRandomAlphabeticString(16);
-            var size = new Vector2Int(90, 25);
-            
-            control.Rectangle = new Rectangle(DialogViewModel.Dialog.Width / 2 - size.X, DialogViewModel.Dialog.Height / 2 - size.Y, size.X, size.Y);
-
-            DialogViewModel.Dialog.Root.AddChild(control);
-            WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
-        }
-    }
-
-    [RelayCommand]
     private void PointerPress(Vector2 position)
     {
         var dialogPosition = RelativePositionToDialog(position);
         
-        // do grip-test first, because clicks outside of control bounds can grip too
+        // do grip-test first, then store if it hits
         var isGripHit = false;
         if (SelectedNode != null) isGripHit = GetGrip(SelectedNode.Data, dialogPosition) != null;
 
+        // if no grip hits, we know we aren't starting to resize or move a control,
+        // thus we can select a new one
         if (!isGripHit) SelectedNode = GetControlNodeAtPosition(dialogPosition);
 
         if (SelectedNode != null)
@@ -209,6 +181,8 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
         }
         else
         {
+            // no node caught but stil clicked,
+            // so start translating the camera
             _isDragging = true;
             _dragStartPointerPosition = position;
             _dragStartTranslation = Translation;
@@ -354,5 +328,27 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Canvas
         await headerStream.FlushAsync();
     }
 
-    #endregion
+
+	#endregion
+
+
+	#region Interface Methods
+
+
+	void IRecipient<ControlAddingMessage>.Receive(ControlAddingMessage message)
+	{
+        // generate randomized unique identifier because we can't have duplicate identifiers
+		message.Value.Identifier = StringHelper.GetRandomAlphabeticString(16);
+
+        // place it roughly in the middle
+		var size = new Vector2Int(90, 25);
+		message.Value.Rectangle = new Rectangle(DialogViewModel.Dialog.Width / 2 - size.X, DialogViewModel.Dialog.Height / 2 - size.Y, size.X, size.Y);
+
+        // add it to the root node, then queue an invalidation
+		DialogViewModel.Dialog.Root.AddChild(message.Value);
+		WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
+	}
+
+
+	#endregion
 }

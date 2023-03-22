@@ -21,7 +21,8 @@ namespace RsrcArchitect.Views.WPF;
 [INotifyPropertyChanged]
 public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 {
-    private static readonly SKPaint SkBlackFontPaint = new()
+	private const float zoomIncrement = 0.5f;
+	private static readonly SKPaint SkBlackFontPaint = new()
     {
         Color = SKColors.Black,
         IsAntialias = true,
@@ -84,12 +85,18 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
     private void SkElement_OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
+        // this control broadcasts paint events even when its disabled
+        if (MainViewModel.SelectedDialogEditorViewModel == null)
+        {
+            return;
+        }
+        
         e.Surface.Canvas.Clear();
-        e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(MainViewModel.DialogEditorViewModel.Translation.X, MainViewModel.DialogEditorViewModel.Translation.Y));
-        e.Surface.Canvas.Scale(MainViewModel.DialogEditorViewModel.Zoom);
+        e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(MainViewModel.SelectedDialogEditorViewModel.Translation.X, MainViewModel.SelectedDialogEditorViewModel.Translation.Y));
+        e.Surface.Canvas.Scale(MainViewModel.SelectedDialogEditorViewModel.Zoom);
 
-        var dialogRectangle = SKRect.Create(0, 0, MainViewModel.DialogEditorViewModel.DialogViewModel.Width,
-            MainViewModel.DialogEditorViewModel.DialogViewModel.Height);
+        var dialogRectangle = SKRect.Create(0, 0, MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Width,
+            MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Height);
         
          
         e.Surface.Canvas.DrawRect(dialogRectangle.InflateCopy(1f, 1f), new SKPaint
@@ -103,16 +110,16 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                 Color = new SKColor(240, 240, 240)
             });
        
-        e.Surface.Canvas.DrawRect(-1, -30, MainViewModel.DialogEditorViewModel.DialogViewModel.Width + 2, 30, new SKPaint()
+        e.Surface.Canvas.DrawRect(-1, -30, MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Width + 2, 30, new SKPaint()
         {
             Style = SKPaintStyle.Fill,
             Color = new SKColor(0, 120, 215)
         });
-        e.Surface.Canvas.DrawText(MainViewModel.DialogEditorViewModel.DialogViewModel.Caption,
+        e.Surface.Canvas.DrawText(MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Caption,
             40f,
-            -15 + GetTextSize(MainViewModel.DialogEditorViewModel.DialogViewModel.Caption).Height / 2, SkFont, SkWhiteFontPaint);
+            -15 + GetTextSize(MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Caption).Height / 2, SkFont, SkWhiteFontPaint);
         
-        var flattenedControlDictionary = MainViewModel.DialogEditorViewModel.DialogViewModel.DoLayout();
+        var flattenedControlDictionary = MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.DoLayout();
 
         SKSize GetTextSize(string text)
         {
@@ -189,14 +196,14 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
             e.Surface.Canvas.Restore();
         }
 
-        if (MainViewModel.DialogEditorViewModel.SelectedControlViewModel != null)
+        if (MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel != null)
         {
             var rectangle = SKRect.Create(0, 0,
-                MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.Width,
-                MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.Height);
+                MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Rectangle.Width,
+                MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Rectangle.Height);
             e.Surface.Canvas.Translate(
-                MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.X,
-                MainViewModel.DialogEditorViewModel.SelectedControlViewModel.Rectangle.Y);
+                MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Rectangle.X,
+                MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Rectangle.Y);
 
             e.Surface.Canvas.DrawRect(rectangle,
                 new SKPaint
@@ -237,26 +244,26 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
         var position = e.GetPosition((IInputElement)sender);
 
-        MainViewModel.DialogEditorViewModel.PointerPressCommand.Execute(new Vector2((float)position.X,
+        MainViewModel.SelectedDialogEditorViewModel.PointerPressCommand.Execute(new Vector2((float)position.X,
             (float)position.Y));
     }
 
     private void SkElement_OnMouseUp(object sender, MouseButtonEventArgs e)
     {
         ((IInputElement)sender).ReleaseMouseCapture();
-        MainViewModel.DialogEditorViewModel.PointerReleaseCommand.Execute(null);
+        MainViewModel.SelectedDialogEditorViewModel.PointerReleaseCommand.Execute(null);
     }
 
     private void SkElement_OnMouseMove(object sender, MouseEventArgs e)
     {
         var position = e.GetPosition((IInputElement)sender);
-        MainViewModel.DialogEditorViewModel.PointerMoveCommand.Execute(new Vector2((float)position.X,
+        MainViewModel.SelectedDialogEditorViewModel.PointerMoveCommand.Execute(new Vector2((float)position.X,
             (float)position.Y));
     }
 
     private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Delete) MainViewModel.DialogEditorViewModel.DeleteSelectedNodeCommand.Execute(null);
+        if (e.Key == Key.Delete) MainViewModel.SelectedDialogEditorViewModel.DeleteSelectedNodeCommand.Execute(null);
     }
 
     private void PositioningModeButton_OnClick(object sender, RoutedEventArgs e)
@@ -267,23 +274,23 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     
     private void ZoomOutButton_OnClick(object sender, RoutedEventArgs e)
     {
-        MainViewModel.DialogEditorViewModel.Zoom -= 0.25f;
+        MainViewModel.SelectedDialogEditorViewModel.Zoom -= zoomIncrement;
     }
     
     private void ZoomInButton_OnClick(object sender, RoutedEventArgs e)
     {
-        MainViewModel.DialogEditorViewModel.Zoom += 0.25f;
+        MainViewModel.SelectedDialogEditorViewModel.Zoom += zoomIncrement;
     }
 
     private void SkElement_OnMouseWheel(object sender, MouseWheelEventArgs e)
     {
         if (e.Delta > 0)
         {
-            MainViewModel.DialogEditorViewModel.Zoom += 0.25f;
+            MainViewModel.SelectedDialogEditorViewModel.Zoom += zoomIncrement;
         }
         else
         {
-            MainViewModel.DialogEditorViewModel.Zoom -= 0.25f;
+            MainViewModel.SelectedDialogEditorViewModel.Zoom -= zoomIncrement;
         }
     }
 }
