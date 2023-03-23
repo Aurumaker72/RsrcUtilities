@@ -187,6 +187,12 @@ public partial class DialogEditorViewModel : ObservableObject
     #region Commands
 
     [RelayCommand]
+    private void Close()
+    {
+        WeakReferenceMessenger.Default.Send(new DialogEditorViewModelClosingMessage(this));
+    }
+    
+    [RelayCommand]
     private void PointerPress(Vector2 position)
     {
         var dialogPosition = RelativePositionToDialog(position);

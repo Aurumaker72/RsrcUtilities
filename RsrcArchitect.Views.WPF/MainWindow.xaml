@@ -23,16 +23,28 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+        
         <ui:TitleBar
             Title="RsrcArchitect" />
 
-
-        <TabControl Grid.Row="1" ItemsSource="{Binding MainViewModel.DialogEditorViewModels}" DataContextChanged="TabControl_DataContextChanged" SelectionChanged="TabControl_SelectionChanged">
+        <Menu Grid.Row="1" Background="Transparent">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New Project" Command="{Binding MainViewModel.CreateProjectCommand}" />
+            </MenuItem>
+        </Menu>
+        
+        <TabControl Grid.Row="2" ItemsSource="{Binding MainViewModel.DialogEditorViewModels}" DataContextChanged="TabControl_DataContextChanged" SelectionChanged="TabControl_SelectionChanged">
             <TabControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type viewModels:DialogEditorViewModel}">
-                    <TextBlock Text="{Binding FriendlyName}" Foreground="white"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding FriendlyName}" Foreground="white" Margin="5" VerticalAlignment="Center"/>
+                        <Button Margin="0" Padding="5" VerticalAlignment="Center" BorderThickness="0" Command="{Binding CloseCommand}">
+                            <ui:SymbolIcon Symbol="Dismiss24"/>
+                        </Button>
+                    </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.Resources>
@@ -46,14 +58,15 @@
                                         HorizontalAlignment="Center"
                                         ContentSource="Header"
                                         Margin="10"/>
+                                    
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter TargetName="Border" Property="Background" Value="#393939" />
                                     </Trigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Border" Property="Background" Value="#494949" />
-                                    </Trigger>
+                                    <!--<Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="#404040" />
+                                    </Trigger>-->
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Setter.Value>
