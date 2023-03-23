@@ -29,318 +29,329 @@
             Title="RsrcArchitect" />
 
 
-        <Grid Grid.Row="1">
-            
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            
-            <Grid Grid.Row="0">
-                <StackPanel Orientation="Horizontal">
-                    <Button Command="{Binding MainViewModel.CreateDialogEditorCommand}" Padding="10 10 10 10" Margin="5">
-                        <ui:SymbolIcon Symbol="Add24" />
-                    </Button>
-                    <ListBox ItemsSource="{Binding MainViewModel.DialogEditorViewModels}" SelectedItem="{Binding MainViewModel.SelectedDialogEditorViewModel, Mode=TwoWay}">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type viewModels:DialogEditorViewModel}">
-                                    <TextBlock Text="{Binding FriendlyName}"></TextBlock>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
-              
-            </Grid>
-
-            <Grid Grid.Row="1" IsEnabled="{Binding MainViewModel.IsDialogEditorViewModelSelected}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <ToolBarTray ToolBarTray.IsLocked="True">
-                    <ToolBar Band="1" BandIndex="1">
-                        <Button
-                            Command="{Binding MainViewModel.SelectedDialogEditorViewModel.SaveCommand}">
-                            <ui:SymbolIcon Symbol="Save24" />
-                        </Button>
-                        <Button
+        <TabControl Grid.Row="1" ItemsSource="{Binding MainViewModel.DialogEditorViewModels}" DataContextChanged="TabControl_DataContextChanged" SelectionChanged="TabControl_SelectionChanged">
+            <TabControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewModels:DialogEditorViewModel}">
+                    <TextBlock Text="{Binding FriendlyName}" Foreground="white"/>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="#393939" CornerRadius="4,4,0,0" Margin="4,0">
+                                    <ContentPresenter x:Name="ContentSite"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        Margin="10"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="#393939" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="#494949" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            <TabControl.ContentTemplate>
+                <DataTemplate DataType="{x:Type viewModels:DialogEditorViewModel}">
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <ToolBarTray ToolBarTray.IsLocked="True">
+                            <ToolBar Band="1" BandIndex="1">
+                                <Button
+                            Command="{Binding SaveCommand}">
+                                    <ui:SymbolIcon Symbol="Save24" />
+                                </Button>
+                                <Button
                             Click="PositioningModeButton_OnClick">
-                            <ui:SymbolIcon x:Name="PositioningModeSymbolIcon" />
-                        </Button>   
-                        <Button
+                                    <ui:SymbolIcon Symbol="ErrorCircle24"/>
+                                </Button>
+                                <Button
                             Click="ZoomOutButton_OnClick">
-                            <ui:SymbolIcon Symbol="ZoomOut24" />
-                        </Button>
-                        <Button
+                                    <ui:SymbolIcon Symbol="ZoomOut24" />
+                                </Button>
+                                <Button
                             Click="ZoomInButton_OnClick">
-                            <ui:SymbolIcon Symbol="ZoomIn24" />
-                        </Button>
+                                    <ui:SymbolIcon Symbol="ZoomIn24" />
+                                </Button>
 
-                    </ToolBar>
-                </ToolBarTray>
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="0.5*" />
-                    </Grid.ColumnDefinitions>
+                            </ToolBar>
+                        </ToolBarTray>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="0.5*" />
+                            </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Column="0" Margin="5">
-                        <ItemsControl ItemsSource="{Binding MainViewModel.SelectedDialogEditorViewModel.ToolboxItemViewModels}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type viewModels:ToolboxItemViewModel}">
-                                    <Button CommandParameter="Button"
+                            <Grid Grid.Column="0" Margin="5">
+                                <ItemsControl ItemsSource="{Binding ToolboxItemViewModels}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type viewModels:ToolboxItemViewModel}">
+                                            <Button CommandParameter="Button"
                                 Command="{Binding CreateCommand}"
                                 HorizontalAlignment="Stretch"
                                         Margin="0 2 0 2">
-                                        <TextBlock Text="{Binding Name}" />
-                                    </Button>
+                                                <TextBlock Text="{Binding Name}" />
+                                            </Button>
 
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
 
 
-                    <skia:SKElement x:Name="SkElement" Grid.Column="1" SnapsToDevicePixels="True"
+                            <skia:SKElement x:Name="SkElement" Grid.Column="1" SnapsToDevicePixels="True"
                                 UseLayoutRounding="True"
                                 PaintSurface="SkElement_OnPaintSurface"
                                 MouseDown="SkElement_OnMouseDown"
                                 MouseUp="SkElement_OnMouseUp"
                                 MouseMove="SkElement_OnMouseMove"
                                 MouseWheel="SkElement_OnMouseWheel">
-                        <skia:SKElement.ContextMenu>
-                            <ContextMenu>
-                                <!-- ReSharper disable Xaml.RedundantResource -->
-                                <MenuItem Header="Delete Selected"
-                                      Command="{Binding MainViewModel.SelectedDialogEditorViewModel.DeleteSelectedNodeCommand}">
-                                    <MenuItem.Icon>
-                                        <ui:SymbolIcon Symbol="Delete24" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="Bring Selected To Front"
-                                      Command="{Binding MainViewModel.SelectedDialogEditorViewModel.BringSelectedNodeToFrontCommand}">
-                                    <MenuItem.Icon>
-                                        <ui:SymbolIcon Symbol="PositionToFront24" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <!-- ReSharper restore Xaml.RedundantResource -->
-                            </ContextMenu>
-                        </skia:SKElement.ContextMenu>
-                    </skia:SKElement>
+                                <skia:SKElement.ContextMenu>
+                                    <ContextMenu>
+                                        <!-- ReSharper disable Xaml.RedundantResource -->
+                                        <MenuItem Header="Delete Selected"
+                                      Command="{Binding DeleteSelectedNodeCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:SymbolIcon Symbol="Delete24" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Bring Selected To Front"
+                                      Command="{Binding BringSelectedNodeToFrontCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:SymbolIcon Symbol="PositionToFront24" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <!-- ReSharper restore Xaml.RedundantResource -->
+                                    </ContextMenu>
+                                </skia:SKElement.ContextMenu>
+                            </skia:SKElement>
 
-                    <Grid Grid.Column="2">
-                        <StackPanel Orientation="Vertical">
-                            <ContentControl>
-                                <ContentControl.Style>
-                                    <Style TargetType="ContentControl">
-                                        <Setter Property="Content">
-                                            <Setter.Value>
-                                                <StackPanel Orientation="Vertical">
-                                                    <ui:Card Margin="10">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <ui:SymbolIcon Symbol="Cursor24" />
-                                                            <TextBlock>Control</TextBlock>
+                            <Grid Grid.Column="2">
+                                <StackPanel Orientation="Vertical">
+                                    <ContentControl>
+                                        <ContentControl.Style>
+                                            <Style TargetType="ContentControl">
+                                                <Setter Property="Content">
+                                                    <Setter.Value>
+                                                        <StackPanel Orientation="Vertical">
+                                                            <ui:Card Margin="10">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <ui:SymbolIcon Symbol="Cursor24" />
+                                                                    <TextBlock>Control</TextBlock>
+                                                                </StackPanel>
+                                                            </ui:Card>
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="0.5*" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                </Grid.RowDefinitions>
+                                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" />
+                                                                <TextBox Grid.Row="0" Grid.Column="1"
+                                                             Text="{Binding SelectedControlViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="X" />
+                                                                <TextBox Grid.Row="1" Grid.Column="1"
+                                                             Text="{Binding SelectedControlViewModel.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Y" />
+                                                                <TextBox Grid.Row="2" Grid.Column="1"
+                                                             Text="{Binding SelectedControlViewModel.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Width" />
+                                                                <TextBox Grid.Row="3" Grid.Column="1"
+                                                             Text="{Binding SelectedControlViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Height" />
+                                                                <TextBox Grid.Row="4" Grid.Column="1"
+                                                             Text="{Binding SelectedControlViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                            </Grid>
                                                         </StackPanel>
-                                                    </ui:Card>
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="0.5*" />
-                                                            <ColumnDefinition Width="*" />
-                                                        </Grid.ColumnDefinitions>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="Auto" />
-                                                            <RowDefinition Height="Auto" />
-                                                            <RowDefinition Height="Auto" />
-                                                            <RowDefinition Height="Auto" />
-                                                            <RowDefinition Height="Auto" />
-                                                        </Grid.RowDefinitions>
-                                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" />
-                                                        <TextBox Grid.Row="0" Grid.Column="1"
-                                                             Text="{Binding MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="X" />
-                                                        <TextBox Grid.Row="1" Grid.Column="1"
-                                                             Text="{Binding MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Y" />
-                                                        <TextBox Grid.Row="2" Grid.Column="1"
-                                                             Text="{Binding MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Width" />
-                                                        <TextBox Grid.Row="3" Grid.Column="1"
-                                                             Text="{Binding MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Height" />
-                                                        <TextBox Grid.Row="4" Grid.Column="1"
-                                                             Text="{Binding MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                                    </Grid>
-                                                </StackPanel>
-
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Style.Triggers>
-                                            <DataTrigger
-                                            Binding="{Binding Path=MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel}"
-                                            Value="{x:Null}">
-                                                <Setter Property="Content">
-                                                    <Setter.Value>
-                                                        <ui:Card Margin="10">
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <ui:SymbolIcon Symbol="Window24" />
-                                                                <TextBlock>Dialog</TextBlock>
-                                                            </StackPanel>
-                                                        </ui:Card>
                                                     </Setter.Value>
                                                 </Setter>
-                                            </DataTrigger>
-
-                                        </Style.Triggers>
-                                    </Style>
-                                </ContentControl.Style>
-
-
-                            </ContentControl>
-                            <ContentControl>
-                                <ContentControl.Style>
-                                    <Style TargetType="ContentControl">
-                                        <Setter Property="Content"
-                                            Value="{Binding MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel}" />
-                                        <Style.Triggers>
-                                            <DataTrigger
-                                            Binding="{Binding Path=MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel}"
+                                                <Style.Triggers>
+                                                    <DataTrigger
+                                            Binding="{Binding Path=SelectedControlViewModel}"
                                             Value="{x:Null}">
-                                                <Setter Property="Content">
-                                                    <Setter.Value>
-                                                        <!-- dialog-scoped -->
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="0.5*" />
-                                                                <ColumnDefinition Width="*" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto" />
-                                                                <RowDefinition Height="Auto" />
-                                                                <RowDefinition Height="Auto" />
-                                                                <RowDefinition Height="Auto" />
-                                                            </Grid.RowDefinitions>
+                                                        <Setter Property="Content">
+                                                            <Setter.Value>
+                                                                <ui:Card Margin="10">
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <ui:SymbolIcon Symbol="Window24" />
+                                                                        <TextBlock>Dialog</TextBlock>
+                                                                    </StackPanel>
+                                                                </ui:Card>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
 
-                                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" />
-                                                            <TextBox Grid.Row="0" Grid.Column="1"
-                                                                 Text="{Binding MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Caption" />
-                                                            <TextBox Grid.Row="1" Grid.Column="1"
-                                                                 Text="{Binding MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Width" />
-                                                            <TextBox Grid.Row="2" Grid.Column="1"
-                                                                 Text="{Binding MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Height" />
-                                                            <TextBox Grid.Row="3" Grid.Column="1"
-                                                                 Text="{Binding MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ContentControl.Style>
 
 
-                                                        </Grid>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ContentControl.Style>
-                                <ContentControl.Resources>
+                                    </ContentControl>
+                                    <ContentControl>
+                                        <ContentControl.Style>
+                                            <Style TargetType="ContentControl">
+                                                <Setter Property="Content"
+                                            Value="{Binding SelectedControlViewModel}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger
+                                            Binding="{Binding Path=SelectedControlViewModel}"
+                                            Value="{x:Null}">
+                                                        <Setter Property="Content">
+                                                            <Setter.Value>
+                                                                <!-- dialog-scoped -->
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="0.5*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="Auto" />
+                                                                        <RowDefinition Height="Auto" />
+                                                                        <RowDefinition Height="Auto" />
+                                                                        <RowDefinition Height="Auto" />
+                                                                    </Grid.RowDefinitions>
 
-                                    <DataTemplate DataType="{x:Type controls:ButtonViewModel}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="0.5*" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" />
+                                                                    <TextBox Grid.Row="0" Grid.Column="1"
+                                                                 Text="{Binding DialogViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Caption" />
+                                                                    <TextBox Grid.Row="1" Grid.Column="1"
+                                                                 Text="{Binding DialogViewModel.Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Width" />
+                                                                    <TextBox Grid.Row="2" Grid.Column="1"
+                                                                 Text="{Binding DialogViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Height" />
+                                                                    <TextBox Grid.Row="3" Grid.Column="1"
+                                                                 Text="{Binding DialogViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
 
-                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
-                                            <TextBox Grid.Row="0" Grid.Column="1"
+                                                                </Grid>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ContentControl.Style>
+                                        <ContentControl.Resources>
+
+                                            <DataTemplate DataType="{x:Type controls:ButtonViewModel}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="0.5*" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+
+
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
+                                                    <TextBox Grid.Row="0" Grid.Column="1"
                                                  Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                        </Grid>
-                                    </DataTemplate>
+                                                </Grid>
+                                            </DataTemplate>
 
 
-                                    <DataTemplate DataType="{x:Type controls:CheckBoxViewModel}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="0.5*" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
+                                            <DataTemplate DataType="{x:Type controls:CheckBoxViewModel}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="0.5*" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
 
 
-                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
-                                            <TextBox Grid.Row="0" Grid.Column="1"
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
+                                                    <TextBox Grid.Row="0" Grid.Column="1"
                                                  Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                        </Grid>
-                                    </DataTemplate>
+                                                </Grid>
+                                            </DataTemplate>
 
-                                    <DataTemplate DataType="{x:Type controls:GroupBoxViewModel}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="0.5*" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
+                                            <DataTemplate DataType="{x:Type controls:GroupBoxViewModel}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="0.5*" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
 
 
-                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
-                                            <TextBox Grid.Row="0" Grid.Column="1"
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
+                                                    <TextBox Grid.Row="0" Grid.Column="1"
                                                  Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                        </Grid>
-                                    </DataTemplate>
+                                                </Grid>
+                                            </DataTemplate>
 
-                                    <DataTemplate DataType="{x:Type controls:TextBoxViewModel}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="0.5*" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
+                                            <DataTemplate DataType="{x:Type controls:TextBoxViewModel}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="0.5*" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
 
 
-                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Is Writable" />
-                                            <TextBox Grid.Row="0" Grid.Column="1"
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Is Writable" />
+                                                    <TextBox Grid.Row="0" Grid.Column="1"
                                                  Text="{Binding IsWritable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Allows Horizontal Scrolling" />
-                                            <TextBox Grid.Row="1" Grid.Column="1"
+                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Allows Horizontal Scrolling" />
+                                                    <TextBox Grid.Row="1" Grid.Column="1"
                                                  Text="{Binding AllowHorizontalScroll, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                        </Grid>
-                                    </DataTemplate>
+                                                </Grid>
+                                            </DataTemplate>
 
 
-                                </ContentControl.Resources>
-                            </ContentControl>
-                        </StackPanel>
+                                        </ContentControl.Resources>
+                                    </ContentControl>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </Grid>
-        </Grid>
+                    
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+            
+
+            
+        </TabControl>
     </Grid>
 </ui:FluentWindow>

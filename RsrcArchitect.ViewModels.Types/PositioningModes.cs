@@ -13,5 +13,10 @@ public enum PositioningModes
     /// <summary>
     /// Translation and scaling is snapped to the nearest multiple of an arbitrary value
     /// </summary>
-    Grid
+    Grid,
+    
+    /// <summary>
+    /// Translation is snapped to other controls' translations
+    /// </summary>
+    Snap,
 }

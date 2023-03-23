@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Numerics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RsrcArchitect.Services;
 using RsrcArchitect.ViewModels;
@@ -10,8 +12,15 @@ using RsrcArchitect.Views.WPF.Services;
 using RsrcCore.Controls;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using SkiaSharp.Views.WPF;
 using Wpf.Ui.Common;
+using Wpf.Ui.Controls;
 using Wpf.Ui.Controls.Window;
+using Button = RsrcCore.Controls.Button;
+using CheckBox = RsrcCore.Controls.CheckBox;
+using GroupBox = RsrcCore.Controls.GroupBox;
+using Panel = RsrcCore.Controls.Panel;
+using TextBox = RsrcCore.Controls.TextBox;
 
 namespace RsrcArchitect.Views.WPF;
 
@@ -21,6 +30,7 @@ namespace RsrcArchitect.Views.WPF;
 [INotifyPropertyChanged]
 public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 {
+    
 	private const float zoomIncrement = 0.5f;
 	private static readonly SKPaint SkBlackFontPaint = new()
     {
@@ -44,59 +54,48 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         Edging = SKFontEdging.SubpixelAntialias,
         Size = 12
     };
-    
-    public MainWindow()
+
+    private SKElement? _skElement;
+    private SymbolIcon? _positioningModeSymbolIcon;
+
+	public MainViewModel MainViewModel { get; }
+
+	public MainWindow()
     {
         InitializeComponent();
+
         MainViewModel = new MainViewModel(new FilesService(), this);
-
-        DataContext = this;
-
-        MainViewModel.SettingsViewModel.PropertyChanged += (sender, args) =>
-        {
+		MainViewModel.SettingsViewModel.PropertyChanged += (sender, args) =>
+		{
             if (args.PropertyName ==
                 nameof(SettingsViewModel.PositioningMode))
-                UpdatePositioningModeSymbolIcon();
-        };
-        UpdatePositioningModeSymbolIcon();
+                //UpdatePositioningModeSymbolIcon();
+                ; // TODO: reimplement the positioning mode symbol
+		};
+        
+
+		DataContext = this;
+
+        
     }
 
-    public MainViewModel MainViewModel { get; }
 
     void ICanvasInvalidationService.Invalidate()
     {
-        SkElement.InvalidateVisual();
-    }
+		_skElement?.InvalidateVisual();
+	}
 
-    private void UpdatePositioningModeSymbolIcon()
-    {
-        switch (MainViewModel.SettingsViewModel.PositioningMode)
-        {
-            case PositioningModes.Freeform:
-                PositioningModeSymbolIcon.Symbol = SymbolRegular.ArrowMove24;
-                break;
-            case PositioningModes.Grid:
-                PositioningModeSymbolIcon.Symbol = SymbolRegular.Grid24;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
 
     private void SkElement_OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
-        // this control broadcasts paint events even when its disabled
-        if (MainViewModel.SelectedDialogEditorViewModel == null)
-        {
-            return;
-        }
-        
-        e.Surface.Canvas.Clear();
-        e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(MainViewModel.SelectedDialogEditorViewModel.Translation.X, MainViewModel.SelectedDialogEditorViewModel.Translation.Y));
-        e.Surface.Canvas.Scale(MainViewModel.SelectedDialogEditorViewModel.Zoom);
+        var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
 
-        var dialogRectangle = SKRect.Create(0, 0, MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Width,
-            MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Height);
+		e.Surface.Canvas.Clear();
+        e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(dialogEditorViewModel.Translation.X, dialogEditorViewModel.Translation.Y));
+        e.Surface.Canvas.Scale(dialogEditorViewModel.Zoom);
+
+        var dialogRectangle = SKRect.Create(0, 0, dialogEditorViewModel.DialogViewModel.Width,
+			dialogEditorViewModel.DialogViewModel.Height);
         
          
         e.Surface.Canvas.DrawRect(dialogRectangle.InflateCopy(1f, 1f), new SKPaint
@@ -110,16 +109,16 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                 Color = new SKColor(240, 240, 240)
             });
        
-        e.Surface.Canvas.DrawRect(-1, -30, MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Width + 2, 30, new SKPaint()
+        e.Surface.Canvas.DrawRect(-1, -30, dialogEditorViewModel.DialogViewModel.Width + 2, 30, new SKPaint()
         {
             Style = SKPaintStyle.Fill,
             Color = new SKColor(0, 120, 215)
         });
-        e.Surface.Canvas.DrawText(MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Caption,
+        e.Surface.Canvas.DrawText(dialogEditorViewModel.DialogViewModel.Caption,
             40f,
-            -15 + GetTextSize(MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.Caption).Height / 2, SkFont, SkWhiteFontPaint);
+            -15 + GetTextSize(dialogEditorViewModel.DialogViewModel.Caption).Height / 2, SkFont, SkWhiteFontPaint);
         
-        var flattenedControlDictionary = MainViewModel.SelectedDialogEditorViewModel.DialogViewModel.DoLayout();
+        var flattenedControlDictionary = dialogEditorViewModel.DialogViewModel.DoLayout();
 
         SKSize GetTextSize(string text)
         {
@@ -127,8 +126,6 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
             SkBlackFontPaint.MeasureText(text, ref skRect);
             return new SKSize(skRect.Width, skRect.Height);
         }
-        
-        // e.Surface.Canvas.ClipRect(dialogRectangle.InflateCopy(1f, 1f));
         
         foreach (var pair in flattenedControlDictionary)
         {
@@ -196,14 +193,14 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
             e.Surface.Canvas.Restore();
         }
 
-        if (MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel != null)
+        if (dialogEditorViewModel.SelectedControlViewModel != null)
         {
             var rectangle = SKRect.Create(0, 0,
-                MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Rectangle.Width,
-                MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Rectangle.Height);
+				dialogEditorViewModel.SelectedControlViewModel.Rectangle.Width,
+				dialogEditorViewModel.SelectedControlViewModel.Rectangle.Height);
             e.Surface.Canvas.Translate(
-                MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Rectangle.X,
-                MainViewModel.SelectedDialogEditorViewModel.SelectedControlViewModel.Rectangle.Y);
+				dialogEditorViewModel.SelectedControlViewModel.Rectangle.X,
+				dialogEditorViewModel.SelectedControlViewModel.Rectangle.Y);
 
             e.Surface.Canvas.DrawRect(rectangle,
                 new SKPaint
@@ -244,26 +241,27 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
         var position = e.GetPosition((IInputElement)sender);
 
-        MainViewModel.SelectedDialogEditorViewModel.PointerPressCommand.Execute(new Vector2((float)position.X,
+		(((FrameworkElement)sender).DataContext as DialogEditorViewModel).PointerPressCommand.Execute(new Vector2((float)position.X,
             (float)position.Y));
     }
 
     private void SkElement_OnMouseUp(object sender, MouseButtonEventArgs e)
     {
         ((IInputElement)sender).ReleaseMouseCapture();
-        MainViewModel.SelectedDialogEditorViewModel.PointerReleaseCommand.Execute(null);
+		(((FrameworkElement)sender).DataContext as DialogEditorViewModel).PointerReleaseCommand.Execute(null);
     }
 
     private void SkElement_OnMouseMove(object sender, MouseEventArgs e)
     {
         var position = e.GetPosition((IInputElement)sender);
-        MainViewModel.SelectedDialogEditorViewModel.PointerMoveCommand.Execute(new Vector2((float)position.X,
+		(((FrameworkElement)sender).DataContext as DialogEditorViewModel).PointerMoveCommand.Execute(new Vector2((float)position.X,
             (float)position.Y));
     }
 
     private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Delete) MainViewModel.SelectedDialogEditorViewModel.DeleteSelectedNodeCommand.Execute(null);
+        if (e.Key == Key.Delete)
+			(((FrameworkElement)sender).DataContext as DialogEditorViewModel).DeleteSelectedNodeCommand.Execute(null);
     }
 
     private void PositioningModeButton_OnClick(object sender, RoutedEventArgs e)
@@ -274,23 +272,63 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     
     private void ZoomOutButton_OnClick(object sender, RoutedEventArgs e)
     {
-        MainViewModel.SelectedDialogEditorViewModel.Zoom -= zoomIncrement;
+		(((FrameworkElement)sender).DataContext as DialogEditorViewModel).Zoom -= zoomIncrement;
     }
     
     private void ZoomInButton_OnClick(object sender, RoutedEventArgs e)
     {
-        MainViewModel.SelectedDialogEditorViewModel.Zoom += zoomIncrement;
+        (((FrameworkElement)sender).DataContext as DialogEditorViewModel).Zoom += zoomIncrement;
     }
 
     private void SkElement_OnMouseWheel(object sender, MouseWheelEventArgs e)
     {
         if (e.Delta > 0)
         {
-            MainViewModel.SelectedDialogEditorViewModel.Zoom += zoomIncrement;
+            ZoomInButton_OnClick(sender, null);
         }
         else
         {
-            MainViewModel.SelectedDialogEditorViewModel.Zoom -= zoomIncrement;
-        }
+			ZoomOutButton_OnClick(sender, null);
+		}
     }
+
+	private void TabControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+	{
+        var tabControl = (TabControl)sender;
+		_skElement = tabControl.Template.FindName("SkElement", tabControl) as SKElement;
+        (this as ICanvasInvalidationService).Invalidate();
+	}
+
+	private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+	{
+		var tabControl = (TabControl)sender;
+        _skElement = FindElementByName<SKElement>(tabControl, "SkElement");
+		(this as ICanvasInvalidationService).Invalidate();
+	}
+
+    public T FindElementByName<T>(FrameworkElement element, string sChildName) where T : FrameworkElement
+    {
+        T childElement = null;
+        var nChildCount = VisualTreeHelper.GetChildrenCount(element);
+        for (int i = 0; i < nChildCount; i++)
+        {
+            FrameworkElement child = VisualTreeHelper.GetChild(element, i) as FrameworkElement;
+
+            if (child == null)
+                continue;
+
+            if (child is T && child.Name.Equals(sChildName))
+            {
+                childElement = (T)child;
+                break;
+            }
+
+            childElement = FindElementByName<T>(child, sChildName);
+
+            if (childElement != null)
+                break;
+        }
+
+        return childElement;
+           }
 }

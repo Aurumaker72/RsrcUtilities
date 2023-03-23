@@ -18,7 +18,7 @@ using RsrcCore.Serializers.Implementations;
 
 namespace RsrcArchitect.ViewModels;
 
-public partial class DialogEditorViewModel : ObservableObject, IRecipient<ControlAddingMessage>
+public partial class DialogEditorViewModel : ObservableObject
 {
     private readonly IFilesService _filesService;
     private readonly SettingsViewModel _settingsViewModel;
@@ -37,21 +37,21 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Contro
         _filesService = filesService;
         _settingsViewModel = settingsViewModel;
         FriendlyName = friendlyName;
-        DialogViewModel = new(dialog);
+        DialogViewModel = new DialogViewModel(dialog);
         ToolboxItemViewModels = new List<ToolboxItemViewModel>
-		{
-            new ToolboxItemViewModel("button", () => new Button()),
-            new ToolboxItemViewModel("textbox", () => new TextBox()),
-            new ToolboxItemViewModel("checkbox", () => new CheckBox()),
-            new ToolboxItemViewModel("groupbox", () => new GroupBox()),
-		};
-		WeakReferenceMessenger.Default.RegisterAll(this);
-	}
-    
+        {
+            new(this, "button", () => new Button()),
+            new(this, "textbox", () => new TextBox()),
+            new(this, "checkbox", () => new CheckBox()),
+            new(this, "groupbox", () => new GroupBox())
+        };
+        WeakReferenceMessenger.Default.RegisterAll(this);
+    }
+
     public List<ToolboxItemViewModel> ToolboxItemViewModels { get; }
     public DialogViewModel DialogViewModel { get; }
     public string FriendlyName { get; }
-    
+
     private TreeNode<Control>? SelectedNode
     {
         get => _selectedNode;
@@ -83,7 +83,7 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Contro
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
         }
     }
-    
+
     public bool IsNodeSelected => SelectedNode != null;
     public ControlViewModel? SelectedControlViewModel { get; private set; }
     public Vector2 Translation { get; private set; } = Vector2.Zero;
@@ -127,7 +127,7 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Contro
         return null;
     }
 
-    private Vector2 ProcessPosition(Vector2 vector2)
+    private Vector2 ProcessPosition(IEnumerable<TreeNode<Control>> controls, Control selectedControl, Vector2 vector2)
     {
         switch (_settingsViewModel.PositioningMode)
         {
@@ -138,6 +138,32 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Contro
                 const int coarseness = 10;
                 return new Vector2((float)(Math.Round(vector2.X / coarseness) * coarseness),
                     (float)(Math.Round(vector2.Y / coarseness) * coarseness));
+            case PositioningModes.Snap:
+
+                // aggregate all coordinates of other controls
+                var xCoordinates = controls.Where(x => !x.Data.Identifier.Equals(selectedControl.Identifier))
+                    .Select(node => node.Data.Rectangle.X);
+                var yCoordinates = controls.Where(x => !x.Data.Identifier.Equals(selectedControl.Identifier))
+                    .Select(node => node.Data.Rectangle.Y);
+
+                // TODO: optimize this
+                foreach (var x in xCoordinates)
+                {
+                    if (Math.Abs(selectedControl.Rectangle.X - x) >= 10) continue;
+                    
+                    vector2.X = selectedControl.Rectangle.X;
+                    break;
+                }
+                
+                foreach (var y in yCoordinates)
+                {
+                    if (Math.Abs(selectedControl.Rectangle.Y - y) >= 10) continue;
+                    
+                    vector2.Y = selectedControl.Rectangle.Y;
+                    break;
+                }
+                
+                return vector2;
             default:
                 throw new NotImplementedException();
         }
@@ -155,7 +181,7 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Contro
     {
         return (position - Translation) / Zoom;
     }
-    
+
     #endregion
 
     #region Commands
@@ -164,7 +190,7 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Contro
     private void PointerPress(Vector2 position)
     {
         var dialogPosition = RelativePositionToDialog(position);
-        
+
         // do grip-test first, then store if it hits
         var isGripHit = false;
         if (SelectedNode != null) isGripHit = GetGrip(SelectedNode.Data, dialogPosition) != null;
@@ -177,7 +203,7 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Contro
         {
             _currentGrip = GetGrip(SelectedNode.Data, dialogPosition);
             _gripStartControlRectangle = SelectedNode.Data.Rectangle;
-            _gripStartPointerPosition = ProcessPosition(dialogPosition);
+            _gripStartPointerPosition = ProcessPosition(DialogViewModel.Dialog.Root, SelectedNode.Data, dialogPosition);
         }
         else
         {
@@ -207,86 +233,89 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Contro
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
             return;
         }
-        
-        var dialogPosition = ProcessPosition(RelativePositionToDialog(position));
+
 
         if (SelectedControlViewModel != null)
+        {
+            position = ProcessPosition(DialogViewModel.Dialog.Root, SelectedNode.Data, RelativePositionToDialog(position));
+
             switch (_currentGrip)
             {
                 case Grips.TopLeft:
-                    dialogPosition.X = Math.Min(dialogPosition.X, (float)_gripStartControlRectangle.Right);
-                    dialogPosition.Y = Math.Min(dialogPosition.Y, (float)_gripStartControlRectangle.Bottom);
-                    SelectedControlViewModel.X = (int)dialogPosition.X;
-                    SelectedControlViewModel.Y = (int)dialogPosition.Y;
+                    position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
+                    position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
+                    SelectedControlViewModel.X = (int)position.X;
+                    SelectedControlViewModel.Y = (int)position.Y;
                     SelectedControlViewModel.Width = (int)(_gripStartControlRectangle.Width +
-                                                           (_gripStartPointerPosition.X - dialogPosition.X));
+                                                           (_gripStartPointerPosition.X - position.X));
                     SelectedControlViewModel.Height = (int)(_gripStartControlRectangle.Height +
-                                                            (_gripStartPointerPosition.Y - dialogPosition.Y));
+                                                            (_gripStartPointerPosition.Y - position.Y));
                     break;
                 case Grips.BottomLeft:
-                    dialogPosition.X = Math.Min(dialogPosition.X, (float)_gripStartControlRectangle.Right);
+                    position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
 
-                    SelectedControlViewModel.X = (int)dialogPosition.X;
+                    SelectedControlViewModel.X = (int)position.X;
                     SelectedControlViewModel.Width =
-                        (int)(_gripStartControlRectangle.Width + (_gripStartPointerPosition.X - dialogPosition.X));
+                        (int)(_gripStartControlRectangle.Width + (_gripStartPointerPosition.X - position.X));
                     SelectedControlViewModel.Height = (int)Math.Max(0,
-                        _gripStartControlRectangle.Height + (dialogPosition.Y - _gripStartPointerPosition.Y));
+                        _gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
 
                     break;
                 case Grips.BottomRight:
-                    dialogPosition.X = Math.Max(dialogPosition.X, (float)_gripStartControlRectangle.X);
-                    dialogPosition.Y = Math.Max(dialogPosition.Y, (float)_gripStartControlRectangle.Y);
+                    position.X = Math.Max(position.X, _gripStartControlRectangle.X);
+                    position.Y = Math.Max(position.Y, _gripStartControlRectangle.Y);
 
                     SelectedControlViewModel.Width =
-                        (int)(_gripStartControlRectangle.Width + (dialogPosition.X - _gripStartPointerPosition.X));
+                        (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
                     SelectedControlViewModel.Height =
-                        (int)(_gripStartControlRectangle.Height + (dialogPosition.Y - _gripStartPointerPosition.Y));
+                        (int)(_gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
                     break;
                 case Grips.TopRight:
-                    dialogPosition.X = Math.Max(dialogPosition.X, (float)_gripStartControlRectangle.X);
-                    dialogPosition.Y = Math.Min(dialogPosition.Y, (float)_gripStartControlRectangle.Bottom);
+                    position.X = Math.Max(position.X, _gripStartControlRectangle.X);
+                    position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
 
-                    SelectedControlViewModel.Y = (int)dialogPosition.Y;
+                    SelectedControlViewModel.Y = (int)position.Y;
                     SelectedControlViewModel.Width =
-                        (int)(_gripStartControlRectangle.Width + (dialogPosition.X - _gripStartPointerPosition.X));
+                        (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
                     SelectedControlViewModel.Height =
-                        (int)(_gripStartControlRectangle.Height + (_gripStartPointerPosition.Y - dialogPosition.Y));
+                        (int)(_gripStartControlRectangle.Height + (_gripStartPointerPosition.Y - position.Y));
                     break;
                 case Grips.Left:
-                    dialogPosition.X = Math.Min(dialogPosition.X, (float)_gripStartControlRectangle.Right);
+                    position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
 
-                    SelectedControlViewModel.X = (int)dialogPosition.X;
+                    SelectedControlViewModel.X = (int)position.X;
                     SelectedControlViewModel.Width = (int)(_gripStartControlRectangle.Width +
-                                                           (_gripStartPointerPosition.X - dialogPosition.X));
+                                                           (_gripStartPointerPosition.X - position.X));
                     break;
                 case Grips.Right:
-                    dialogPosition.X = Math.Max(dialogPosition.X, (float)_gripStartControlRectangle.X);
+                    position.X = Math.Max(position.X, _gripStartControlRectangle.X);
                     SelectedControlViewModel.Width =
-                        (int)(_gripStartControlRectangle.Width + (dialogPosition.X - _gripStartPointerPosition.X));
+                        (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
                     break;
                 case Grips.Bottom:
-                    dialogPosition.Y = Math.Max(dialogPosition.Y, (float)_gripStartControlRectangle.Y);
+                    position.Y = Math.Max(position.Y, _gripStartControlRectangle.Y);
 
                     SelectedControlViewModel.Height =
-                        (int)(_gripStartControlRectangle.Height + (dialogPosition.Y - _gripStartPointerPosition.Y));
+                        (int)(_gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
 
                     break;
                 case Grips.Top:
-                    dialogPosition.Y = Math.Min(dialogPosition.Y, (float)_gripStartControlRectangle.Bottom);
+                    position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
 
-                    SelectedControlViewModel.Y = (int)dialogPosition.Y;
+                    SelectedControlViewModel.Y = (int)position.Y;
                     SelectedControlViewModel.Height = (int)(_gripStartControlRectangle.Height +
-                                                            (_gripStartPointerPosition.Y - dialogPosition.Y));
+                                                            (_gripStartPointerPosition.Y - position.Y));
                     break;
                 case Grips.Move:
                     SelectedControlViewModel.X =
-                        (int)(_gripStartControlRectangle.X + (dialogPosition.X - _gripStartPointerPosition.X));
+                        (int)(_gripStartControlRectangle.X + (position.X - _gripStartPointerPosition.X));
                     SelectedControlViewModel.Y =
-                        (int)(_gripStartControlRectangle.Y + (dialogPosition.Y - _gripStartPointerPosition.Y));
+                        (int)(_gripStartControlRectangle.Y + (position.Y - _gripStartPointerPosition.Y));
                     break;
                 case null:
                     break;
             }
+        }
     }
 
     [RelayCommand(CanExecute = nameof(IsNodeSelected))]
@@ -321,34 +350,30 @@ public partial class DialogEditorViewModel : ObservableObject, IRecipient<Contro
         await using var resourceStream = await resourceFile.OpenStreamForWriteAsync();
         await using var headerStream = await headerFile.OpenStreamForWriteAsync();
 
-        resourceStream.Write(Encoding.Default.GetBytes((string)serializedDialog));
+        resourceStream.Write(Encoding.Default.GetBytes(serializedDialog));
         await resourceStream.FlushAsync();
 
-        headerStream.Write(Encoding.Default.GetBytes((string)generatedHeader));
+        headerStream.Write(Encoding.Default.GetBytes(generatedHeader));
         await headerStream.FlushAsync();
     }
 
-
-	#endregion
-
-
-	#region Interface Methods
+    #endregion
 
 
-	void IRecipient<ControlAddingMessage>.Receive(ControlAddingMessage message)
-	{
-        // generate randomized unique identifier because we can't have duplicate identifiers
-		message.Value.Identifier = StringHelper.GetRandomAlphabeticString(16);
 
-        // place it roughly in the middle
+    internal void AddControl(Control control)
+    {
+		// generate randomized unique identifier because we can't have duplicate identifiers
+		control.Identifier = StringHelper.GetRandomAlphabeticString(16);
+
+		// place it roughly in the middle
 		var size = new Vector2Int(90, 25);
-		message.Value.Rectangle = new Rectangle(DialogViewModel.Dialog.Width / 2 - size.X, DialogViewModel.Dialog.Height / 2 - size.Y, size.X, size.Y);
+		control.Rectangle = new Rectangle(DialogViewModel.Dialog.Width / 2 - size.X,
+			DialogViewModel.Dialog.Height / 2 - size.Y, size.X, size.Y);
 
-        // add it to the root node, then queue an invalidation
-		DialogViewModel.Dialog.Root.AddChild(message.Value);
+		// add it to the root node, then queue an invalidation
+		DialogViewModel.Dialog.Root.AddChild(control);
 		WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
 	}
 
-
-	#endregion
 }

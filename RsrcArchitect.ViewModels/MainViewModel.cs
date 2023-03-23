@@ -18,23 +18,16 @@ public partial class MainViewModel : ObservableObject, IRecipient<CanvasInvalida
 
     public ObservableCollection<DialogEditorViewModel> DialogEditorViewModels { get; } = new();
 
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsDialogEditorViewModelSelected))]
-    private DialogEditorViewModel? _selectedDialogEditorViewModel;
-
-    public bool IsDialogEditorViewModelSelected => _selectedDialogEditorViewModel != null;
-
     public MainViewModel(IFilesService filesService, ICanvasInvalidationService canvasInvalidationService)
     {
         _filesService = filesService;
         _canvasInvalidationService = canvasInvalidationService;
         SettingsViewModel = new SettingsViewModel();
         WeakReferenceMessenger.Default.RegisterAll(this);
-    }
+        CreateDialogEditor();
+        CreateDialogEditor();
+	}
 
-    partial void OnSelectedDialogEditorViewModelChanged(DialogEditorViewModel? value)
-    {
-        WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
-    }
     
     [RelayCommand]
     private void CreateDialogEditor()

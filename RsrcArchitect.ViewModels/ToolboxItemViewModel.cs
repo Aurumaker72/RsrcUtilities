@@ -13,19 +13,21 @@ namespace RsrcArchitect.ViewModels
 {
 	public partial class ToolboxItemViewModel : ObservableObject
 	{
-		public ToolboxItemViewModel(string name, Func<Control> createControlFunction)
+		public ToolboxItemViewModel(DialogEditorViewModel dialogEditorViewModel, string name, Func<Control> createControlFunction)
 		{
-			Name = name;
+			_dialogEditorViewModel = dialogEditorViewModel;
 			_createControlFunction = createControlFunction;
+			Name = name;
 		}
 
-		public string Name { get; }
+		private readonly DialogEditorViewModel _dialogEditorViewModel;
 		private readonly Func<Control> _createControlFunction;
+		public string Name { get; }
 
 		[RelayCommand]
 		private void Create()
 		{
-			WeakReferenceMessenger.Default.Send(new ControlAddingMessage(_createControlFunction()));
+			_dialogEditorViewModel.AddControl(_createControlFunction());
 		}
 	}
 }
