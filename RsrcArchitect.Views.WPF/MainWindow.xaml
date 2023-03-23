@@ -103,25 +103,27 @@
                         </ToolBarTray>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="0.25*" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="0.5*" />
                             </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Column="0" Margin="5">
-                                <ItemsControl ItemsSource="{Binding ToolboxItemViewModels}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type viewModels:ToolboxItemViewModel}">
+                            <Grid Grid.Column="0">
+                                    <ItemsControl ItemsSource="{Binding ToolboxItemViewModels}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <VirtualizingStackPanel Orientation="Vertical"/>
+                                        </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type viewModels:ToolboxItemViewModel}">
                                             <Button CommandParameter="Button"
-                                Command="{Binding CreateCommand}"
-                                HorizontalAlignment="Stretch"
-                                        Margin="0 2 0 2">
+                                Command="{Binding CreateCommand}" HorizontalAlignment="Stretch" Margin="{StaticResource SmallVerticalMargin}">
                                                 <TextBlock Text="{Binding Name}" />
                                             </Button>
-
                                         </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
                             </Grid>
 
 
@@ -160,11 +162,8 @@
                                                 <Setter Property="Content">
                                                     <Setter.Value>
                                                         <StackPanel Orientation="Vertical">
-                                                            <ui:Card Margin="10">
-                                                                <StackPanel Orientation="Horizontal">
-                                                                    <ui:SymbolIcon Symbol="Cursor24" />
-                                                                    <TextBlock>Control</TextBlock>
-                                                                </StackPanel>
+                                                            <ui:Card>
+                                                                <TextBlock>Control</TextBlock>
                                                             </ui:Card>
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
@@ -178,25 +177,26 @@
                                                                     <RowDefinition Height="Auto" />
                                                                     <RowDefinition Height="Auto" />
                                                                 </Grid.RowDefinitions>
-                                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" />
+
+                                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                                                 <TextBox Grid.Row="0" Grid.Column="1"
-                                                             Text="{Binding SelectedControlViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                             Text="{Binding SelectedControlViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}" />
 
-                                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="X" />
+                                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="X" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 <TextBox Grid.Row="1" Grid.Column="1"
-                                                             Text="{Binding SelectedControlViewModel.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                             Text="{Binding SelectedControlViewModel.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}" />
 
-                                                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Y" />
+                                                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Y" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 <TextBox Grid.Row="2" Grid.Column="1"
-                                                             Text="{Binding SelectedControlViewModel.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                             Text="{Binding SelectedControlViewModel.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}"/>
 
-                                                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Width" />
+                                                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Width" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 <TextBox Grid.Row="3" Grid.Column="1"
-                                                             Text="{Binding SelectedControlViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                             Text="{Binding SelectedControlViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}"/>
 
-                                                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Height" />
+                                                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Height" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 <TextBox Grid.Row="4" Grid.Column="1"
-                                                             Text="{Binding SelectedControlViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                             Text="{Binding SelectedControlViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Margin="{StaticResource SmallVerticalMargin}"/>
 
                                                             </Grid>
                                                         </StackPanel>
@@ -209,11 +209,8 @@
                                             Value="{x:Null}">
                                                         <Setter Property="Content">
                                                             <Setter.Value>
-                                                                <ui:Card Margin="10">
-                                                                    <StackPanel Orientation="Horizontal">
-                                                                        <ui:SymbolIcon Symbol="Window24" />
-                                                                        <TextBlock>Dialog</TextBlock>
-                                                                    </StackPanel>
+                                                                <ui:Card>
+                                                                    <TextBlock>Dialog</TextBlock>
                                                                 </ui:Card>
                                                             </Setter.Value>
                                                         </Setter>
@@ -249,21 +246,21 @@
                                                                         <RowDefinition Height="Auto" />
                                                                     </Grid.RowDefinitions>
 
-                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifier" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                     <TextBox Grid.Row="0" Grid.Column="1"
-                                                                 Text="{Binding DialogViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                                 Text="{Binding DialogViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}" />
 
-                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Caption" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Caption" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                     <TextBox Grid.Row="1" Grid.Column="1"
-                                                                 Text="{Binding DialogViewModel.Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                                 Text="{Binding DialogViewModel.Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}"/>
 
-                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Width" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Width" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                     <TextBox Grid.Row="2" Grid.Column="1"
-                                                                 Text="{Binding DialogViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                                 Text="{Binding DialogViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}"/>
 
-                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Height" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Height" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                     <TextBox Grid.Row="3" Grid.Column="1"
-                                                                 Text="{Binding DialogViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                                 Text="{Binding DialogViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}"/>
 
 
                                                                 </Grid>
@@ -286,9 +283,9 @@
                                                     </Grid.RowDefinitions>
 
 
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                     <TextBox Grid.Row="0" Grid.Column="1"
-                                                 Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                 Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}"/>
 
                                                 </Grid>
                                             </DataTemplate>
@@ -305,9 +302,9 @@
                                                     </Grid.RowDefinitions>
 
 
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                     <TextBox Grid.Row="0" Grid.Column="1"
-                                                 Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                 Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}"/>
 
                                                 </Grid>
                                             </DataTemplate>
@@ -323,9 +320,9 @@
                                                     </Grid.RowDefinitions>
 
 
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" />
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                     <TextBox Grid.Row="0" Grid.Column="1"
-                                                 Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                 Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}"/>
 
                                                 </Grid>
                                             </DataTemplate>
@@ -342,12 +339,12 @@
                                                     </Grid.RowDefinitions>
 
 
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Is Writable" />
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Is Writable" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                     <TextBox Grid.Row="0" Grid.Column="1"
-                                                 Text="{Binding IsWritable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Allows Horizontal Scrolling" />
+                                                 Text="{Binding IsWritable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}"/>
+                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Allows Horizontal Scrolling" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                     <TextBox Grid.Row="1" Grid.Column="1"
-                                                 Text="{Binding AllowHorizontalScroll, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                 Text="{Binding AllowHorizontalScroll, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource SmallVerticalMargin}"/>
 
                                                 </Grid>
                                             </DataTemplate>

@@ -24,7 +24,6 @@ public partial class MainViewModel : ObservableObject, IRecipient<CanvasInvalida
         _canvasInvalidationService = canvasInvalidationService;
         SettingsViewModel = new SettingsViewModel();
         WeakReferenceMessenger.Default.RegisterAll(this);
-        CreateProjectCommand.Execute(null);
     }
 
     
