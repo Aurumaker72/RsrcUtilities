@@ -21,7 +21,6 @@ namespace RsrcArchitect.ViewModels;
 public partial class DialogEditorViewModel : ObservableObject
 {
     private readonly IFilesService _filesService;
-    private readonly SettingsViewModel _settingsViewModel;
     private Grips? _currentGrip;
     private Rectangle _gripStartControlRectangle;
     private Vector2 _gripStartPointerPosition;
@@ -32,10 +31,9 @@ public partial class DialogEditorViewModel : ObservableObject
     private TreeNode<Control>? _selectedNode;
 
     public DialogEditorViewModel(Dialog dialog,
-        IFilesService filesService, SettingsViewModel settingsViewModel, string friendlyName)
+        IFilesService filesService, string friendlyName)
     {
         _filesService = filesService;
-        _settingsViewModel = settingsViewModel;
         FriendlyName = friendlyName;
         DialogViewModel = new DialogViewModel(dialog);
         ToolboxItemViewModels = new List<ToolboxItemViewModel>
@@ -45,11 +43,13 @@ public partial class DialogEditorViewModel : ObservableObject
             new(this, "checkbox", () => new CheckBox()),
             new(this, "groupbox", () => new GroupBox())
         };
+        DialogEditorSettingsViewModel = new();
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
     public List<ToolboxItemViewModel> ToolboxItemViewModels { get; }
     public DialogViewModel DialogViewModel { get; }
+    public DialogEditorSettingsViewModel DialogEditorSettingsViewModel { get; }
     public string FriendlyName { get; }
 
     private TreeNode<Control>? SelectedNode
@@ -94,33 +94,33 @@ public partial class DialogEditorViewModel : ObservableObject
     private Grips? GetGrip(Control control, Vector2 position)
     {
         if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.X, control.Rectangle.Y)) < _settingsViewModel.GripDistance)
+                new Vector2(control.Rectangle.X, control.Rectangle.Y)) < DialogEditorSettingsViewModel.GripDistance)
             return Grips.TopLeft;
         if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.Right, control.Rectangle.Y)) < _settingsViewModel.GripDistance)
+                new Vector2(control.Rectangle.Right, control.Rectangle.Y)) < DialogEditorSettingsViewModel.GripDistance)
             return Grips.TopRight;
         if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.X, control.Rectangle.Bottom)) < _settingsViewModel.GripDistance)
+                new Vector2(control.Rectangle.X, control.Rectangle.Bottom)) < DialogEditorSettingsViewModel.GripDistance)
             return Grips.BottomLeft;
         if (Vector2.Distance(position,
                 new Vector2(control.Rectangle.Right, control.Rectangle.Bottom)) <
-            _settingsViewModel.GripDistance)
+            DialogEditorSettingsViewModel.GripDistance)
             return Grips.BottomRight;
         if (Vector2.Distance(position,
                 new Vector2(control.Rectangle.X, control.Rectangle.CenterY)) <
-            _settingsViewModel.GripDistance)
+            DialogEditorSettingsViewModel.GripDistance)
             return Grips.Left;
         if (Vector2.Distance(position,
                 new Vector2(control.Rectangle.CenterX, control.Rectangle.Y)) <
-            _settingsViewModel.GripDistance)
+            DialogEditorSettingsViewModel.GripDistance)
             return Grips.Top;
         if (Vector2.Distance(position,
                 new Vector2(control.Rectangle.CenterX, control.Rectangle.Bottom)) <
-            _settingsViewModel.GripDistance)
+            DialogEditorSettingsViewModel.GripDistance)
             return Grips.Bottom;
         if (Vector2.Distance(position,
                 new Vector2(control.Rectangle.Right, control.Rectangle.CenterY)) <
-            _settingsViewModel.GripDistance)
+            DialogEditorSettingsViewModel.GripDistance)
             return Grips.Right;
         if (control.Rectangle.Contains(new Vector2Int(position)))
             return Grips.Move;
@@ -130,12 +130,12 @@ public partial class DialogEditorViewModel : ObservableObject
     // process a target control's rectangle
     private Rectangle ProcessRectangle(IEnumerable<TreeNode<Control>> controls, Control targetControl)
     {
-        switch (_settingsViewModel.PositioningMode)
+        switch (DialogEditorSettingsViewModel.PositioningMode)
         {
             case PositioningModes.Freeform:
                 return targetControl.Rectangle;
             case PositioningModes.Grid:
-                // TODO: make this adjustable in the SettingsViewModel
+                // TODO: make this adjustable in the DialogEditorSettingsViewModel
                 const int coarseness = 10;
                 return new Rectangle((int)(Math.Round((double)(targetControl.Rectangle.X / coarseness)) * coarseness),
                     (int)(Math.Round((double)(targetControl.Rectangle.Y / coarseness)) * coarseness), targetControl.Rectangle.Width, targetControl.Rectangle.Height);

@@ -1,18 +1,16 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RsrcArchitect.Services;
 using RsrcArchitect.ViewModels;
-using RsrcArchitect.ViewModels.Types;
+using RsrcArchitect.Views.WPF.Extensions;
 using RsrcArchitect.Views.WPF.Services;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
-using Wpf.Ui.Common;
-using Wpf.Ui.Controls;
 using Wpf.Ui.Controls.Window;
 using Button = RsrcCore.Controls.Button;
 using CheckBox = RsrcCore.Controls.CheckBox;
@@ -55,7 +53,6 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     };
 
     private SKElement? _skElement;
-    private SymbolIcon? _positioningModeSymbolIcon;
 
     public MainViewModel MainViewModel { get; }
 
@@ -64,35 +61,23 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         InitializeComponent();
 
         MainViewModel = new MainViewModel(new FilesService(), this);
-        MainViewModel.SettingsViewModel.PropertyChanged += (sender, args) =>
-        {
-            if (args.PropertyName ==
-                nameof(SettingsViewModel.PositioningMode))
-                UpdatePositioningModeSymbolIcon();
-        };
-
-
+        
         DataContext = this;
+
+        MainViewModel.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(MainViewModel.SelectedDialogEditorViewModel))
+            {
+                RefreshControlReferences();
+            }
+        };
+        RefreshControlReferences();
     }
 
-    private void UpdatePositioningModeSymbolIcon()
+    private void RefreshControlReferences()
     {
-        if (_positioningModeSymbolIcon == null)
-        {
-            return;
-        }
-        if (MainViewModel.SettingsViewModel.PositioningMode == PositioningModes.Freeform)
-        {
-            _positioningModeSymbolIcon.Symbol = SymbolRegular.Cursor24;
-        }
-        else if (MainViewModel.SettingsViewModel.PositioningMode == PositioningModes.Grid)
-        {
-            _positioningModeSymbolIcon.Symbol = SymbolRegular.Grid24;
-        }
-        else if (MainViewModel.SettingsViewModel.PositioningMode == PositioningModes.Snap)
-        {
-            _positioningModeSymbolIcon.Symbol = SymbolRegular.LineStyle24;
-        }
+        _skElement = TabControl.FindElementByName<SKElement>("SkElement");
+        (this as ICanvasInvalidationService).Invalidate();
     }
 
     void ICanvasInvalidationService.Invalidate()
@@ -112,7 +97,6 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
         var dialogRectangle = SKRect.Create(0, 0, dialogEditorViewModel.DialogViewModel.Width,
             dialogEditorViewModel.DialogViewModel.Height);
-
 
         e.Surface.Canvas.DrawRect(dialogRectangle.InflateCopy(1f, 1f), new SKPaint
         {
@@ -244,7 +228,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                 new(rectangle.MidX, rectangle.Bottom)
             }, new SKPaint
             {
-                StrokeWidth = MainViewModel.SettingsViewModel.GripDistance,
+                StrokeWidth = dialogEditorViewModel.DialogEditorSettingsViewModel.GripDistance,
                 Color = new SKColor(90, 90, 90),
                 IsAntialias = true
             });
@@ -253,49 +237,53 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
     private void SkElement_OnMouseDown(object sender, MouseButtonEventArgs e)
     {
+        var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
+        
         ((IInputElement)sender).CaptureMouse();
-
         var position = e.GetPosition((IInputElement)sender);
 
-        (((FrameworkElement)sender).DataContext as DialogEditorViewModel).PointerPressCommand.Execute(new Vector2(
+        dialogEditorViewModel.PointerPressCommand.Execute(new Vector2(
             (float)position.X,
             (float)position.Y));
     }
 
     private void SkElement_OnMouseUp(object sender, MouseButtonEventArgs e)
     {
+        var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
         ((IInputElement)sender).ReleaseMouseCapture();
-        (((FrameworkElement)sender).DataContext as DialogEditorViewModel).PointerReleaseCommand.Execute(null);
+        dialogEditorViewModel.PointerReleaseCommand.Execute(null);
     }
 
     private void SkElement_OnMouseMove(object sender, MouseEventArgs e)
     {
+        var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
+        
         var position = e.GetPosition((IInputElement)sender);
-        (((FrameworkElement)sender).DataContext as DialogEditorViewModel).PointerMoveCommand.Execute(new Vector2(
+        dialogEditorViewModel.PointerMoveCommand.Execute(new Vector2(
             (float)position.X,
             (float)position.Y));
     }
 
-    private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.Key == Key.Delete)
-            (((FrameworkElement)sender).DataContext as DialogEditorViewModel).DeleteSelectedNodeCommand.Execute(null);
-    }
-
     private void PositioningModeButton_OnClick(object sender, RoutedEventArgs e)
     {
-        MainViewModel.SettingsViewModel.PositioningMode =
-            MainViewModel.SettingsViewModel.PositioningMode.Next();
+        var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
+        
+        dialogEditorViewModel.DialogEditorSettingsViewModel.PositioningMode =
+            dialogEditorViewModel.DialogEditorSettingsViewModel.PositioningMode.Next();
     }
 
     private void ZoomOutButton_OnClick(object sender, RoutedEventArgs e)
     {
-        (((FrameworkElement)sender).DataContext as DialogEditorViewModel).Scale -= zoomIncrement;
+        var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
+
+        dialogEditorViewModel.Scale -= zoomIncrement;
     }
 
     private void ZoomInButton_OnClick(object sender, RoutedEventArgs e)
     {
-        (((FrameworkElement)sender).DataContext as DialogEditorViewModel).Scale += zoomIncrement;
+        var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
+
+        dialogEditorViewModel.Scale += zoomIncrement;
     }
 
     private void SkElement_OnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -304,40 +292,5 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
             ZoomInButton_OnClick(sender, null);
         else
             ZoomOutButton_OnClick(sender, null);
-    }
-
-    private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        var tabControl = (TabControl)sender;
-        _skElement = FindElementByName<SKElement>(tabControl, "SkElement");
-        _positioningModeSymbolIcon = FindElementByName<SymbolIcon>(tabControl, "PositioningModeSymbolIcon");
-        UpdatePositioningModeSymbolIcon();
-        (this as ICanvasInvalidationService).Invalidate();
-    }
-
-    public T FindElementByName<T>(FrameworkElement element, string sChildName) where T : FrameworkElement
-    {
-        T childElement = null;
-        var nChildCount = VisualTreeHelper.GetChildrenCount(element);
-        for (var i = 0; i < nChildCount; i++)
-        {
-            var child = VisualTreeHelper.GetChild(element, i) as FrameworkElement;
-
-            if (child == null)
-                continue;
-
-            if (child is T && child.Name.Equals(sChildName))
-            {
-                childElement = (T)child;
-                break;
-            }
-
-            childElement = FindElementByName<T>(child, sChildName);
-
-            if (childElement != null)
-                break;
-        }
-
-        return childElement;
     }
 }

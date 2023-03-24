@@ -9,19 +9,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0"/>
-        <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4"/>
-        <PackageReference Include="SkiaSharp.Views.WPF" Version="2.88.3"/>
-        <PackageReference Include="WPF-UI" Version="3.0.0-preview.1"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
+        <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
+        <PackageReference Include="SkiaSharp.Views.WPF" Version="2.88.3" />
+        <PackageReference Include="WPF-UI" Version="3.0.0-preview.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\RsrcCore.Controls\RsrcCore.Controls.csproj"/>
-        <ProjectReference Include="..\RsrcCore.Core\RsrcCore.Core.csproj"/>
-        <ProjectReference Include="..\RsrcCore.Geometry\RsrcCore.Geometry.csproj"/>
-        <ProjectReference Include="..\RsrcCore.Layout\RsrcCore.Layout.csproj"/>
-        <ProjectReference Include="..\RsrcArchitect.ViewModels\RsrcArchitect.ViewModels.csproj"/>
-        <ProjectReference Include="..\RsrcCore.Serializers\RsrcCore.Serializers.csproj"/>
+        <ProjectReference Include="..\RsrcCore.Controls\RsrcCore.Controls.csproj" />
+        <ProjectReference Include="..\RsrcCore.Core\RsrcCore.Core.csproj" />
+        <ProjectReference Include="..\RsrcCore.Geometry\RsrcCore.Geometry.csproj" />
+        <ProjectReference Include="..\RsrcCore.Layout\RsrcCore.Layout.csproj" />
+        <ProjectReference Include="..\RsrcArchitect.ViewModels\RsrcArchitect.ViewModels.csproj" />
+        <ProjectReference Include="..\RsrcCore.Serializers\RsrcCore.Serializers.csproj" />
     </ItemGroup>
 
 </Project>
