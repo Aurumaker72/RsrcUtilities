@@ -10,14 +10,14 @@ namespace RsrcArchitect.ViewModels;
 public abstract class ControlViewModel : ObservableObject
 {
     private readonly Func<string, bool> _isIdentifierInUse;
-    protected readonly Control Control;
+    internal readonly Control Control;
 
     public ControlViewModel(Control control, Func<string, bool> isIdentifierInUse)
     {
         Control = control;
         _isIdentifierInUse = isIdentifierInUse;
     }
-
+    
     public Rectangle Rectangle => Control.Rectangle;
 
     public string Identifier

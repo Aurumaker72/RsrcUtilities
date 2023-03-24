@@ -27,7 +27,7 @@ public partial class DialogEditorViewModel : ObservableObject
     private Vector2 _gripStartPointerPosition;
     private Vector2 _dragStartPointerPosition;
     private Vector2 _dragStartTranslation;
-    private float _zoom = 1f;
+    private float _scale = 1f;
     private bool _isDragging;
     private TreeNode<Control>? _selectedNode;
 
@@ -74,12 +74,12 @@ public partial class DialogEditorViewModel : ObservableObject
         }
     }
 
-    public float Zoom
+    public float Scale
     {
-        get => _zoom;
+        get => _scale;
         set
         {
-            SetProperty(ref _zoom, Math.Max(0.25f, value));
+            SetProperty(ref _scale, Math.Max(0.25f, value));
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
         }
     }
@@ -127,43 +127,41 @@ public partial class DialogEditorViewModel : ObservableObject
         return null;
     }
 
-    private Vector2 ProcessPosition(IEnumerable<TreeNode<Control>> controls, Control selectedControl, Vector2 vector2)
+    // process a target control's rectangle
+    private Rectangle ProcessRectangle(IEnumerable<TreeNode<Control>> controls, Control targetControl)
     {
         switch (_settingsViewModel.PositioningMode)
         {
             case PositioningModes.Freeform:
-                return vector2;
+                return targetControl.Rectangle;
             case PositioningModes.Grid:
                 // TODO: make this adjustable in the SettingsViewModel
                 const int coarseness = 10;
-                return new Vector2((float)(Math.Round(vector2.X / coarseness) * coarseness),
-                    (float)(Math.Round(vector2.Y / coarseness) * coarseness));
+                return new Rectangle((int)(Math.Round((double)(targetControl.Rectangle.X / coarseness)) * coarseness),
+                    (int)(Math.Round((double)(targetControl.Rectangle.Y / coarseness)) * coarseness), targetControl.Rectangle.Width, targetControl.Rectangle.Height);
             case PositioningModes.Snap:
+                
+                // TODO: optimize by utilizing a LUT instead?
 
-                // aggregate all coordinates of other controls
-                var xCoordinates = controls.Where(x => !x.Data.Identifier.Equals(selectedControl.Identifier))
-                    .Select(node => node.Data.Rectangle.X);
-                var yCoordinates = controls.Where(x => !x.Data.Identifier.Equals(selectedControl.Identifier))
-                    .Select(node => node.Data.Rectangle.Y);
-
-                // TODO: optimize this
-                foreach (var x in xCoordinates)
+                bool hasSnappedX = false;
+                bool hasSnappedY= false;
+                
+                // enumerate all other controls
+                foreach (var node in controls.Where(x => !x.Data.Identifier.Equals(targetControl.Identifier)))
                 {
-                    if (Math.Abs(selectedControl.Rectangle.X - x) >= 10) continue;
-                    
-                    vector2.X = selectedControl.Rectangle.X;
-                    break;
+                    if (!hasSnappedX && Math.Abs(node.Data.Rectangle.X - targetControl.Rectangle.X) < 10)
+                    {
+                        targetControl.Rectangle = targetControl.Rectangle.WithX(node.Data.Rectangle.X);
+                        hasSnappedX = true;
+                    }
+                    if (!hasSnappedY && Math.Abs(node.Data.Rectangle.Y - targetControl.Rectangle.Y) < 10)
+                    {
+                        targetControl.Rectangle = targetControl.Rectangle.WithY(node.Data.Rectangle.Y);
+                        hasSnappedY = true;
+                    }
                 }
                 
-                foreach (var y in yCoordinates)
-                {
-                    if (Math.Abs(selectedControl.Rectangle.Y - y) >= 10) continue;
-                    
-                    vector2.Y = selectedControl.Rectangle.Y;
-                    break;
-                }
-                
-                return vector2;
+                return targetControl.Rectangle;
             default:
                 throw new NotImplementedException();
         }
@@ -179,7 +177,7 @@ public partial class DialogEditorViewModel : ObservableObject
 
     private Vector2 RelativePositionToDialog(Vector2 position)
     {
-        return (position - Translation) / Zoom;
+        return (position - Translation) / Scale;
     }
 
     #endregion
@@ -209,7 +207,7 @@ public partial class DialogEditorViewModel : ObservableObject
         {
             _currentGrip = GetGrip(SelectedNode.Data, dialogPosition);
             _gripStartControlRectangle = SelectedNode.Data.Rectangle;
-            _gripStartPointerPosition = ProcessPosition(DialogViewModel.Dialog.Root, SelectedNode.Data, dialogPosition);
+            _gripStartPointerPosition = dialogPosition;
         }
         else
         {
@@ -241,87 +239,94 @@ public partial class DialogEditorViewModel : ObservableObject
         }
 
 
-        if (SelectedControlViewModel != null)
+        if (SelectedControlViewModel == null) return;
+
+        position = RelativePositionToDialog(position);
+        
+        switch (_currentGrip)
         {
-            position = ProcessPosition(DialogViewModel.Dialog.Root, SelectedNode.Data, RelativePositionToDialog(position));
+            case Grips.TopLeft:
+                position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
+                position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
+                SelectedControlViewModel.X = (int)position.X;
+                SelectedControlViewModel.Y = (int)position.Y;
+                SelectedControlViewModel.Width = (int)(_gripStartControlRectangle.Width +
+                                                       (_gripStartPointerPosition.X - position.X));
+                SelectedControlViewModel.Height = (int)(_gripStartControlRectangle.Height +
+                                                        (_gripStartPointerPosition.Y - position.Y));
+                break;
+            case Grips.BottomLeft:
+                position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
 
-            switch (_currentGrip)
-            {
-                case Grips.TopLeft:
-                    position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
-                    position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
-                    SelectedControlViewModel.X = (int)position.X;
-                    SelectedControlViewModel.Y = (int)position.Y;
-                    SelectedControlViewModel.Width = (int)(_gripStartControlRectangle.Width +
-                                                           (_gripStartPointerPosition.X - position.X));
-                    SelectedControlViewModel.Height = (int)(_gripStartControlRectangle.Height +
-                                                            (_gripStartPointerPosition.Y - position.Y));
-                    break;
-                case Grips.BottomLeft:
-                    position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
+                SelectedControlViewModel.X = (int)position.X;
+                SelectedControlViewModel.Width =
+                    (int)(_gripStartControlRectangle.Width + (_gripStartPointerPosition.X - position.X));
+                SelectedControlViewModel.Height = (int)Math.Max(0,
+                    _gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
 
-                    SelectedControlViewModel.X = (int)position.X;
-                    SelectedControlViewModel.Width =
-                        (int)(_gripStartControlRectangle.Width + (_gripStartPointerPosition.X - position.X));
-                    SelectedControlViewModel.Height = (int)Math.Max(0,
-                        _gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
+                break;
+            case Grips.BottomRight:
+                position.X = Math.Max(position.X, _gripStartControlRectangle.X);
+                position.Y = Math.Max(position.Y, _gripStartControlRectangle.Y);
 
-                    break;
-                case Grips.BottomRight:
-                    position.X = Math.Max(position.X, _gripStartControlRectangle.X);
-                    position.Y = Math.Max(position.Y, _gripStartControlRectangle.Y);
+                SelectedControlViewModel.Width =
+                    (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
+                SelectedControlViewModel.Height =
+                    (int)(_gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
+                break;
+            case Grips.TopRight:
+                position.X = Math.Max(position.X, _gripStartControlRectangle.X);
+                position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
 
-                    SelectedControlViewModel.Width =
-                        (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
-                    SelectedControlViewModel.Height =
-                        (int)(_gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
-                    break;
-                case Grips.TopRight:
-                    position.X = Math.Max(position.X, _gripStartControlRectangle.X);
-                    position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
+                SelectedControlViewModel.Y = (int)position.Y;
+                SelectedControlViewModel.Width =
+                    (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
+                SelectedControlViewModel.Height =
+                    (int)(_gripStartControlRectangle.Height + (_gripStartPointerPosition.Y - position.Y));
+                break;
+            case Grips.Left:
+                position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
 
-                    SelectedControlViewModel.Y = (int)position.Y;
-                    SelectedControlViewModel.Width =
-                        (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
-                    SelectedControlViewModel.Height =
-                        (int)(_gripStartControlRectangle.Height + (_gripStartPointerPosition.Y - position.Y));
-                    break;
-                case Grips.Left:
-                    position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
+                SelectedControlViewModel.X = (int)position.X;
+                SelectedControlViewModel.Width = (int)(_gripStartControlRectangle.Width +
+                                                       (_gripStartPointerPosition.X - position.X));
+                break;
+            case Grips.Right:
+                position.X = Math.Max(position.X, _gripStartControlRectangle.X);
+                SelectedControlViewModel.Width =
+                    (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
+                break;
+            case Grips.Bottom:
+                position.Y = Math.Max(position.Y, _gripStartControlRectangle.Y);
 
-                    SelectedControlViewModel.X = (int)position.X;
-                    SelectedControlViewModel.Width = (int)(_gripStartControlRectangle.Width +
-                                                           (_gripStartPointerPosition.X - position.X));
-                    break;
-                case Grips.Right:
-                    position.X = Math.Max(position.X, _gripStartControlRectangle.X);
-                    SelectedControlViewModel.Width =
-                        (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
-                    break;
-                case Grips.Bottom:
-                    position.Y = Math.Max(position.Y, _gripStartControlRectangle.Y);
+                SelectedControlViewModel.Height =
+                    (int)(_gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
 
-                    SelectedControlViewModel.Height =
-                        (int)(_gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
+                break;
+            case Grips.Top:
+                position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
 
-                    break;
-                case Grips.Top:
-                    position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
-
-                    SelectedControlViewModel.Y = (int)position.Y;
-                    SelectedControlViewModel.Height = (int)(_gripStartControlRectangle.Height +
-                                                            (_gripStartPointerPosition.Y - position.Y));
-                    break;
-                case Grips.Move:
-                    SelectedControlViewModel.X =
-                        (int)(_gripStartControlRectangle.X + (position.X - _gripStartPointerPosition.X));
-                    SelectedControlViewModel.Y =
-                        (int)(_gripStartControlRectangle.Y + (position.Y - _gripStartPointerPosition.Y));
-                    break;
-                case null:
-                    break;
-            }
+                SelectedControlViewModel.Y = (int)position.Y;
+                SelectedControlViewModel.Height = (int)(_gripStartControlRectangle.Height +
+                                                        (_gripStartPointerPosition.Y - position.Y));
+                break;
+            case Grips.Move:
+                SelectedControlViewModel.X =
+                    (int)(_gripStartControlRectangle.X + (position.X - _gripStartPointerPosition.X));
+                SelectedControlViewModel.Y =
+                    (int)(_gripStartControlRectangle.Y + (position.Y - _gripStartPointerPosition.Y));
+                break;
+            case null:
+                break;
         }
+
+        var processedRectangle = ProcessRectangle(DialogViewModel.Dialog.Root, SelectedControlViewModel.Control);
+        SelectedControlViewModel.X = processedRectangle.X;
+        SelectedControlViewModel.Y = processedRectangle.Y;
+        SelectedControlViewModel.Width = processedRectangle.Width;
+        SelectedControlViewModel.Height = processedRectangle.Height;
+        
+        
     }
 
     [RelayCommand(CanExecute = nameof(IsNodeSelected))]

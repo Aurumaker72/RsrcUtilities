@@ -36,7 +36,7 @@
             </MenuItem>
         </Menu>
         
-        <TabControl Grid.Row="2" ItemsSource="{Binding MainViewModel.DialogEditorViewModels}" DataContextChanged="TabControl_DataContextChanged" SelectionChanged="TabControl_SelectionChanged">
+        <TabControl Grid.Row="2" ItemsSource="{Binding MainViewModel.DialogEditorViewModels}" SelectionChanged="TabControl_SelectionChanged">
             <TabControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type viewModels:DialogEditorViewModel}">
                     <StackPanel Orientation="Horizontal">
@@ -88,7 +88,7 @@
                                 </Button>
                                 <Button
                             Click="PositioningModeButton_OnClick">
-                                    <ui:SymbolIcon Symbol="ErrorCircle24"/>
+                                    <ui:SymbolIcon x:Name="PositioningModeSymbolIcon"/>
                                 </Button>
                                 <Button
                             Click="ZoomOutButton_OnClick">
