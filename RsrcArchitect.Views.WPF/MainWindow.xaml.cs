@@ -174,7 +174,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
                 paint.Style = SKPaintStyle.Stroke;
                 paint.Color = new SKColor(51, 51, 51);
-                e.Surface.Canvas.DrawRect(checkRectangle.InflateCopy(1f, 1f), paint);
+                e.Surface.Canvas.DrawRect(checkRectangle, paint);
 
                 e.Surface.Canvas.DrawText(checkBox.Caption,
                     GetTextSize(checkBox.Caption).Width / 2 + checkSize + 6f,

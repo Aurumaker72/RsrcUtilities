@@ -27,11 +27,15 @@
         </Grid.RowDefinitions>
 
         <ui:TitleBar
-            Title="RsrcArchitect" Icon="pack://application:,,,/Assets/logo.png"/>
+            Title="RsrcArchitect" Icon="pack://application:,,,/Assets/logo.png" />
 
         <Menu Grid.Row="1" Background="Transparent">
             <MenuItem Header="_File">
-                <MenuItem Header="_New Project" Command="{Binding MainViewModel.CreateProjectCommand}" />
+                <MenuItem Header="_New Project" Command="{Binding MainViewModel.CreateProjectCommand}">
+                    <MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Add24" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
         </Menu>
 
@@ -91,7 +95,8 @@
                                 </Button>
                                 <Button
                                     Click="PositioningModeButton_OnClick">
-                                    <ui:SymbolIcon Symbol="{Binding DialogEditorSettingsViewModel.PositioningMode, Converter={StaticResource PositioningModeToSymbolConverter}}" />
+                                    <ui:SymbolIcon
+                                        Symbol="{Binding DialogEditorSettingsViewModel.PositioningMode, Converter={StaticResource PositioningModeToSymbolConverter}}" />
                                 </Button>
                                 <Button
                                     Click="ZoomOutButton_OnClick">
@@ -101,7 +106,7 @@
                                     Click="ZoomInButton_OnClick">
                                     <ui:SymbolIcon Symbol="ZoomIn24" />
                                 </Button>
-                                <Separator/>
+                                <Separator />
                                 <Button
                                     Command="{Binding BringSelectedNodeToFrontCommand}">
                                     <ui:SymbolIcon Symbol="PositionToFront24" />
@@ -146,7 +151,7 @@
                                             MouseDown="SkElement_OnMouseDown"
                                             MouseUp="SkElement_OnMouseUp"
                                             MouseMove="SkElement_OnMouseMove"
-                                            MouseWheel="SkElement_OnMouseWheel"/>
+                                            MouseWheel="SkElement_OnMouseWheel" />
 
                             <Grid Grid.Column="2">
                                 <StackPanel Orientation="Vertical">
