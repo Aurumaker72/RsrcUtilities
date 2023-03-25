@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
         <RootNamespace>RsrcArchitect.Views.WPF</RootNamespace>
+        <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,6 +23,15 @@
         <ProjectReference Include="..\RsrcCore.Layout\RsrcCore.Layout.csproj" />
         <ProjectReference Include="..\RsrcArchitect.ViewModels\RsrcArchitect.ViewModels.csproj" />
         <ProjectReference Include="..\RsrcCore.Serializers\RsrcCore.Serializers.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Assets" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Assets\logo.png" />
+      <Resource Include="Assets\logo.png" />
     </ItemGroup>
 
 </Project>

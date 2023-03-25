@@ -27,7 +27,7 @@
         </Grid.RowDefinitions>
 
         <ui:TitleBar
-            Title="RsrcArchitect" UseSnapLayout="True" />
+            Title="RsrcArchitect" Icon="pack://application:,,,/Assets/logo.png"/>
 
         <Menu Grid.Row="1" Background="Transparent">
             <MenuItem Header="_File">
