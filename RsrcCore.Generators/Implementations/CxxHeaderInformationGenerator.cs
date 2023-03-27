@@ -9,7 +9,7 @@ namespace RsrcCore.Generators.Implementations;
 /// <summary>
 ///     A resource generator specialized in .h(pp) files
 /// </summary>
-public class CxxHeaderResourceGenerator : IResourceGenerator
+public class CxxHeaderInformationGenerator : IInformationGenerator
 {
     /// <inheritdoc />
     [Pure]

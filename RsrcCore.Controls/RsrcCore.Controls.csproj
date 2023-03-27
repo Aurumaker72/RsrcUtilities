@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\RsrcCore.Core\RsrcCore.Core.csproj"/>
-        <ProjectReference Include="..\RsrcCore.Geometry\RsrcCore.Geometry.csproj"/>
+        <ProjectReference Include="..\RsrcCore.Core\RsrcCore.Core.csproj" />
+        <ProjectReference Include="..\RsrcCore.Geometry\RsrcCore.Geometry.csproj" />
     </ItemGroup>
 
 </Project>

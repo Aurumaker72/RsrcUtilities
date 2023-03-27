@@ -161,6 +161,34 @@ public class RcDialogSerializer : IDialogSerializer
 
                     break;
                 }
+                case Label label:
+                {
+                    // LTEXT           "Static",IDC_STATIC,207,46,50,8
+                    stringBuilder.AppendLine(
+                        $"LTEXT \"{label.Caption}\", {control.Identifier}, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}");
+                    break;
+                }
+                case ComboBox comboBox:
+                {
+                    // COMBOBOX        IDC_COMBO1,371,129,151,21,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+                    List<string> comboBoxStyles = new();
+                    comboBoxStyles.AddRange(new[]
+                    {
+                        "WS_TABSTOP",
+                        "CBS_DROPDOWN",
+                        "WS_VSCROLL",
+                    });
+                    if (comboBox.IsSorted)
+                    {
+                        comboBoxStyles.Add("CBS_SORT");
+                    }
+                    
+                    var line = $"COMBOBOX {control.Identifier}, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}";
+                    if (comboBoxStyles.Count > 0) line += $", {string.Join(" | ", comboBoxStyles)}";
+                    stringBuilder.AppendLine(line);
+                    
+                    break;
+                }
                 default:
                     throw new Exception($"Failed to serialize {control.GetType()}");
             }

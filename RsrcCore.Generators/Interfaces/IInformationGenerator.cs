@@ -12,10 +12,10 @@ namespace RsrcCore.Generators.Interfaces;
 ///         anything inside the hierarchy
 ///     </b>
 /// </remarks>
-public interface IResourceGenerator
+public interface IInformationGenerator
 {
     /// <summary>
-    ///     Generates additional resources for the <paramref name="controls" />
+    ///     Generates additional information for the <paramref name="controls" />
     /// </summary>
     /// <param name="controls">The controls to generate a snippet for</param>
     /// <returns>The generated resource header snippet</returns>
