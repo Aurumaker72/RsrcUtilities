@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,8 +8,10 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RsrcArchitect.Services;
 using RsrcArchitect.ViewModels;
+using RsrcArchitect.ViewModels.Types;
 using RsrcArchitect.Views.WPF.Extensions;
 using RsrcArchitect.Views.WPF.Services;
+using RsrcCore.Geometry.Structs;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
@@ -52,6 +56,16 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         Size = 12
     };
 
+    private static readonly SKPaint SkGridPaint = new SKPaint
+    {
+        Color = SKColors.DarkGray,
+        StrokeWidth = 2f,
+    };
+
+    private Vector2Int _lastDialogSize = Vector2Int.Zero;
+    private float _lastSnapThreshold = 0f;
+    private SKPoint[] _gridPoints = Array.Empty<SKPoint>();
+
     private SKElement? _skElement;
 
     public MainViewModel MainViewModel { get; }
@@ -85,11 +99,34 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         _skElement?.InvalidateVisual();
     }
 
+    private SKSize GetTextSize(string text)
+    {
+        var skRect = SKRect.Empty;
+        SkBlackFontPaint.MeasureText(text, ref skRect);
+        return new SKSize(skRect.Width, skRect.Height);
+    }
 
     private void SkElement_OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
 
+        // if dialog size or snap threshold changed, regenerate the points 
+        // we need to cache them like this because drawing them uncached is very slow
+        if (dialogEditorViewModel.DialogViewModel.Width != _lastDialogSize.X || dialogEditorViewModel.DialogViewModel.Height != _lastDialogSize.Y || dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold != _lastSnapThreshold)
+        {
+            var points = new List<SKPoint>();
+            
+            for (int x = 0; x < dialogEditorViewModel.DialogViewModel.Width / dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold; x++)
+            {
+                for (int y = 0; y < dialogEditorViewModel.DialogViewModel.Height / dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold; y++)
+                {
+                    points.Add(new SKPoint(x * dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold, y * dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold));
+                }
+            }
+
+            _gridPoints = points.ToArray();
+        }
+        
         e.Surface.Canvas.Clear();
         e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(dialogEditorViewModel.Translation.X,
             dialogEditorViewModel.Translation.Y));
@@ -120,13 +157,13 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
         var flattenedControlDictionary = dialogEditorViewModel.DialogViewModel.DoLayout();
 
-        SKSize GetTextSize(string text)
-        {
-            var skRect = SKRect.Empty;
-            SkBlackFontPaint.MeasureText(text, ref skRect);
-            return new SKSize(skRect.Width, skRect.Height);
-        }
+        
 
+        if (dialogEditorViewModel.DialogEditorSettingsViewModel.PositioningMode == PositioningModes.Grid)
+        {
+            e.Surface.Canvas.DrawPoints(SKPointMode.Points, _gridPoints, SkGridPaint);
+        }
+        
         foreach (var pair in flattenedControlDictionary)
         {
             var rectangle = SKRect.Create(0, 0, pair.Value.Width, pair.Value.Height);
@@ -228,11 +265,15 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                 new(rectangle.MidX, rectangle.Bottom)
             }, new SKPaint
             {
-                StrokeWidth = dialogEditorViewModel.DialogEditorSettingsViewModel.GripDistance,
+                StrokeWidth = dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold,
                 Color = new SKColor(90, 90, 90),
                 IsAntialias = true
             });
         }
+
+        _lastDialogSize = new(dialogEditorViewModel.DialogViewModel.Width,
+            dialogEditorViewModel.DialogViewModel.Height);
+        _lastSnapThreshold = dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold;
     }
 
     private void SkElement_OnMouseDown(object sender, MouseButtonEventArgs e)

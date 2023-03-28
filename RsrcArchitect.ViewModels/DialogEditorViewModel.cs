@@ -51,7 +51,7 @@ public partial class DialogEditorViewModel : ObservableObject
     public DialogViewModel DialogViewModel { get; }
     public DialogEditorSettingsViewModel DialogEditorSettingsViewModel { get; }
     public string FriendlyName { get; }
-
+    
     private TreeNode<Control>? SelectedNode
     {
         get => _selectedNode;
@@ -93,34 +93,36 @@ public partial class DialogEditorViewModel : ObservableObject
 
     private Grips? GetGrip(Control control, Vector2 position)
     {
+        // grip distance is the same as snap threshold
+        
         if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.X, control.Rectangle.Y)) < DialogEditorSettingsViewModel.GripDistance)
+                new Vector2(control.Rectangle.X, control.Rectangle.Y)) < DialogEditorSettingsViewModel.SnapThreshold)
             return Grips.TopLeft;
         if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.Right, control.Rectangle.Y)) < DialogEditorSettingsViewModel.GripDistance)
+                new Vector2(control.Rectangle.Right, control.Rectangle.Y)) < DialogEditorSettingsViewModel.SnapThreshold)
             return Grips.TopRight;
         if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.X, control.Rectangle.Bottom)) < DialogEditorSettingsViewModel.GripDistance)
+                new Vector2(control.Rectangle.X, control.Rectangle.Bottom)) < DialogEditorSettingsViewModel.SnapThreshold)
             return Grips.BottomLeft;
         if (Vector2.Distance(position,
                 new Vector2(control.Rectangle.Right, control.Rectangle.Bottom)) <
-            DialogEditorSettingsViewModel.GripDistance)
+            DialogEditorSettingsViewModel.SnapThreshold)
             return Grips.BottomRight;
         if (Vector2.Distance(position,
                 new Vector2(control.Rectangle.X, control.Rectangle.CenterY)) <
-            DialogEditorSettingsViewModel.GripDistance)
+            DialogEditorSettingsViewModel.SnapThreshold)
             return Grips.Left;
         if (Vector2.Distance(position,
                 new Vector2(control.Rectangle.CenterX, control.Rectangle.Y)) <
-            DialogEditorSettingsViewModel.GripDistance)
+            DialogEditorSettingsViewModel.SnapThreshold)
             return Grips.Top;
         if (Vector2.Distance(position,
                 new Vector2(control.Rectangle.CenterX, control.Rectangle.Bottom)) <
-            DialogEditorSettingsViewModel.GripDistance)
+            DialogEditorSettingsViewModel.SnapThreshold)
             return Grips.Bottom;
         if (Vector2.Distance(position,
                 new Vector2(control.Rectangle.Right, control.Rectangle.CenterY)) <
-            DialogEditorSettingsViewModel.GripDistance)
+            DialogEditorSettingsViewModel.SnapThreshold)
             return Grips.Right;
         if (control.Rectangle.Contains(new Vector2Int(position)))
             return Grips.Move;
@@ -136,27 +138,36 @@ public partial class DialogEditorViewModel : ObservableObject
                 return targetControl.Rectangle;
             case PositioningModes.Grid:
                 // TODO: make this adjustable in the DialogEditorSettingsViewModel
-                const int coarseness = 10;
-                return new Rectangle((int)(Math.Round((double)(targetControl.Rectangle.X / coarseness)) * coarseness),
-                    (int)(Math.Round((double)(targetControl.Rectangle.Y / coarseness)) * coarseness), targetControl.Rectangle.Width, targetControl.Rectangle.Height);
+                return new Rectangle((int)(Math.Round(targetControl.Rectangle.X / DialogEditorSettingsViewModel.SnapThreshold) * DialogEditorSettingsViewModel.SnapThreshold),
+                    (int)(Math.Round(targetControl.Rectangle.Y / DialogEditorSettingsViewModel.SnapThreshold) * DialogEditorSettingsViewModel.SnapThreshold), targetControl.Rectangle.Width, targetControl.Rectangle.Height);
             case PositioningModes.Snap:
                 
                 // TODO: optimize by utilizing a LUT instead?
 
                 bool hasSnappedX = false;
-                bool hasSnappedY= false;
+                bool hasSnappedY = false;
                 
                 // enumerate all other controls
                 foreach (var node in controls.Where(x => !x.Data.Identifier.Equals(targetControl.Identifier)))
                 {
-                    if (!hasSnappedX && Math.Abs(node.Data.Rectangle.X - targetControl.Rectangle.X) < 10)
+                    if (!hasSnappedX && Math.Abs(node.Data.Rectangle.X - targetControl.Rectangle.X) < DialogEditorSettingsViewModel.SnapThreshold)
                     {
                         targetControl.Rectangle = targetControl.Rectangle.WithX(node.Data.Rectangle.X);
                         hasSnappedX = true;
                     }
-                    if (!hasSnappedY && Math.Abs(node.Data.Rectangle.Y - targetControl.Rectangle.Y) < 10)
+                    if (!hasSnappedX && Math.Abs(node.Data.Rectangle.Right - targetControl.Rectangle.Right) < DialogEditorSettingsViewModel.SnapThreshold)
+                    {
+                        targetControl.Rectangle = targetControl.Rectangle.WithX(node.Data.Rectangle.Right - targetControl.Rectangle.Width);
+                        hasSnappedX = true;
+                    }
+                    if (!hasSnappedY && Math.Abs(node.Data.Rectangle.Y - targetControl.Rectangle.Y) < DialogEditorSettingsViewModel.SnapThreshold)
                     {
                         targetControl.Rectangle = targetControl.Rectangle.WithY(node.Data.Rectangle.Y);
+                        hasSnappedY = true;
+                    }
+                    if (!hasSnappedY && Math.Abs(node.Data.Rectangle.Bottom - targetControl.Rectangle.Bottom) < DialogEditorSettingsViewModel.SnapThreshold)
+                    {
+                        targetControl.Rectangle = targetControl.Rectangle.WithY(node.Data.Rectangle.Bottom - targetControl.Rectangle.Height);
                         hasSnappedY = true;
                     }
                 }
@@ -386,5 +397,4 @@ public partial class DialogEditorViewModel : ObservableObject
 		DialogViewModel.Dialog.Root.AddChild(control);
 		WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
 	}
-
 }

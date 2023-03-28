@@ -17,7 +17,7 @@ public class PositioningModeToSymbolConverter : IValueConverter
             {
                 PositioningModes.Freeform => SymbolRegular.Cursor24,
                 PositioningModes.Grid => SymbolRegular.Grid24,
-                PositioningModes.Snap => SymbolRegular.LineStyle24,
+                PositioningModes.Snap => SymbolRegular.BrainCircuit24,
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
