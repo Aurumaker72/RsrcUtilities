@@ -18,7 +18,9 @@ using SkiaSharp.Views.WPF;
 using Wpf.Ui.Controls.Window;
 using Button = RsrcCore.Controls.Button;
 using CheckBox = RsrcCore.Controls.CheckBox;
+using ComboBox = RsrcCore.Controls.ComboBox;
 using GroupBox = RsrcCore.Controls.GroupBox;
+using Label = RsrcCore.Controls.Label;
 using Panel = RsrcCore.Controls.Panel;
 using TextBox = RsrcCore.Controls.TextBox;
 
@@ -37,7 +39,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         Color = SKColors.Black,
         IsAntialias = true,
         Style = SKPaintStyle.Fill,
-        TextAlign = SKTextAlign.Center,
+        
         TextSize = 12
     };
 
@@ -46,7 +48,6 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         Color = SKColors.White,
         IsAntialias = true,
         Style = SKPaintStyle.Fill,
-        TextAlign = SKTextAlign.Center,
         TextSize = 12
     };
 
@@ -152,13 +153,11 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
             Color = new SKColor(0, 120, 215)
         });
         e.Surface.Canvas.DrawText(dialogEditorViewModel.DialogViewModel.Caption,
-            40f,
+            5f,
             -15 + GetTextSize(dialogEditorViewModel.DialogViewModel.Caption).Height / 2, SkFont, SkWhiteFontPaint);
 
         var flattenedControlDictionary = dialogEditorViewModel.DialogViewModel.DoLayout();
-
         
-
         if (dialogEditorViewModel.DialogEditorSettingsViewModel.PositioningMode == PositioningModes.Grid)
         {
             e.Surface.Canvas.DrawPoints(SKPointMode.Points, _gridPoints, SkGridPaint);
@@ -179,7 +178,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                     new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(225, 225, 225) });
 
                 e.Surface.Canvas.DrawText(button.Caption,
-                    rectangle.MidX,
+                    rectangle.MidX - GetTextSize(button.Caption).Width / 2,
                     rectangle.MidY + GetTextSize(button.Caption).Height / 2, SkFont, SkBlackFontPaint);
             }
             else if (pair.Key is TextBox textBox)
@@ -194,7 +193,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                 e.Surface.Canvas.DrawRect(rectangle,
                     new SKPaint { Style = SKPaintStyle.Stroke, Color = new SKColor(180, 180, 180) });
                 e.Surface.Canvas.DrawText(groupBox.Caption,
-                    GetTextSize(groupBox.Caption).Width / 2 + 10f,
+                    10f,
                     GetTextSize(groupBox.Caption).Height / 2, SkFont, SkBlackFontPaint);
             }
             else if (pair.Key is CheckBox checkBox)
@@ -214,8 +213,28 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
                 e.Surface.Canvas.DrawRect(checkRectangle, paint);
 
                 e.Surface.Canvas.DrawText(checkBox.Caption,
-                    GetTextSize(checkBox.Caption).Width / 2 + checkSize + 6f,
+                    checkSize + 5f,
                     checkRectangle.Top + GetTextSize(checkBox.Caption).Height, SkFont, SkBlackFontPaint);
+            }
+            else if (pair.Key is ComboBox comboBox)
+            {
+                e.Surface.Canvas.DrawRect(rectangle.InflateCopy(1, 1),
+                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(173, 173, 173) });
+                e.Surface.Canvas.DrawRect(rectangle,
+                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(225, 225, 225) });
+                
+                const float arrowSize = 10f;
+                e.Surface.Canvas.DrawPoints(SKPointMode.Polygon, new SKPoint[]
+                {
+                    new(rectangle.Width - arrowSize, rectangle.Height / 2),   
+                    new(rectangle.Width, rectangle.Height / 2),   
+                    new(rectangle.Width - arrowSize / 2, rectangle.Height / 2 + arrowSize / 2),   
+                }, new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(86, 86, 86) });
+                
+            }
+            else if (pair.Key is Label label)
+            {
+                e.Surface.Canvas.DrawText(label.Caption, new SKPoint(0, rectangle.MidY + GetTextSize(label.Caption).Height / 2), SkBlackFontPaint);
             }
             else if (pair.Key is Panel)
             {

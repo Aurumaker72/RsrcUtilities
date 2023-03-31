@@ -8,5 +8,5 @@ public class Label : Control
     /// <summary>
     /// The default text displayed in the label
     /// </summary>
-    public string Caption { get; set; }
+    public string Caption { get; set; } = "Hello World!";
 }

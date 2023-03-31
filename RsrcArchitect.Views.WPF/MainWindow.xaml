@@ -179,35 +179,35 @@
 
                                                                 <TextBlock Grid.Row="0" Grid.Column="0"
                                                                            Text="Identifier" VerticalAlignment="Center"
-                                                                           HorizontalAlignment="Center" />
+                                                                           HorizontalAlignment="Left" />
                                                                 <TextBox Grid.Row="0" Grid.Column="1"
                                                                          Text="{Binding SelectedControlViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                          Margin="{StaticResource SmallVerticalMargin}" />
 
                                                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="X"
                                                                            VerticalAlignment="Center"
-                                                                           HorizontalAlignment="Center" />
+                                                                           HorizontalAlignment="Left" />
                                                                 <TextBox Grid.Row="1" Grid.Column="1"
                                                                          Text="{Binding SelectedControlViewModel.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                          Margin="{StaticResource SmallVerticalMargin}" />
 
                                                                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Y"
                                                                            VerticalAlignment="Center"
-                                                                           HorizontalAlignment="Center" />
+                                                                           HorizontalAlignment="Left" />
                                                                 <TextBox Grid.Row="2" Grid.Column="1"
                                                                          Text="{Binding SelectedControlViewModel.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                          Margin="{StaticResource SmallVerticalMargin}" />
 
                                                                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Width"
                                                                            VerticalAlignment="Center"
-                                                                           HorizontalAlignment="Center" />
+                                                                           HorizontalAlignment="Left" />
                                                                 <TextBox Grid.Row="3" Grid.Column="1"
                                                                          Text="{Binding SelectedControlViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                          Margin="{StaticResource SmallVerticalMargin}" />
 
                                                                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Height"
                                                                            VerticalAlignment="Center"
-                                                                           HorizontalAlignment="Center" />
+                                                                           HorizontalAlignment="Left" />
                                                                 <TextBox Grid.Row="4" Grid.Column="1"
                                                                          Text="{Binding SelectedControlViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                          Margin="{StaticResource SmallVerticalMargin}" />
@@ -312,7 +312,7 @@
 
 
                                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
                                                     <TextBox Grid.Row="0" Grid.Column="1"
                                                              Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                              Margin="{StaticResource SmallVerticalMargin}" />
@@ -333,7 +333,7 @@
 
 
                                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
                                                     <TextBox Grid.Row="0" Grid.Column="1"
                                                              Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                              Margin="{StaticResource SmallVerticalMargin}" />
@@ -353,7 +353,7 @@
 
 
                                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
                                                     <TextBox Grid.Row="0" Grid.Column="1"
                                                              Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                              Margin="{StaticResource SmallVerticalMargin}" />
@@ -374,13 +374,13 @@
 
 
                                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Is Writable"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
                                                     <TextBox Grid.Row="0" Grid.Column="1"
                                                              Text="{Binding IsWritable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                              Margin="{StaticResource SmallVerticalMargin}" />
                                                     <TextBlock Grid.Row="1" Grid.Column="0"
                                                                Text="Allows Horizontal Scrolling"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
                                                     <TextBox Grid.Row="1" Grid.Column="1"
                                                              Text="{Binding AllowHorizontalScroll, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                              Margin="{StaticResource SmallVerticalMargin}" />
@@ -388,6 +388,47 @@
                                                 </Grid>
                                             </DataTemplate>
 
+
+                                            <DataTemplate DataType="{x:Type controls:ComboBoxViewModel}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="0.5*" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+
+
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Is Sorted"
+                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                                    <TextBox Grid.Row="0" Grid.Column="1"
+                                                             Text="{Binding IsSorted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                             Margin="{StaticResource SmallVerticalMargin}" />
+
+                                                </Grid>
+                                            </DataTemplate>
+
+
+                                            <DataTemplate DataType="{x:Type controls:LabelViewModel}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="0.5*" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+
+
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption"
+                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                                    <TextBox Grid.Row="0" Grid.Column="1"
+                                                             Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                             Margin="{StaticResource SmallVerticalMargin}" />
+
+                                                </Grid>
+                                            </DataTemplate>
 
                                         </ContentControl.Resources>
                                     </ContentControl>

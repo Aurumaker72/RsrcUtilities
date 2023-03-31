@@ -17,6 +17,8 @@ internal static class ControlViewModelFactory
             CheckBox checkBox => new CheckBoxViewModel(checkBox, isIdentifierInUse),
             GroupBox groupBox => new GroupBoxViewModel(groupBox, isIdentifierInUse),
             TextBox textBox => new TextBoxViewModel(textBox, isIdentifierInUse),
+            Label label => new LabelViewModel(label, isIdentifierInUse),
+            ComboBox comboBox => new ComboBoxViewModel(comboBox, isIdentifierInUse),
             _ => throw new ArgumentException($"{control} doesn't map to any ViewModel")
         };
     }
