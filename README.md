@@ -75,9 +75,11 @@ The creation of infrastructure to facilitate the design of `rc` user interfaces 
 - Smart hittesting
 - Flexible Z-Ordering
 - Intuitive tabbed navigation system
-- Clever and dynamic inspector
+- Powerful and dynamic inspector
 - Reactive everywhere (no legacy-style return key confirmation)
+- Click-drag camera translation
+- Mousewheel camera zooming
 
-
-
-
+# Cool stuff
+![brain](https://user-images.githubusercontent.com/48759429/228230629-5d782233-e1e0-4a5b-80c2-d177f9438e3b.svg)
+The "smart" positioning mode does clever snapping to ensure you have an easy time when manually positioning controls.
