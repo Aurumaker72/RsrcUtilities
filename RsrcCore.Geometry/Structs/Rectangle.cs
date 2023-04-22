@@ -102,4 +102,14 @@ public readonly struct Rectangle
     {
         return HashCode.Combine(X, Y, Width, Height);
     }
+
+    public static bool operator ==(Rectangle left, Rectangle right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Rectangle left, Rectangle right)
+    {
+        return !(left == right);
+    }
 }

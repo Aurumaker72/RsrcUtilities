@@ -1,28 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Numerics;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RsrcArchitect.Services;
 using RsrcArchitect.ViewModels;
 using RsrcArchitect.ViewModels.Types;
 using RsrcArchitect.Views.WPF.Extensions;
+using RsrcArchitect.Views.WPF.Renderer;
 using RsrcArchitect.Views.WPF.Services;
+using RsrcCore.Controls;
 using RsrcCore.Geometry.Structs;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
 using Wpf.Ui.Controls.Window;
-using Button = RsrcCore.Controls.Button;
-using CheckBox = RsrcCore.Controls.CheckBox;
-using ComboBox = RsrcCore.Controls.ComboBox;
-using GroupBox = RsrcCore.Controls.GroupBox;
-using Label = RsrcCore.Controls.Label;
-using Panel = RsrcCore.Controls.Panel;
-using TextBox = RsrcCore.Controls.TextBox;
 
 namespace RsrcArchitect.Views.WPF;
 
@@ -33,58 +26,23 @@ namespace RsrcArchitect.Views.WPF;
 public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 {
     private const float zoomIncrement = 0.5f;
-
-    private static readonly SKPaint SkBlackFontPaint = new()
-    {
-        Color = SKColors.Black,
-        IsAntialias = true,
-        Style = SKPaintStyle.Fill,
-        
-        TextSize = 12
-    };
-
-    private static readonly SKPaint SkWhiteFontPaint = new()
-    {
-        Color = SKColors.White,
-        IsAntialias = true,
-        Style = SKPaintStyle.Fill,
-        TextSize = 12
-    };
-
-    private static readonly SKFont SkFont = new()
-    {
-        Edging = SKFontEdging.SubpixelAntialias,
-        Size = 12
-    };
-
-    private static readonly SKPaint SkGridPaint = new SKPaint
-    {
-        Color = SKColors.DarkGray,
-        StrokeWidth = 2f,
-    };
-
-    private Vector2Int _lastDialogSize = Vector2Int.Zero;
-    private float _lastSnapThreshold = 0f;
-    private SKPoint[] _gridPoints = Array.Empty<SKPoint>();
-
+    
     private SKElement? _skElement;
 
     public MainViewModel MainViewModel { get; }
-
+    public DialogRenderer DialogRenderer { get; } = new DialogRenderer();
+    
     public MainWindow()
     {
         InitializeComponent();
 
         MainViewModel = new MainViewModel(new FilesService(), this);
-        
+
         DataContext = this;
 
         MainViewModel.PropertyChanged += (sender, args) =>
         {
-            if (args.PropertyName == nameof(MainViewModel.SelectedDialogEditorViewModel))
-            {
-                RefreshControlReferences();
-            }
+            if (args.PropertyName == nameof(MainViewModel.SelectedDialogEditorViewModel)) RefreshControlReferences();
         };
         RefreshControlReferences();
     }
@@ -100,205 +58,16 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         _skElement?.InvalidateVisual();
     }
 
-    private SKSize GetTextSize(string text)
-    {
-        var skRect = SKRect.Empty;
-        SkBlackFontPaint.MeasureText(text, ref skRect);
-        return new SKSize(skRect.Width, skRect.Height);
-    }
-
     private void SkElement_OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
-
-        // if dialog size or snap threshold changed, regenerate the points 
-        // we need to cache them like this because drawing them uncached is very slow
-        if (dialogEditorViewModel.DialogViewModel.Width != _lastDialogSize.X || dialogEditorViewModel.DialogViewModel.Height != _lastDialogSize.Y || dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold != _lastSnapThreshold)
-        {
-            var points = new List<SKPoint>();
-            
-            for (int x = 0; x < dialogEditorViewModel.DialogViewModel.Width / dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold; x++)
-            {
-                for (int y = 0; y < dialogEditorViewModel.DialogViewModel.Height / dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold; y++)
-                {
-                    points.Add(new SKPoint(x * dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold, y * dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold));
-                }
-            }
-
-            _gridPoints = points.ToArray();
-        }
-        
-        e.Surface.Canvas.Clear();
-        e.Surface.Canvas.SetMatrix(SKMatrix.CreateTranslation(dialogEditorViewModel.Translation.X,
-            dialogEditorViewModel.Translation.Y));
-        e.Surface.Canvas.Scale(dialogEditorViewModel.Scale);
-
-        var dialogRectangle = SKRect.Create(0, 0, dialogEditorViewModel.DialogViewModel.Width,
-            dialogEditorViewModel.DialogViewModel.Height);
-
-        e.Surface.Canvas.DrawRect(dialogRectangle.InflateCopy(1f, 1f), new SKPaint
-        {
-            Style = SKPaintStyle.Fill,
-            Color = new SKColor(0, 120, 215)
-        });
-        e.Surface.Canvas.DrawRect(dialogRectangle, new SKPaint
-        {
-            Style = SKPaintStyle.Fill,
-            Color = new SKColor(240, 240, 240)
-        });
-
-        e.Surface.Canvas.DrawRect(-1, -30, dialogEditorViewModel.DialogViewModel.Width + 2, 30, new SKPaint
-        {
-            Style = SKPaintStyle.Fill,
-            Color = new SKColor(0, 120, 215)
-        });
-        e.Surface.Canvas.DrawText(dialogEditorViewModel.DialogViewModel.Caption,
-            5f,
-            -15 + GetTextSize(dialogEditorViewModel.DialogViewModel.Caption).Height / 2, SkFont, SkWhiteFontPaint);
-
-        var flattenedControlDictionary = dialogEditorViewModel.DialogViewModel.DoLayout();
-        
-        if (dialogEditorViewModel.DialogEditorSettingsViewModel.PositioningMode == PositioningModes.Grid)
-        {
-            e.Surface.Canvas.DrawPoints(SKPointMode.Points, _gridPoints, SkGridPaint);
-        }
-        
-        foreach (var pair in flattenedControlDictionary)
-        {
-            var rectangle = SKRect.Create(0, 0, pair.Value.Width, pair.Value.Height);
-
-            e.Surface.Canvas.Save();
-            e.Surface.Canvas.Translate(pair.Value.X, pair.Value.Y);
-
-            if (pair.Key is Button button)
-            {
-                e.Surface.Canvas.DrawRect(rectangle.InflateCopy(1, 1),
-                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(173, 173, 173) });
-                e.Surface.Canvas.DrawRect(rectangle,
-                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(225, 225, 225) });
-
-                e.Surface.Canvas.DrawText(button.Caption,
-                    rectangle.MidX - GetTextSize(button.Caption).Width / 2,
-                    rectangle.MidY + GetTextSize(button.Caption).Height / 2, SkFont, SkBlackFontPaint);
-            }
-            else if (pair.Key is TextBox textBox)
-            {
-                e.Surface.Canvas.DrawRect(rectangle.InflateCopy(1, 1),
-                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(122, 122, 122) });
-                e.Surface.Canvas.DrawRect(rectangle,
-                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(255, 255, 255) });
-            }
-            else if (pair.Key is GroupBox groupBox)
-            {
-                e.Surface.Canvas.DrawRect(rectangle,
-                    new SKPaint { Style = SKPaintStyle.Stroke, Color = new SKColor(180, 180, 180) });
-                e.Surface.Canvas.DrawText(groupBox.Caption,
-                    10f,
-                    GetTextSize(groupBox.Caption).Height / 2, SkFont, SkBlackFontPaint);
-            }
-            else if (pair.Key is CheckBox checkBox)
-            {
-                const float checkSize = 10f;
-                var paint = new SKPaint
-                {
-                    Style = SKPaintStyle.Fill,
-                    Color = SKColors.White
-                };
-                var checkRectangle = SKRect.Create(0, rectangle.Height / 2 - checkSize / 2, checkSize, checkSize);
-
-                e.Surface.Canvas.DrawRect(checkRectangle, paint);
-
-                paint.Style = SKPaintStyle.Stroke;
-                paint.Color = new SKColor(51, 51, 51);
-                e.Surface.Canvas.DrawRect(checkRectangle, paint);
-
-                e.Surface.Canvas.DrawText(checkBox.Caption,
-                    checkSize + 5f,
-                    checkRectangle.Top + GetTextSize(checkBox.Caption).Height, SkFont, SkBlackFontPaint);
-            }
-            else if (pair.Key is ComboBox comboBox)
-            {
-                e.Surface.Canvas.DrawRect(rectangle.InflateCopy(1, 1),
-                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(173, 173, 173) });
-                e.Surface.Canvas.DrawRect(rectangle,
-                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(225, 225, 225) });
-                
-                const float arrowSize = 10f;
-                e.Surface.Canvas.DrawPoints(SKPointMode.Polygon, new SKPoint[]
-                {
-                    new(rectangle.Width - arrowSize, rectangle.Height / 2),   
-                    new(rectangle.Width, rectangle.Height / 2),   
-                    new(rectangle.Width - arrowSize / 2, rectangle.Height / 2 + arrowSize / 2),   
-                }, new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(86, 86, 86) });
-                
-            }
-            else if (pair.Key is Label label)
-            {
-                e.Surface.Canvas.DrawText(label.Caption, new SKPoint(0, rectangle.MidY + GetTextSize(label.Caption).Height / 2), SkBlackFontPaint);
-            }
-            else if (pair.Key is Panel)
-            {
-                ; // panel is a nop for now 
-            }
-            else
-            {
-                e.Surface.Canvas.DrawRect(rectangle,
-                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(255, 0, 255) });
-            }
-
-            e.Surface.Canvas.Restore();
-        }
-
-        if (dialogEditorViewModel.SelectedControlViewModel != null)
-        {
-            var rectangle = SKRect.Create(0, 0,
-                dialogEditorViewModel.SelectedControlViewModel.Rectangle.Width,
-                dialogEditorViewModel.SelectedControlViewModel.Rectangle.Height);
-            e.Surface.Canvas.Translate(
-                dialogEditorViewModel.SelectedControlViewModel.Rectangle.X,
-                dialogEditorViewModel.SelectedControlViewModel.Rectangle.Y);
-
-            e.Surface.Canvas.DrawRect(rectangle,
-                new SKPaint
-                {
-                    Style = SKPaintStyle.Fill,
-                    Color = new SKColor(201, 224, 247, 128)
-                });
-
-            e.Surface.Canvas.DrawRect(rectangle,
-                new SKPaint
-                {
-                    Style = SKPaintStyle.Stroke,
-                    Color = new SKColor(98, 162, 228)
-                });
-
-            e.Surface.Canvas.DrawPoints(SKPointMode.Points, new SKPoint[]
-            {
-                new(0, 0),
-                new(0, rectangle.Height),
-                new(rectangle.Width, 0),
-                new(rectangle.Width, rectangle.Height),
-                new(rectangle.MidX, 0),
-                new(0, rectangle.MidY),
-                new(rectangle.Right, rectangle.MidY),
-                new(rectangle.MidX, rectangle.Bottom)
-            }, new SKPaint
-            {
-                StrokeWidth = dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold,
-                Color = new SKColor(90, 90, 90),
-                IsAntialias = true
-            });
-        }
-
-        _lastDialogSize = new(dialogEditorViewModel.DialogViewModel.Width,
-            dialogEditorViewModel.DialogViewModel.Height);
-        _lastSnapThreshold = dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold;
+        DialogRenderer.Render(dialogEditorViewModel, e.Surface.Canvas);
     }
 
     private void SkElement_OnMouseDown(object sender, MouseButtonEventArgs e)
     {
         var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
-        
+
         ((IInputElement)sender).CaptureMouse();
         var position = e.GetPosition((IInputElement)sender);
 
@@ -317,7 +86,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     private void SkElement_OnMouseMove(object sender, MouseEventArgs e)
     {
         var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
-        
+
         var position = e.GetPosition((IInputElement)sender);
         dialogEditorViewModel.PointerMoveCommand.Execute(new Vector2(
             (float)position.X,
@@ -327,7 +96,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     private void PositioningModeButton_OnClick(object sender, RoutedEventArgs e)
     {
         var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
-        
+
         dialogEditorViewModel.DialogEditorSettingsViewModel.PositioningMode =
             dialogEditorViewModel.DialogEditorSettingsViewModel.PositioningMode.Next();
     }

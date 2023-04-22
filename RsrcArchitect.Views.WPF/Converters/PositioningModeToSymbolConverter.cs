@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Windows.Data;
 using RsrcArchitect.ViewModels.Types;
 using Wpf.Ui.Common;
-using Wpf.Ui.Controls;
 
 namespace RsrcArchitect.Views.WPF.Converters;
 
