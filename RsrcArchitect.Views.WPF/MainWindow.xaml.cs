@@ -8,7 +8,8 @@ using RsrcArchitect.Services;
 using RsrcArchitect.ViewModels;
 using RsrcArchitect.ViewModels.Types;
 using RsrcArchitect.Views.WPF.Extensions;
-using RsrcArchitect.Views.WPF.Renderer;
+using RsrcArchitect.Views.WPF.Renderers;
+using RsrcArchitect.Views.WPF.Renderers.ControlRenderers;
 using RsrcArchitect.Views.WPF.Services;
 using RsrcCore.Controls;
 using RsrcCore.Geometry.Structs;
@@ -44,7 +45,30 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         {
             if (args.PropertyName == nameof(MainViewModel.SelectedDialogEditorViewModel)) OnSelectedDialogEditorChanged();
         };
+        
+        MainViewModel.DialogEditorSettingsViewModel.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName != nameof(MainViewModel.DialogEditorSettingsViewModel.VisualStyle)) return;
+
+            OnVisualStyleChanged();
+        };
+        
         OnSelectedDialogEditorChanged();
+        OnVisualStyleChanged();
+    }
+
+    private void OnVisualStyleChanged()
+    {
+        if (MainViewModel.DialogEditorSettingsViewModel.VisualStyle.Equals("windows-11",
+                StringComparison.InvariantCultureIgnoreCase))
+        {
+            DialogRenderer.ObjectRenderer = new Windows11ObjectRenderer();
+        }
+        else
+        {
+            // fall back to win10 renderer
+            DialogRenderer.ObjectRenderer = new Windows10ObjectRenderer();
+        }
     }
 
     private void OnSelectedDialogEditorChanged()

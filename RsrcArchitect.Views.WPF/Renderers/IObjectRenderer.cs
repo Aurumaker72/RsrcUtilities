@@ -3,7 +3,7 @@ using RsrcCore.Controls;
 using RsrcCore.Geometry.Structs;
 using SkiaSharp;
 
-namespace RsrcArchitect.Views.WPF.Renderer;
+namespace RsrcArchitect.Views.WPF.Renderers;
 
 public interface IObjectRenderer
 {

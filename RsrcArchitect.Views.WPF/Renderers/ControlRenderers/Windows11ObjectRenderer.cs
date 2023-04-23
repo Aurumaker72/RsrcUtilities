@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using RsrcArchitect.ViewModels;
-using RsrcArchitect.ViewModels.Controls;
 using RsrcArchitect.ViewModels.Types;
 using RsrcCore.Controls;
 using RsrcCore.Geometry.Structs;
 using SkiaSharp;
 
-namespace RsrcArchitect.Views.WPF.Renderer.ControlRenderers;
+namespace RsrcArchitect.Views.WPF.Renderers.ControlRenderers;
 
-public class Windows10ObjectRenderer : IObjectRenderer
+public class Windows11ObjectRenderer : IObjectRenderer
 {
-    private static readonly SKPaint SkBlackFontPaint = new()
+     private static readonly SKPaint SkBlackFontPaint = new()
     {
         Color = SKColors.Black,
         IsAntialias = true,
@@ -49,31 +48,34 @@ public class Windows10ObjectRenderer : IObjectRenderer
     private SKPoint[]? _gridPoints;
     private Rectangle _previousDialogRectangle = Rectangle.Zero;
     private float _previousSnapThreshold;
-
+    private const float CornerRadius = 3f;
+    
     public void Render(SKCanvas canvas, Control control, Rectangle visualBounds)
     {
-        var skRectangle = SKRect.Create(0, 0, visualBounds.Width, visualBounds.Height);
+        var skRectangle = new SKRoundRect(SKRect.Create(0, 0, visualBounds.Width, visualBounds.Height), CornerRadius, CornerRadius);
 
         switch (control)
         {
             case Button button:
-                canvas.DrawRect(skRectangle,
-                    new SKPaint { Color = new SKColor(225, 225, 225) });
-                canvas.DrawRect(skRectangle,
-                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(173, 173, 173) });
+                canvas.DrawRoundRect(skRectangle,
+                    new SKPaint { Color = new SKColor(253, 253, 253) });
+                canvas.DrawRoundRect(skRectangle,
+                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(208, 208, 208) });
                 canvas.DrawText(button.Caption,
-                    skRectangle.MidX - GetTextSize(button.Caption).Width / 2,
-                    skRectangle.MidY + GetTextSize(button.Caption).Height / 2, SkFont, SkBlackFontPaint);
+                    skRectangle.Rect.MidX - GetTextSize(button.Caption).Width / 2,
+                    skRectangle.Rect.MidY + GetTextSize(button.Caption).Height / 2, SkFont, SkBlackFontPaint);
                 break;
             case TextBox:
-                canvas.DrawRect(skRectangle,
+                canvas.DrawRoundRect(skRectangle,
                     new SKPaint { Color = new SKColor(255, 255, 255) });
-                canvas.DrawRect(skRectangle,
-                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(122, 122, 122) });
+                canvas.DrawRoundRect(skRectangle,
+                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(236, 236, 236) });
+                canvas.DrawLine(skRectangle.Rect.Left + CornerRadius, skRectangle.Rect.Bottom, skRectangle.Rect.Right - CornerRadius, skRectangle.Rect.Bottom,
+                    new SKPaint { Style = SKPaintStyle.StrokeAndFill, Color = new SKColor(131, 131, 131), StrokeWidth = 1});
                 break;
             case GroupBox groupBox:
-                canvas.DrawRect(skRectangle,
-                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(180, 180, 180) });
+                canvas.DrawRoundRect(skRectangle,
+                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(220, 220, 220) });
                 canvas.DrawText(groupBox.Caption,
                     10f,
                     GetTextSize(groupBox.Caption).Height / 2, SkFont, SkBlackFontPaint);
@@ -84,32 +86,33 @@ public class Windows10ObjectRenderer : IObjectRenderer
                 var paint = new SKPaint
                 {
                     Style = SKPaintStyle.Fill,
-                    Color = SKColors.White
+                    Color = new SKColor(243, 243, 243),
+                    StrokeWidth = 2f,
                 };
-                var checkRectangle = SKRect.Create(0, skRectangle.Height / 2 - checkSize / 2, checkSize, checkSize);
-                canvas.DrawRect(checkRectangle, paint);
+                var checkRectangle = new SKRoundRect(SKRect.Create(0, skRectangle.Height / 2 - checkSize / 2, checkSize, checkSize), CornerRadius, CornerRadius);
+                canvas.DrawRoundRect(checkRectangle, paint);
                 paint.Style = SKPaintStyle.Stroke;
-                paint.Color = new SKColor(51, 51, 51);
-                canvas.DrawRect(checkRectangle, paint);
+                paint.Color = new SKColor(98, 98, 98);
+                canvas.DrawRoundRect(checkRectangle, paint);
                 canvas.DrawText(checkBox.Caption,
                     checkSize + 5f,
-                    checkRectangle.Top + GetTextSize(checkBox.Caption).Height, SkFont, SkBlackFontPaint);
+                    checkRectangle.Rect.Top + GetTextSize(checkBox.Caption).Height, SkFont, SkBlackFontPaint);
                 break;
             }
             case ComboBox:
-                canvas.DrawRect(skRectangle,
-                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(173, 173, 173) });
-                canvas.DrawRect(skRectangle,
-                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(225, 225, 225) });
+                canvas.DrawRoundRect(skRectangle,
+                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(210, 210, 210) });
+                canvas.DrawRoundRect(skRectangle,
+                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(253, 253, 253) });
                 // TODO: combobox arrow rendering
                 break;
             case Label label:
                 canvas.DrawText(label.Caption,
-                    new SKPoint(0, skRectangle.MidY + GetTextSize(label.Caption).Height / 2),
+                    new SKPoint(0, skRectangle.Rect.MidY + GetTextSize(label.Caption).Height / 2),
                     SkBlackFontPaint);
                 break;
             default:
-                canvas.DrawRect(skRectangle,
+                canvas.DrawRect(skRectangle.Rect,
                     new SKPaint { Color = new SKColor(255, 0, 255) });
                 break;
         }
@@ -117,24 +120,37 @@ public class Windows10ObjectRenderer : IObjectRenderer
 
     public void Render(SKCanvas canvas, DialogViewModel dialogViewModel)
     {
-        var skRectangle = SKRect.Create(0, 0, dialogViewModel.Width,
-            dialogViewModel.Height);
-        canvas.DrawRect(skRectangle.InflateCopy(1f, 1f), new SKPaint
+
+        const float titleBarHeight = 30f;
+        
+        var roundedSkRectangle = new SKRoundRect(SKRect.Create(0, -titleBarHeight, dialogViewModel.Width,
+            dialogViewModel.Height + titleBarHeight), CornerRadius * 2f, CornerRadius * 2f);
+
+        canvas.Save();
+        canvas.ClipRoundRect(roundedSkRectangle);
+
+        
+        
+        canvas.DrawRoundRect(roundedSkRectangle, new SKPaint
         {
-            Style = SKPaintStyle.Fill,
-            Color = new SKColor(0, 120, 215)
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = 1f,
+            Color = new SKColor(0, 120, 212),
         });
-        canvas.DrawRect(skRectangle, new SKPaint
+        canvas.DrawRoundRect(roundedSkRectangle, new SKPaint
         {
             Style = SKPaintStyle.Fill,
             Color = new SKColor(240, 240, 240)
         });
-
-        canvas.DrawRect(-1, -30, skRectangle.Width + 2, 30, new SKPaint
+        
+        canvas.DrawRect(-1, -titleBarHeight, roundedSkRectangle.Width + 2, titleBarHeight, new SKPaint
         {
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(0, 120, 215)
+            Color = new SKColor(0, 120, 212)
         });
+
+        canvas.Restore();
+        
         canvas.DrawText(dialogViewModel.Caption,
             5f,
             -15 + GetTextSize(dialogViewModel.Caption).Height / 2, SkFont, SkWhiteFontPaint);
