@@ -42,15 +42,16 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
         MainViewModel.PropertyChanged += (sender, args) =>
         {
-            if (args.PropertyName == nameof(MainViewModel.SelectedDialogEditorViewModel)) RefreshControlReferences();
+            if (args.PropertyName == nameof(MainViewModel.SelectedDialogEditorViewModel)) OnSelectedDialogEditorChanged();
         };
-        RefreshControlReferences();
+        OnSelectedDialogEditorChanged();
     }
 
-    private void RefreshControlReferences()
+    private void OnSelectedDialogEditorChanged()
     {
         _skElement = TabControl.FindElementByName<SKElement>("SkElement");
         (this as ICanvasInvalidationService).Invalidate();
+        
     }
 
     void ICanvasInvalidationService.Invalidate()
@@ -61,7 +62,7 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     private void SkElement_OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
-        DialogRenderer.Render(dialogEditorViewModel, e.Surface.Canvas);
+        DialogRenderer.Render(MainViewModel.DialogEditorSettingsViewModel, dialogEditorViewModel, e.Surface.Canvas);
     }
 
     private void SkElement_OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -95,10 +96,8 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
     private void PositioningModeButton_OnClick(object sender, RoutedEventArgs e)
     {
-        var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
-
-        dialogEditorViewModel.DialogEditorSettingsViewModel.PositioningMode =
-            dialogEditorViewModel.DialogEditorSettingsViewModel.PositioningMode.Next();
+        MainViewModel.DialogEditorSettingsViewModel.PositioningMode =
+            MainViewModel.DialogEditorSettingsViewModel.PositioningMode.Next();
     }
 
     private void ZoomOutButton_OnClick(object sender, RoutedEventArgs e)

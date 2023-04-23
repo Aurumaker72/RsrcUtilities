@@ -87,24 +87,11 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <ToolBarTray ToolBarTray.IsLocked="True">
+                        <ToolBarTray IsLocked="True">
                             <ToolBar Band="1" BandIndex="1">
                                 <Button
                                     Command="{Binding SaveCommand}">
                                     <ui:SymbolIcon Symbol="Save24" />
-                                </Button>
-                                <Button
-                                    Click="PositioningModeButton_OnClick">
-                                    <ui:SymbolIcon
-                                        Symbol="{Binding DialogEditorSettingsViewModel.PositioningMode, Converter={StaticResource PositioningModeToSymbolConverter}}" />
-                                </Button>
-                                <Button
-                                    Click="ZoomOutButton_OnClick">
-                                    <ui:SymbolIcon Symbol="ZoomOut24" />
-                                </Button>
-                                <Button
-                                    Click="ZoomInButton_OnClick">
-                                    <ui:SymbolIcon Symbol="ZoomIn24" />
                                 </Button>
                                 <Separator />
                                 <Button
@@ -114,6 +101,12 @@
                                 <Button
                                     Command="{Binding DeleteSelectedNodeCommand}">
                                     <ui:SymbolIcon Symbol="Delete24" />
+                                </Button>
+                                <Separator/>
+                                <Button
+                                    Click="PositioningModeButton_OnClick">
+                                    <ui:SymbolIcon
+                                        Symbol="{Binding ElementName=Window, Path=MainViewModel.DialogEditorSettingsViewModel.PositioningMode, Converter={StaticResource PositioningModeToSymbolConverter}}" />
                                 </Button>
                             </ToolBar>
                         </ToolBarTray>

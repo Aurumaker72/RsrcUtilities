@@ -11,7 +11,7 @@ public class DialogRenderer
 {
     public IObjectRenderer ObjectRenderer { get; set; } = new Windows10ObjectRenderer();
     
-    public void Render(DialogEditorViewModel dialogEditorViewModel, SKCanvas canvas)
+    public void Render(DialogEditorSettingsViewModel dialogEditorSettingsViewModel, DialogEditorViewModel dialogEditorViewModel, SKCanvas canvas)
     {
         // create view matrix from dialog editor data
         canvas.SetMatrix(SKMatrix.CreateScaleTranslation(dialogEditorViewModel.Scale, dialogEditorViewModel.Scale,
@@ -38,7 +38,7 @@ public class DialogRenderer
             canvas.Restore();
         }
         
-        ObjectRenderer.RenderDecorations(canvas, dialogEditorViewModel);
+        ObjectRenderer.RenderDecorations(canvas, dialogEditorViewModel, dialogEditorSettingsViewModel);
     }
     
 }

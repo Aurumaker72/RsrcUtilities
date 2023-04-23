@@ -9,5 +9,5 @@ public interface IObjectRenderer
 {
     void Render(SKCanvas canvas, Control control, Rectangle visualBounds);
     void Render(SKCanvas canvas, DialogViewModel dialogViewModel);
-    void RenderDecorations(SKCanvas canvas, DialogEditorViewModel dialogEditorViewModel);
+    void RenderDecorations(SKCanvas canvas, DialogEditorViewModel dialogEditorViewModel, DialogEditorSettingsViewModel dialogEditorSettingsViewModel);
 }

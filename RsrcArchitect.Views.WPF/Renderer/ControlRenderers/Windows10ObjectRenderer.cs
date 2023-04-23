@@ -140,14 +140,14 @@ public class Windows10ObjectRenderer : IObjectRenderer
             -15 + GetTextSize(dialogViewModel.Caption).Height / 2, SkFont, SkWhiteFontPaint);
     }
 
-    public void RenderDecorations(SKCanvas canvas, DialogEditorViewModel dialogEditorViewModel)
+    public void RenderDecorations(SKCanvas canvas, DialogEditorViewModel dialogEditorViewModel, DialogEditorSettingsViewModel dialogEditorSettingsViewModel)
     {
         // if anything relevant to grid point rendering changes, regenerate them
         if (_previousDialogRectangle != new Rectangle(0, 0, dialogEditorViewModel.DialogViewModel.Width,
                 dialogEditorViewModel.DialogViewModel.Height)
             ||
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold != _previousSnapThreshold)
+            dialogEditorSettingsViewModel.SnapThreshold != _previousSnapThreshold)
             _gridPoints = null;
 
 
@@ -157,24 +157,24 @@ public class Windows10ObjectRenderer : IObjectRenderer
             var points = new List<SKPoint>();
             for (var x = 0;
                  x < dialogEditorViewModel.DialogViewModel.Width /
-                 dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold;
+                 dialogEditorSettingsViewModel.SnapThreshold;
                  x++)
             for (var y = 0;
                  y < dialogEditorViewModel.DialogViewModel.Height /
-                 dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold;
+                 dialogEditorSettingsViewModel.SnapThreshold;
                  y++)
-                points.Add(new SKPoint(x * dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold,
-                    y * dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold));
+                points.Add(new SKPoint(x * dialogEditorSettingsViewModel.SnapThreshold,
+                    y * dialogEditorSettingsViewModel.SnapThreshold));
             _gridPoints = points.ToArray();
         }
 
-        if (dialogEditorViewModel.DialogEditorSettingsViewModel.PositioningMode == PositioningModes.Grid)
+        if (dialogEditorSettingsViewModel.PositioningMode == PositioningModes.Grid)
             // draw the grid points, now that we're sure they exist
             canvas.DrawPoints(SKPointMode.Points, _gridPoints, SkGridPaint);
 
         _previousDialogRectangle = new Rectangle(0, 0, dialogEditorViewModel.DialogViewModel.Width,
             dialogEditorViewModel.DialogViewModel.Height);
-        _previousSnapThreshold = dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold;
+        _previousSnapThreshold = dialogEditorSettingsViewModel.SnapThreshold;
         
         if (dialogEditorViewModel.SelectedControlViewModel == null) return;
         
@@ -214,7 +214,7 @@ public class Windows10ObjectRenderer : IObjectRenderer
             new(rectangle.MidX, rectangle.Bottom)
         }, new SKPaint
         {
-            StrokeWidth = dialogEditorViewModel.DialogEditorSettingsViewModel.SnapThreshold,
+            StrokeWidth = dialogEditorSettingsViewModel.SnapThreshold,
             Color = new SKColor(90, 90, 90),
             IsAntialias = true
         });

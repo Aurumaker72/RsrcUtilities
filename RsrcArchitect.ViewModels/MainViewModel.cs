@@ -15,6 +15,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<CanvasInvalida
     private readonly ICanvasInvalidationService _canvasInvalidationService;
     
     public ObservableCollection<DialogEditorViewModel> DialogEditorViewModels { get; } = new();
+    public DialogEditorSettingsViewModel DialogEditorSettingsViewModel { get; } = new();
 
     [ObservableProperty] private DialogEditorViewModel? _selectedDialogEditorViewModel = null;
     
@@ -35,7 +36,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<CanvasInvalida
             Width = 600,
             Height = 400,
             Root = new TreeNode<Control>(new Panel())
-        }, _filesService, "New Dialog Project"));
+        }, _filesService, "New Dialog Project", DialogEditorSettingsViewModel));
     }
     
     void IRecipient<CanvasInvalidationMessage>.Receive(CanvasInvalidationMessage message)
