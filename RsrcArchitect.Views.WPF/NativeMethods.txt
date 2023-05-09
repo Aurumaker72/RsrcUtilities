@@ -1,0 +1,5 @@
+﻿DrawFrameControl
+DrawThemeBackground
+OpenThemeData
+IsThemeBackgroundPartiallyTransparent
+DrawThemeParentBackground

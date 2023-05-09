@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RsrcArchitect.Services;
 using RsrcArchitect.ViewModels;
@@ -59,16 +60,16 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
     private void OnVisualStyleChanged()
     {
-        if (MainViewModel.DialogEditorSettingsViewModel.VisualStyle.Equals("windows-11",
-                StringComparison.InvariantCultureIgnoreCase))
+        var windowInteropHelper = new WindowInteropHelper(this);
+        windowInteropHelper.EnsureHandle();
+        
+        DialogRenderer.ObjectRenderer = MainViewModel.DialogEditorSettingsViewModel.VisualStyle switch
         {
-            DialogRenderer.ObjectRenderer = new Windows11ObjectRenderer();
-        }
-        else
-        {
-            // fall back to win10 renderer
-            DialogRenderer.ObjectRenderer = new Windows10ObjectRenderer();
-        }
+            "windows-11" => new Windows11ObjectRenderer(),
+            "windows-10" => new Windows10ObjectRenderer(),
+            "native" => new NativeObjectRenderer(windowInteropHelper.Handle),
+            _ => throw new ArgumentException()
+        };
     }
 
     private void OnSelectedDialogEditorChanged()
