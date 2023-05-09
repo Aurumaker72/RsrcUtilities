@@ -70,16 +70,24 @@ The creation of infrastructure to facilitate the design of `rc` user interfaces 
     <img src="https://img.shields.io/badge/Requires-RsrcUtilities-blue?style=for-the-badge"/>
 </p>
 
-# Key Features
-- Accurate control rendering
-- Smart hittesting
-- Flexible Z-Ordering
-- Intuitive tabbed navigation system
+# 💡 Features
+- Intuitive camera
+  - Click-drag
+  - Mouse-wheel zoom
+- High-precision control renderer
+  - Windows 10
+  - Windows 11
+- Smart selection system
+  - Reliably select the intended element
+- Z-Ordering system
+  - Reorder controls in the dialog editor
+- Multitasking
+  - Tabbed navigation system
 - Powerful and dynamic inspector
-- Reactive everywhere (no legacy-style return key confirmation)
-- Click-drag camera translation
-- Mousewheel camera zooming
-
-# Cool stuff
-![brain](https://user-images.githubusercontent.com/48759429/228230629-5d782233-e1e0-4a5b-80c2-d177f9438e3b.svg)
-The "smart" positioning mode does clever snapping to ensure you have an easy time when manually positioning controls.
+  - Provides context-aware information 
+- Always reactive
+  - Everything reacts to changes immediately with your input
+- Smart positioning system
+  - `Freeform` allows freely positioning controls
+  - `Grid` snaps controls to grid points
+  - `Snap` intelligently snaps controls based on other elements (useful for lists and fluid layouts)
