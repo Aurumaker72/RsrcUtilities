@@ -2,8 +2,7 @@
 using CommunityToolkit.Mvvm.Messaging;
 using RsrcArchitect.ViewModels.Messages;
 using RsrcCore.Controls;
-using RsrcCore.Geometry.Enums;
-using RsrcCore.Geometry.Structs;
+using RsrcCore.Geometry;
 
 namespace RsrcArchitect.ViewModels;
 
@@ -17,7 +16,7 @@ public abstract class ControlViewModel : ObservableObject
         Control = control;
         _isIdentifierInUse = isIdentifierInUse;
     }
-    
+
     public Rectangle Rectangle => Control.Rectangle;
 
     public string Identifier
@@ -25,7 +24,8 @@ public abstract class ControlViewModel : ObservableObject
         get => Control.Identifier;
         set
         {
-            if (!_isIdentifierInUse(value) && !string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && !value.Any(char.IsDigit) && value.All(char.IsAscii)) Control.Identifier = value;
+            if (!_isIdentifierInUse(value) && !string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) &&
+                !value.Any(char.IsDigit) && value.All(char.IsAscii)) Control.Identifier = value;
 
             OnPropertyChanged();
         }
@@ -36,7 +36,8 @@ public abstract class ControlViewModel : ObservableObject
         get => Control.Rectangle.X;
         set
         {
-            Control.Rectangle = Control.Rectangle.WithX(value);
+            Control.Rectangle = Control.Rectangle with { X = value };
+
             OnPropertyChanged();
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
         }
@@ -47,7 +48,7 @@ public abstract class ControlViewModel : ObservableObject
         get => Control.Rectangle.Y;
         set
         {
-            Control.Rectangle = Control.Rectangle.WithY(value);
+            Control.Rectangle = Control.Rectangle with { Y = value };
             OnPropertyChanged();
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
         }
@@ -58,7 +59,7 @@ public abstract class ControlViewModel : ObservableObject
         get => Control.Rectangle.Width;
         set
         {
-            Control.Rectangle = Control.Rectangle.WithWidth(value);
+            Control.Rectangle = Control.Rectangle with { Width = value };
             OnPropertyChanged();
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
         }
@@ -69,7 +70,7 @@ public abstract class ControlViewModel : ObservableObject
         get => Control.Rectangle.Height;
         set
         {
-            Control.Rectangle = Control.Rectangle.WithHeight(value);
+            Control.Rectangle = Control.Rectangle with { Height = value };
             OnPropertyChanged();
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
         }

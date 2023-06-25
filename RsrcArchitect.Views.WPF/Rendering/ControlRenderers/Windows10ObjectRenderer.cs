@@ -2,14 +2,14 @@
 using RsrcArchitect.ViewModels;
 using RsrcArchitect.ViewModels.Types;
 using RsrcCore.Controls;
-using RsrcCore.Geometry.Structs;
+using RsrcCore.Geometry;
 using SkiaSharp;
 
-namespace RsrcArchitect.Views.WPF.Renderers.ControlRenderers;
+namespace RsrcArchitect.Views.WPF.Rendering.ControlRenderers;
 
-public class Windows11ObjectRenderer : IObjectRenderer
+public class Windows10ObjectRenderer : IObjectRenderer
 {
-     private static readonly SKPaint SkBlackFontPaint = new()
+    private static readonly SKPaint SkBlackFontPaint = new()
     {
         Color = SKColors.Black,
         IsAntialias = true,
@@ -35,6 +35,7 @@ public class Windows11ObjectRenderer : IObjectRenderer
     private static readonly SKPaint SkGridPaint = new()
     {
         Color = SKColors.DarkGray,
+        IsAntialias = true,
         StrokeWidth = 2f
     };
 
@@ -46,36 +47,33 @@ public class Windows11ObjectRenderer : IObjectRenderer
     }
 
     private SKPoint[]? _gridPoints;
-    private Rectangle _previousDialogRectangle = Rectangle.Zero;
+    private Rectangle _previousDialogRectangle = Rectangle.Empty;
     private float _previousSnapThreshold;
-    private const float CornerRadius = 3f;
-    
+
     public void Render(SKCanvas canvas, Control control, Rectangle visualBounds)
     {
-        var skRectangle = new SKRoundRect(SKRect.Create(0, 0, visualBounds.Width, visualBounds.Height), CornerRadius, CornerRadius);
+        var skRectangle = SKRect.Create(0, 0, visualBounds.Width, visualBounds.Height);
 
         switch (control)
         {
             case Button button:
-                canvas.DrawRoundRect(skRectangle,
-                    new SKPaint { Color = new SKColor(253, 253, 253) });
-                canvas.DrawRoundRect(skRectangle,
-                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(208, 208, 208) });
+                canvas.DrawRect(skRectangle,
+                    new SKPaint { Color = new SKColor(225, 225, 225) });
+                canvas.DrawRect(skRectangle,
+                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(173, 173, 173) });
                 canvas.DrawText(button.Caption,
-                    skRectangle.Rect.MidX - GetTextSize(button.Caption).Width / 2,
-                    skRectangle.Rect.MidY + GetTextSize(button.Caption).Height / 2, SkFont, SkBlackFontPaint);
+                    skRectangle.MidX - GetTextSize(button.Caption).Width / 2,
+                    skRectangle.MidY + GetTextSize(button.Caption).Height / 2, SkFont, SkBlackFontPaint);
                 break;
             case TextBox:
-                canvas.DrawRoundRect(skRectangle,
+                canvas.DrawRect(skRectangle,
                     new SKPaint { Color = new SKColor(255, 255, 255) });
-                canvas.DrawRoundRect(skRectangle,
-                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(236, 236, 236) });
-                canvas.DrawLine(skRectangle.Rect.Left + CornerRadius, skRectangle.Rect.Bottom, skRectangle.Rect.Right - CornerRadius, skRectangle.Rect.Bottom,
-                    new SKPaint { Style = SKPaintStyle.StrokeAndFill, Color = new SKColor(131, 131, 131), StrokeWidth = 1});
+                canvas.DrawRect(skRectangle,
+                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(122, 122, 122) });
                 break;
             case GroupBox groupBox:
-                canvas.DrawRoundRect(skRectangle,
-                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(220, 220, 220) });
+                canvas.DrawRect(skRectangle,
+                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(180, 180, 180) });
                 canvas.DrawText(groupBox.Caption,
                     10f,
                     GetTextSize(groupBox.Caption).Height / 2, SkFont, SkBlackFontPaint);
@@ -86,33 +84,32 @@ public class Windows11ObjectRenderer : IObjectRenderer
                 var paint = new SKPaint
                 {
                     Style = SKPaintStyle.Fill,
-                    Color = new SKColor(243, 243, 243),
-                    StrokeWidth = 2f,
+                    Color = SKColors.White
                 };
-                var checkRectangle = new SKRoundRect(SKRect.Create(0, skRectangle.Height / 2 - checkSize / 2, checkSize, checkSize), CornerRadius, CornerRadius);
-                canvas.DrawRoundRect(checkRectangle, paint);
+                var checkRectangle = SKRect.Create(0, skRectangle.Height / 2 - checkSize / 2, checkSize, checkSize);
+                canvas.DrawRect(checkRectangle, paint);
                 paint.Style = SKPaintStyle.Stroke;
-                paint.Color = new SKColor(98, 98, 98);
-                canvas.DrawRoundRect(checkRectangle, paint);
+                paint.Color = new SKColor(51, 51, 51);
+                canvas.DrawRect(checkRectangle, paint);
                 canvas.DrawText(checkBox.Caption,
                     checkSize + 5f,
-                    checkRectangle.Rect.Top + GetTextSize(checkBox.Caption).Height, SkFont, SkBlackFontPaint);
+                    checkRectangle.Top + GetTextSize(checkBox.Caption).Height, SkFont, SkBlackFontPaint);
                 break;
             }
             case ComboBox:
-                canvas.DrawRoundRect(skRectangle,
-                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(210, 210, 210) });
-                canvas.DrawRoundRect(skRectangle,
-                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(253, 253, 253) });
+                canvas.DrawRect(skRectangle,
+                    new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = new SKColor(173, 173, 173) });
+                canvas.DrawRect(skRectangle,
+                    new SKPaint { Style = SKPaintStyle.Fill, Color = new SKColor(225, 225, 225) });
                 // TODO: combobox arrow rendering
                 break;
             case Label label:
                 canvas.DrawText(label.Caption,
-                    new SKPoint(0, skRectangle.Rect.MidY + GetTextSize(label.Caption).Height / 2),
+                    new SKPoint(0, skRectangle.MidY + GetTextSize(label.Caption).Height / 2),
                     SkBlackFontPaint);
                 break;
             default:
-                canvas.DrawRect(skRectangle.Rect,
+                canvas.DrawRect(skRectangle,
                     new SKPaint { Color = new SKColor(255, 0, 255) });
                 break;
         }
@@ -120,43 +117,31 @@ public class Windows11ObjectRenderer : IObjectRenderer
 
     public void Render(SKCanvas canvas, DialogViewModel dialogViewModel)
     {
-
-        const float titleBarHeight = 30f;
-        
-        var roundedSkRectangle = new SKRoundRect(SKRect.Create(0, -titleBarHeight, dialogViewModel.Width,
-            dialogViewModel.Height + titleBarHeight), CornerRadius * 2f, CornerRadius * 2f);
-
-        canvas.Save();
-        canvas.ClipRoundRect(roundedSkRectangle);
-
-        
-        
-        canvas.DrawRoundRect(roundedSkRectangle, new SKPaint
+        var skRectangle = SKRect.Create(0, 0, dialogViewModel.Width,
+            dialogViewModel.Height);
+        canvas.DrawRect(skRectangle.InflateCopy(1f, 1f), new SKPaint
         {
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = 1f,
-            Color = new SKColor(0, 120, 212),
+            Style = SKPaintStyle.Fill,
+            Color = new SKColor(0, 120, 215)
         });
-        canvas.DrawRoundRect(roundedSkRectangle, new SKPaint
+        canvas.DrawRect(skRectangle, new SKPaint
         {
             Style = SKPaintStyle.Fill,
             Color = new SKColor(240, 240, 240)
         });
-        
-        canvas.DrawRect(-1, -titleBarHeight, roundedSkRectangle.Width + 2, titleBarHeight, new SKPaint
+
+        canvas.DrawRect(-1, -30, skRectangle.Width + 2, 30, new SKPaint
         {
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(0, 120, 212)
+            Color = new SKColor(0, 120, 215)
         });
-
-        canvas.Restore();
-        
         canvas.DrawText(dialogViewModel.Caption,
             5f,
             -15 + GetTextSize(dialogViewModel.Caption).Height / 2, SkFont, SkWhiteFontPaint);
     }
 
-    public void RenderDecorations(SKCanvas canvas, DialogEditorViewModel dialogEditorViewModel, DialogEditorSettingsViewModel dialogEditorSettingsViewModel)
+    public void RenderDecorations(SKCanvas canvas, DialogEditorViewModel dialogEditorViewModel,
+        DialogEditorSettingsViewModel dialogEditorSettingsViewModel)
     {
         // if anything relevant to grid point rendering changes, regenerate them
         if (_previousDialogRectangle != new Rectangle(0, 0, dialogEditorViewModel.DialogViewModel.Width,
@@ -173,11 +158,11 @@ public class Windows11ObjectRenderer : IObjectRenderer
             var points = new List<SKPoint>();
             for (var x = 0;
                  x < dialogEditorViewModel.DialogViewModel.Width /
-                 dialogEditorSettingsViewModel.SnapThreshold;
+                 dialogEditorSettingsViewModel.SnapThreshold + 1;
                  x++)
             for (var y = 0;
                  y < dialogEditorViewModel.DialogViewModel.Height /
-                 dialogEditorSettingsViewModel.SnapThreshold;
+                 dialogEditorSettingsViewModel.SnapThreshold + 1;
                  y++)
                 points.Add(new SKPoint(x * dialogEditorSettingsViewModel.SnapThreshold,
                     y * dialogEditorSettingsViewModel.SnapThreshold));
@@ -191,9 +176,9 @@ public class Windows11ObjectRenderer : IObjectRenderer
         _previousDialogRectangle = new Rectangle(0, 0, dialogEditorViewModel.DialogViewModel.Width,
             dialogEditorViewModel.DialogViewModel.Height);
         _previousSnapThreshold = dialogEditorSettingsViewModel.SnapThreshold;
-        
+
         if (dialogEditorViewModel.SelectedControlViewModel == null) return;
-        
+
         // draw selection rectangle
         var rectangle = SKRect.Create(0, 0,
             dialogEditorViewModel.SelectedControlViewModel.Rectangle.Width,

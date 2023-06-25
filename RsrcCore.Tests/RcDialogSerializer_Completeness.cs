@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using RsrcCore.Controls;
-using RsrcCore.Geometry.Enums;
-using RsrcCore.Geometry.Structs;
+using RsrcCore.Geometry;
 using RsrcCore.Layout.Implementations;
 using RsrcCore.Serializers.Implementations;
 

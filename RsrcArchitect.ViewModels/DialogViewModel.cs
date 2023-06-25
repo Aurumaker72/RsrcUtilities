@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.Messaging;
 using RsrcArchitect.ViewModels.Messages;
 using RsrcCore.Controls;
-using RsrcCore.Geometry.Structs;
+using RsrcCore.Geometry;
 using RsrcCore.Layout.Implementations;
 using RsrcCore.Layout.Interfaces;
 

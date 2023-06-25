@@ -109,8 +109,8 @@
                                         Symbol="{Binding ElementName=Window, Path=MainViewModel.DialogEditorSettingsViewModel.PositioningMode, Converter={StaticResource PositioningModeToSymbolConverter}}" />
                                 </Button>
                                 <ComboBox SelectedValue="{Binding ElementName=Window, Path=MainViewModel.DialogEditorSettingsViewModel.VisualStyle, Mode=TwoWay}" SelectedValuePath="Tag">
+                                    <ComboBoxItem Tag="nineslice">Nine-slice</ComboBoxItem>
                                     <ComboBoxItem Tag="windows-10">Windows 10</ComboBoxItem>
-                                    <ComboBoxItem Tag="windows-11">Windows 11</ComboBoxItem>
                                 </ComboBox>
                             </ToolBar>
                         </ToolBarTray>

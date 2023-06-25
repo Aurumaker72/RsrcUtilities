@@ -1,9 +1,9 @@
 ﻿using RsrcArchitect.ViewModels;
 using RsrcCore.Controls;
-using RsrcCore.Geometry.Structs;
+using RsrcCore.Geometry;
 using SkiaSharp;
 
-namespace RsrcArchitect.Views.WPF.Renderers;
+namespace RsrcArchitect.Views.WPF.Rendering;
 
 public interface IObjectRenderer
 {

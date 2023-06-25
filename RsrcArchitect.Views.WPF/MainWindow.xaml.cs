@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RsrcArchitect.Services;
 using RsrcArchitect.ViewModels;
-using RsrcArchitect.ViewModels.Types;
 using RsrcArchitect.Views.WPF.Extensions;
-using RsrcArchitect.Views.WPF.Renderers;
-using RsrcArchitect.Views.WPF.Renderers.ControlRenderers;
+using RsrcArchitect.Views.WPF.Rendering;
+using RsrcArchitect.Views.WPF.Rendering.ControlRenderers;
 using RsrcArchitect.Views.WPF.Services;
-using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
 using Wpf.Ui.Controls.Window;
@@ -25,13 +21,13 @@ namespace RsrcArchitect.Views.WPF;
 [INotifyPropertyChanged]
 public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 {
-    private const float zoomIncrement = 0.5f;
-    
+    private const float ZoomIncrement = 0.5f;
+
     private SKElement? _skElement;
 
     public MainViewModel MainViewModel { get; }
-    public DialogRenderer DialogRenderer { get; } = new DialogRenderer();
-    
+    public DialogRenderer DialogRenderer { get; } = new();
+
     public MainWindow()
     {
         InitializeComponent();
@@ -42,29 +38,27 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
         MainViewModel.PropertyChanged += (sender, args) =>
         {
-            if (args.PropertyName == nameof(MainViewModel.SelectedDialogEditorViewModel)) OnSelectedDialogEditorChanged();
+            if (args.PropertyName == nameof(MainViewModel.SelectedDialogEditorViewModel))
+                OnSelectedDialogEditorChanged();
         };
-        
+
         MainViewModel.DialogEditorSettingsViewModel.PropertyChanged += (sender, args) =>
         {
             if (args.PropertyName != nameof(MainViewModel.DialogEditorSettingsViewModel.VisualStyle)) return;
 
             OnVisualStyleChanged();
         };
-        
+
         OnSelectedDialogEditorChanged();
         OnVisualStyleChanged();
     }
 
     private void OnVisualStyleChanged()
     {
-        var windowInteropHelper = new WindowInteropHelper(this);
-        windowInteropHelper.EnsureHandle();
-        
         DialogRenderer.ObjectRenderer = MainViewModel.DialogEditorSettingsViewModel.VisualStyle switch
         {
-            "windows-11" => new Windows11ObjectRenderer(),
             "windows-10" => new Windows10ObjectRenderer(),
+            "nineslice" => new NinesliceObjectRenderer(),
             _ => throw new ArgumentException()
         };
     }
@@ -73,7 +67,6 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     {
         _skElement = TabControl.FindElementByName<SKElement>("SkElement");
         (this as ICanvasInvalidationService).Invalidate();
-        
     }
 
     void ICanvasInvalidationService.Invalidate()
@@ -126,14 +119,14 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
     {
         var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
 
-        dialogEditorViewModel.Scale -= zoomIncrement;
+        dialogEditorViewModel.Scale -= ZoomIncrement;
     }
 
     private void ZoomInButton_OnClick(object sender, RoutedEventArgs e)
     {
         var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
 
-        dialogEditorViewModel.Scale += zoomIncrement;
+        dialogEditorViewModel.Scale += ZoomIncrement;
     }
 
     private void SkElement_OnMouseWheel(object sender, MouseWheelEventArgs e)

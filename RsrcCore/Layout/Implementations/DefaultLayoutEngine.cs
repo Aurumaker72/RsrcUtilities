@@ -1,6 +1,5 @@
 ﻿using RsrcCore.Controls;
-using RsrcCore.Geometry.Enums;
-using RsrcCore.Geometry.Structs;
+using RsrcCore.Geometry;
 using RsrcCore.Layout.Interfaces;
 
 namespace RsrcCore.Layout.Implementations;
@@ -32,19 +31,20 @@ public class DefaultLayoutEngine : ILayoutEngine
             switch (control.HorizontalAlignment)
             {
                 case Alignment.Start:
-                    finalRectangle = finalRectangle.WithX(parentRectangle.X + control.Rectangle.X);
+                    finalRectangle = finalRectangle with { X = parentRectangle.X + control.Rectangle.X };
                     break;
                 case Alignment.Fill:
-                    finalRectangle = finalRectangle.WithX(parentRectangle.X + control.Rectangle.X);
-                    finalRectangle = finalRectangle.WithWidth(parentRectangle.Width - control.Rectangle.X * 2);
+                    finalRectangle = finalRectangle with
+                    {
+                        X = parentRectangle.X + control.Rectangle.X,
+                        Width = parentRectangle.Width - control.Rectangle.X * 2
+                    };
                     break;
                 case Alignment.End:
-                    finalRectangle = finalRectangle.WithX(parentRectangle.Right - control.Rectangle.Right);
+                    finalRectangle = finalRectangle with { X = parentRectangle.Right - control.Rectangle.Right };
                     break;
                 case Alignment.Center:
-                    finalRectangle =
-                        finalRectangle.WithX(
-                            parentRectangle.X + parentRectangle.Width / 2 - control.Rectangle.Width / 2);
+                    finalRectangle = finalRectangle with { X = parentRectangle.X + parentRectangle.Width / 2 - control.Rectangle.Width / 2 };
                     break;
                 default:
                     throw new NotImplementedException();
@@ -53,18 +53,21 @@ public class DefaultLayoutEngine : ILayoutEngine
             switch (control.VerticalAlignment)
             {
                 case Alignment.Start:
-                    finalRectangle = finalRectangle.WithY(parentRectangle.Y + control.Rectangle.Y);
+                    finalRectangle = finalRectangle with { Y = parentRectangle.Y + control.Rectangle.Y };
                     break;
                 case Alignment.Fill:
-                    finalRectangle = finalRectangle.WithY(parentRectangle.Y + control.Rectangle.Y);
-                    finalRectangle = finalRectangle.WithHeight(parentRectangle.Height - control.Rectangle.Y * 2);
+                    finalRectangle = finalRectangle with
+                    {
+                        Y = parentRectangle.Y + control.Rectangle.Y,
+                        Height = parentRectangle.Height - control.Rectangle.Y * 2
+                    };
                     break;
                 case Alignment.End:
-                    finalRectangle = finalRectangle.WithY(parentRectangle.Bottom - control.Rectangle.Bottom);
+                    finalRectangle = finalRectangle with { Y = parentRectangle.Bottom - control.Rectangle.Bottom };
                     break;
                 case Alignment.Center:
-                    finalRectangle = finalRectangle.WithY(parentRectangle.Y + parentRectangle.Height / 2 -
-                                                          control.Rectangle.Height / 2);
+                    finalRectangle = finalRectangle with { Y = parentRectangle.Y + parentRectangle.Height / 2 -
+                                                               control.Rectangle.Height / 2 };
                     break;
                 default:
                     throw new NotImplementedException();

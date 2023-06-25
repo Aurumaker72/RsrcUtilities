@@ -1,8 +1,8 @@
 ﻿using RsrcArchitect.ViewModels;
-using RsrcArchitect.Views.WPF.Renderers.ControlRenderers;
+using RsrcArchitect.Views.WPF.Rendering.ControlRenderers;
 using SkiaSharp;
 
-namespace RsrcArchitect.Views.WPF.Renderers;
+namespace RsrcArchitect.Views.WPF.Rendering;
 
 public class DialogRenderer
 {

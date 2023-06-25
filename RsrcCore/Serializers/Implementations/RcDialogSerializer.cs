@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using RsrcCore.Controls;
 using RsrcCore.Extensions;
-using RsrcCore.Geometry.Structs;
+using RsrcCore.Geometry;
 using RsrcCore.Serializers.Interfaces;
 
 namespace RsrcCore.Serializers.Implementations;

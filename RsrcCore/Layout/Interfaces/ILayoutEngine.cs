@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using RsrcCore.Controls;
-using RsrcCore.Geometry.Structs;
+using RsrcCore.Geometry;
 
 namespace RsrcCore.Layout.Interfaces;
 

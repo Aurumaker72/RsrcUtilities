@@ -1,4 +1,4 @@
-﻿namespace RsrcCore.Geometry.Enums;
+﻿namespace RsrcCore.Geometry;
 
 /// <summary>
 ///     The alignment relative to a parent

@@ -11,7 +11,7 @@ using RsrcArchitect.ViewModels.Types;
 using RsrcCore;
 using RsrcCore.Controls;
 using RsrcCore.Generators.Implementations;
-using RsrcCore.Geometry.Structs;
+using RsrcCore.Geometry;
 using RsrcCore.Layout.Implementations;
 using RsrcCore.Serializers.Implementations;
 
@@ -21,7 +21,7 @@ public partial class DialogEditorViewModel : ObservableObject
 {
     private readonly IFilesService _filesService;
     private readonly DialogEditorSettingsViewModel _dialogEditorSettingsViewModel;
-    
+
     private Grips? _currentGrip;
     private Rectangle _gripStartControlRectangle;
     private Vector2 _gripStartPointerPosition;
@@ -45,7 +45,7 @@ public partial class DialogEditorViewModel : ObservableObject
             new(this, "checkbox", () => new CheckBox()),
             new(this, "groupbox", () => new GroupBox()),
             new(this, "combobox", () => new ComboBox()),
-            new(this, "label", () => new Label()),
+            new(this, "label", () => new Label())
         };
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
@@ -165,30 +165,34 @@ public partial class DialogEditorViewModel : ObservableObject
                     if (!hasSnappedX && Math.Abs(node.Data.Rectangle.X - targetControl.Rectangle.X) <
                         _dialogEditorSettingsViewModel.SnapThreshold)
                     {
-                        targetControl.Rectangle = targetControl.Rectangle.WithX(node.Data.Rectangle.X);
+                        targetControl.Rectangle = targetControl.Rectangle with { X = node.Data.Rectangle.X };
                         hasSnappedX = true;
                     }
 
                     if (!hasSnappedX && Math.Abs(node.Data.Rectangle.Right - targetControl.Rectangle.Right) <
                         _dialogEditorSettingsViewModel.SnapThreshold)
                     {
-                        targetControl.Rectangle =
-                            targetControl.Rectangle.WithX(node.Data.Rectangle.Right - targetControl.Rectangle.Width);
+                        targetControl.Rectangle = targetControl.Rectangle with
+                        {
+                            X = node.Data.Rectangle.Right - targetControl.Rectangle.Width
+                        };
                         hasSnappedX = true;
                     }
 
                     if (!hasSnappedY && Math.Abs(node.Data.Rectangle.Y - targetControl.Rectangle.Y) <
                         _dialogEditorSettingsViewModel.SnapThreshold)
                     {
-                        targetControl.Rectangle = targetControl.Rectangle.WithY(node.Data.Rectangle.Y);
+                        targetControl.Rectangle = targetControl.Rectangle with { Y = node.Data.Rectangle.Y };
                         hasSnappedY = true;
                     }
 
                     if (!hasSnappedY && Math.Abs(node.Data.Rectangle.Bottom - targetControl.Rectangle.Bottom) <
                         _dialogEditorSettingsViewModel.SnapThreshold)
                     {
-                        targetControl.Rectangle =
-                            targetControl.Rectangle.WithY(node.Data.Rectangle.Bottom - targetControl.Rectangle.Height);
+                        targetControl.Rectangle = targetControl.Rectangle with
+                        {
+                            Y = node.Data.Rectangle.Bottom - targetControl.Rectangle.Height
+                        };
                         hasSnappedY = true;
                     }
                 }
@@ -408,8 +412,7 @@ public partial class DialogEditorViewModel : ObservableObject
 
         // place it roughly in the middle
         var size = new Vector2Int(90, 25);
-        control.Rectangle = new Rectangle(DialogViewModel.Dialog.Width / 2 - size.X,
-            DialogViewModel.Dialog.Height / 2 - size.Y, size.X, size.Y);
+        control.Rectangle = new Rectangle(0, 0, size.X, size.Y);
 
         // add it to the root node, then queue an invalidation
         DialogViewModel.Dialog.Root.AddChild(control);

@@ -1,5 +1,4 @@
-﻿using RsrcCore.Geometry.Enums;
-using RsrcCore.Geometry.Structs;
+﻿using RsrcCore.Geometry;
 
 namespace RsrcCore.Controls;
 
