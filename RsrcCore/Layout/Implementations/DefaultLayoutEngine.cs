@@ -31,17 +31,17 @@ public class DefaultLayoutEngine : ILayoutEngine
 
             switch (control.HorizontalAlignment)
             {
-                case HorizontalAlignments.Left:
+                case Alignment.Start:
                     finalRectangle = finalRectangle.WithX(parentRectangle.X + control.Rectangle.X);
                     break;
-                case HorizontalAlignments.Stretch:
+                case Alignment.Fill:
                     finalRectangle = finalRectangle.WithX(parentRectangle.X + control.Rectangle.X);
                     finalRectangle = finalRectangle.WithWidth(parentRectangle.Width - control.Rectangle.X * 2);
                     break;
-                case HorizontalAlignments.Right:
+                case Alignment.End:
                     finalRectangle = finalRectangle.WithX(parentRectangle.Right - control.Rectangle.Right);
                     break;
-                case HorizontalAlignments.Center:
+                case Alignment.Center:
                     finalRectangle =
                         finalRectangle.WithX(
                             parentRectangle.X + parentRectangle.Width / 2 - control.Rectangle.Width / 2);
@@ -52,17 +52,17 @@ public class DefaultLayoutEngine : ILayoutEngine
 
             switch (control.VerticalAlignment)
             {
-                case VerticalAlignments.Top:
+                case Alignment.Start:
                     finalRectangle = finalRectangle.WithY(parentRectangle.Y + control.Rectangle.Y);
                     break;
-                case VerticalAlignments.Stretch:
+                case Alignment.Fill:
                     finalRectangle = finalRectangle.WithY(parentRectangle.Y + control.Rectangle.Y);
                     finalRectangle = finalRectangle.WithHeight(parentRectangle.Height - control.Rectangle.Y * 2);
                     break;
-                case VerticalAlignments.Bottom:
+                case Alignment.End:
                     finalRectangle = finalRectangle.WithY(parentRectangle.Bottom - control.Rectangle.Bottom);
                     break;
-                case VerticalAlignments.Center:
+                case Alignment.Center:
                     finalRectangle = finalRectangle.WithY(parentRectangle.Y + parentRectangle.Height / 2 -
                                                           control.Rectangle.Height / 2);
                     break;

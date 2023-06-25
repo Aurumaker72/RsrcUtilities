@@ -75,7 +75,7 @@ public abstract class ControlViewModel : ObservableObject
         }
     }
 
-    public HorizontalAlignments HorizontalAlignment
+    public Alignment HorizontalAlignment
     {
         get => Control.HorizontalAlignment;
         set
@@ -86,7 +86,7 @@ public abstract class ControlViewModel : ObservableObject
         }
     }
 
-    public VerticalAlignments VerticalAlignment
+    public Alignment VerticalAlignment
     {
         get => Control.VerticalAlignment;
         set

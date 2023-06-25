@@ -26,10 +26,10 @@ public abstract class Control
     /// <summary>
     ///     The horizontal alignment relative to the parent
     /// </summary>
-    public HorizontalAlignments HorizontalAlignment { get; set; } = HorizontalAlignments.Left;
+    public Alignment HorizontalAlignment { get; set; } = Alignment.Start;
 
     /// <summary>
     ///     The vertical alignment relative to the parent
     /// </summary>
-    public VerticalAlignments VerticalAlignment { get; set; } = VerticalAlignments.Top;
+    public Alignment VerticalAlignment { get; set; } = Alignment.Start;
 }

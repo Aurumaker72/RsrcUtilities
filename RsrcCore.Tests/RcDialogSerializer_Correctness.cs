@@ -25,8 +25,8 @@ public class RcDialogSerializerCorrectness
             Root = new TreeNode<Control>(new Panel
             {
                 Rectangle = new Rectangle(0, 0, 0, 0),
-                HorizontalAlignment = HorizontalAlignments.Stretch,
-                VerticalAlignment = VerticalAlignments.Stretch
+                HorizontalAlignment = Alignment.Fill,
+                VerticalAlignment = Alignment.Fill
             })
         };
 
