@@ -27,17 +27,17 @@ var dialog = new Dialog
  ```cs
 dialog.Root = new TreeNode<Control>(new Panel
 {
-    Rectangle = new Rectangle(0, 0, 0, 0),
-    HorizontalAlignment = Alignments.Stretch,
-    VerticalAlignment = Alignments.Stretch
+    Rectangle = Rectangle.Empty,
+    HorizontalAlignment = Alignments.Fill,
+    VerticalAlignment = Alignments.Fill
 });
 ```
 4. Add any controls you desire
 ```cs
 dialog.Root.AddChild(new CheckBox()
 {
-    Identifier = "IDC_SOME_NAME",
-    Caption = "Hi",
+    Identifier = "IDC_EXAMPLE",
+    Caption = "Hello World!",
     Rectangle = new Rectangle(0, 0, 80, 40),
     HorizontalAlignment = Alignments.Center,
     VerticalAlignment = Alignments.Center
