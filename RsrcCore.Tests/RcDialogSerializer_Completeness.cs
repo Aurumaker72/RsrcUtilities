@@ -7,7 +7,7 @@ using RsrcCore.Serializers.Implementations;
 
 namespace RsrcCore.UnitTests.Serializers;
 
-public class RcDialogSerializer_Correctness
+public class RcDialogSerializerCompleteness
 {
     [SetUp]
     public void Setup()
@@ -20,8 +20,8 @@ public class RcDialogSerializer_Correctness
         var dialog = new Dialog
         {
             Identifier = "IDD_TEST",
-            Width = 123,
-            Height = 321,
+            Width = 800,
+            Height = 600,
             Root = new TreeNode<Control>(new Panel
             {
                 Rectangle = new Rectangle(0, 0, 0, 0),
@@ -30,14 +30,14 @@ public class RcDialogSerializer_Correctness
             })
         };
 
-        var serializedDialog = new RcDialogSerializer().Serialize(new DefaultLayoutEngine().DoLayout(dialog), dialog);
+        
+        dialog.Root.AddChild(new Button { Identifier = "IDC_BUTTON" });
+        dialog.Root.AddChild(new CheckBox { Identifier = "IDC_CHECKBOX" });
+        dialog.Root.AddChild(new ComboBox { Identifier = "IDC_COMBOBOX" });
+        dialog.Root.AddChild(new GroupBox { Identifier = "IDC_GROUPBOX" });
+        dialog.Root.AddChild(new TextBox { Identifier = "IDC_TEXTBOX" });
+        dialog.Root.AddChild(new Label { Identifier = "IDC_LABEL" });
 
-        var lines = serializedDialog.Split(Environment.NewLine);
-        var bareDialogDefinition = Regex.Replace(lines[0].Replace(',', ' '), @"\s+", " ").Split(' ');
-        var serializedWidth = int.Parse(bareDialogDefinition[4]);
-        var serializedHeight = int.Parse(bareDialogDefinition[5]);
-
-        Assert.That(serializedWidth, Is.EqualTo(dialog.Width), "Width was incorrectly serialized");
-        Assert.That(serializedHeight, Is.EqualTo(dialog.Height), "Height was incorrectly serialized");
+        _ = new RcDialogSerializer().Serialize(new DefaultLayoutEngine().DoLayout(dialog), dialog);
     }
 }

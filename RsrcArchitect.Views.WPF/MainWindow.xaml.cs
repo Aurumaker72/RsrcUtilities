@@ -12,8 +12,6 @@ using RsrcArchitect.Views.WPF.Extensions;
 using RsrcArchitect.Views.WPF.Renderers;
 using RsrcArchitect.Views.WPF.Renderers.ControlRenderers;
 using RsrcArchitect.Views.WPF.Services;
-using RsrcCore.Controls;
-using RsrcCore.Geometry.Structs;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
@@ -67,7 +65,6 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
         {
             "windows-11" => new Windows11ObjectRenderer(),
             "windows-10" => new Windows10ObjectRenderer(),
-            "native" => new NativeObjectRenderer(windowInteropHelper.Handle),
             _ => throw new ArgumentException()
         };
     }

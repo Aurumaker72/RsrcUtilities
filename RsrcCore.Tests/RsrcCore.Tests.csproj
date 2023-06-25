@@ -19,9 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\RsrcCore.Controls\RsrcCore.Controls.csproj" />
-        <ProjectReference Include="..\RsrcCore.Layout\RsrcCore.Layout.csproj" />
-        <ProjectReference Include="..\RsrcCore.Serializers\RsrcCore.Serializers.csproj" />
+      <ProjectReference Include="..\RsrcCore\RsrcCore.csproj" />
     </ItemGroup>
 
 </Project>

@@ -12,12 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\RsrcCore.Controls\RsrcCore.Controls.csproj" />
-        <ProjectReference Include="..\RsrcCore.Generators\RsrcCore.Generators.csproj" />
-        <ProjectReference Include="..\RsrcCore.Layout\RsrcCore.Layout.csproj" />
         <ProjectReference Include="..\RsrcArchitect.Services\RsrcArchitect.Services.csproj" />
         <ProjectReference Include="..\RsrcArchitect.ViewModels.Types\RsrcArchitect.ViewModels.Types.csproj" />
-        <ProjectReference Include="..\RsrcCore.Serializers\RsrcCore.Serializers.csproj" />
+        <ProjectReference Include="..\RsrcCore\RsrcCore.csproj" />
     </ItemGroup>
 
 </Project>
