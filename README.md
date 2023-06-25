@@ -6,7 +6,7 @@
   RsrcUtilities
 </h1>
 <p align="center">
-  Modular .NET class library suite for interacting with rc files
+  .NET library for rc file interaction
 </p>
 
 <img align="center" src="https://user-images.githubusercontent.com/48759429/222482582-2b253888-d5dd-45b2-a9af-2103aacc3dbb.png">
