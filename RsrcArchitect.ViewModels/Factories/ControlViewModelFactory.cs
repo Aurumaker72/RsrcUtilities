@@ -1,25 +1,32 @@
-﻿using RsrcArchitect.ViewModels.Controls;
+﻿using System.Reflection;
+using RsrcArchitect.ViewModels.Controls;
 using RsrcCore.Controls;
 
 namespace RsrcArchitect.ViewModels.Factories;
 
 internal static class ControlViewModelFactory
 {
+    private static Dictionary<string, Type> _typeCache = new();
+
     /// <summary>
     ///     Creates a class inheriting <see cref="ControlViewModel" /> which maps to the specified control
     /// </summary>
     /// <returns>An instance of a class inheriting <see cref="ControlViewModel" /></returns>
     internal static ControlViewModel Create(Control control, Func<string, bool> isIdentifierInUse)
     {
-        return control switch
+        var typeName = $"{control.GetType().Name}ViewModel";
+        if (!_typeCache.TryGetValue(typeName, out var type))
         {
-            Button button => new ButtonViewModel(button, isIdentifierInUse),
-            CheckBox checkBox => new CheckBoxViewModel(checkBox, isIdentifierInUse),
-            GroupBox groupBox => new GroupBoxViewModel(groupBox, isIdentifierInUse),
-            TextBox textBox => new TextBoxViewModel(textBox, isIdentifierInUse),
-            Label label => new LabelViewModel(label, isIdentifierInUse),
-            ComboBox comboBox => new ComboBoxViewModel(comboBox, isIdentifierInUse),
-            _ => throw new ArgumentException($"{control} doesn't map to any ViewModel")
-        };
+            _typeCache[typeName] = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(x => x.GetTypes())
+                .FirstOrDefault(t => t.Name == typeName)!;
+             type = _typeCache[typeName];
+        }
+        if (type == null)
+        {
+            throw new ArgumentException($"Couldn't map a control vm to {typeName}");
+        }
+        return (ControlViewModel)Activator.CreateInstance(type, control, isIdentifierInUse);
     }
 }
