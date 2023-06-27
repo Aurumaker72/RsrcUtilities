@@ -6,9 +6,12 @@
   RsrcUtilities
 </h1>
 <p align="center">
-  .NET library for rc file interaction
+   .NET utility suite for working with the rc format 
 </p>
-
+<p align="center">
+   RsrcUtilities consists of RsrcCore and RsrcArchitect
+</p>
+<br>
 <img align="center" src="https://user-images.githubusercontent.com/48759429/222482582-2b253888-d5dd-45b2-a9af-2103aacc3dbb.png">
 
 # :zap: Quickstart 
