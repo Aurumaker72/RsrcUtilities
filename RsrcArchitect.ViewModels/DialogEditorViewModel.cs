@@ -404,10 +404,7 @@ public partial class DialogEditorViewModel : ObservableObject
 
         headerStream.Write(Encoding.Default.GetBytes(generatedHeader));
         await headerStream.FlushAsync();
-
-        WeakReferenceMessenger.Default.Send(new DialogSavedMessage((serializedDialog, generatedHeader)));
     }
-
     #endregion
 
 

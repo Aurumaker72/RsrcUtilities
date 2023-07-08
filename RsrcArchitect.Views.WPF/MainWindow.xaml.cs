@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Numerics;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -20,7 +22,7 @@ namespace RsrcArchitect.Views.WPF;
 ///     Interaction logic for MainWindow.xaml
 /// </summary>
 [INotifyPropertyChanged]
-public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>, IRecipient<DialogSavedMessage>
+public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>
 {
     private const float ZoomIncrement = 0.5f;
 
@@ -130,20 +132,20 @@ public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>,
             ZoomOutButton_OnClick(sender, null);
     }
 
-    private void Save_OnClick(object sender, RoutedEventArgs e)
-    {
-        var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
-
-        dialogEditorViewModel.SaveCommand.Execute(null);
-    }
-
     public void Receive(CanvasInvalidationMessage message)
     {
         _skElement?.InvalidateVisual();
     }
 
-    public void Receive(DialogSavedMessage message)
+
+    private void Preview_OnClick(object sender, RoutedEventArgs e)
     {
-        DialogLoader.ShowDialogFromRcString(message.Value.Resource, message.Value.Header);
+        var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
+
+        Thread thread = new(() =>
+        {
+            DialogLoader.ShowDialogFromRcString(dialogEditorViewModel.DialogViewModel);
+        });
+        thread.Start();
     }
 }

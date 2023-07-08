@@ -46,7 +46,7 @@
                         <ToolBarTray IsLocked="True">
                             <ToolBar Band="1" BandIndex="1">
                                 <Button
-                                    Click="Save_OnClick"
+                                    Command="{Binding SaveCommand}"
                                     Content="Save" />
                                 <Separator />
                                 <Button
@@ -55,6 +55,7 @@
                                 <Button
                                     Command="{Binding DeleteSelectedNodeCommand}"
                                     Content="Delete" />
+                                <Button Click="Preview_OnClick" Content="Preview"/>
                                 <Separator />
                                 <Button
                                     Click="PositioningModeButton_OnClick"

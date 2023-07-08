@@ -23,8 +23,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<DialogEditorVi
         _filesService = filesService;
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
-
-
+    
     [RelayCommand]
     private void CreateProject()
     {

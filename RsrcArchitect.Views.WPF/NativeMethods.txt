@@ -1,0 +1,15 @@
+RegisterClassEx
+MessageBox
+CreateWindowEx
+ShowWindow
+UpdateWindow
+CreateWindowW
+GetWindowLongPtr
+GetMessage
+TranslateMessage
+DispatchMessage
+CloseWindow
+DestroyWindow
+GetModuleHandle
+DefWindowProc
+WS_OVERLAPPEDWINDOW
