@@ -9,24 +9,22 @@ using RsrcCore.Controls;
 
 namespace RsrcArchitect.ViewModels;
 
-public partial class MainViewModel : ObservableObject, IRecipient<CanvasInvalidationMessage>, IRecipient<DialogEditorViewModelClosingMessage>
+public partial class MainViewModel : ObservableObject, IRecipient<DialogEditorViewModelClosingMessage>
 {
     private readonly IFilesService _filesService;
-    private readonly ICanvasInvalidationService _canvasInvalidationService;
-    
+
     public ObservableCollection<DialogEditorViewModel> DialogEditorViewModels { get; } = new();
     public DialogEditorSettingsViewModel DialogEditorSettingsViewModel { get; } = new();
 
     [ObservableProperty] private DialogEditorViewModel? _selectedDialogEditorViewModel = null;
-    
-    public MainViewModel(IFilesService filesService, ICanvasInvalidationService canvasInvalidationService)
+
+    public MainViewModel(IFilesService filesService)
     {
         _filesService = filesService;
-        _canvasInvalidationService = canvasInvalidationService;
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
-    
+
     [RelayCommand]
     private void CreateProject()
     {
@@ -38,12 +36,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<CanvasInvalida
             Root = new TreeNode<Control>(new Panel())
         }, _filesService, "New Dialog Project", DialogEditorSettingsViewModel));
     }
-    
-    void IRecipient<CanvasInvalidationMessage>.Receive(CanvasInvalidationMessage message)
-    {
-        _canvasInvalidationService.Invalidate();
-    }
-    
+
     void IRecipient<DialogEditorViewModelClosingMessage>.Receive(DialogEditorViewModelClosingMessage message)
     {
         DialogEditorViewModels.Remove(message.Value);

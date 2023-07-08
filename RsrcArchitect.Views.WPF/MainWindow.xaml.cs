@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using RsrcArchitect.Services;
 using RsrcArchitect.ViewModels;
+using RsrcArchitect.ViewModels.Messages;
 using RsrcArchitect.Views.WPF.Extensions;
 using RsrcArchitect.Views.WPF.Rendering;
 using RsrcArchitect.Views.WPF.Services;
@@ -17,7 +20,7 @@ namespace RsrcArchitect.Views.WPF;
 ///     Interaction logic for MainWindow.xaml
 /// </summary>
 [INotifyPropertyChanged]
-public partial class MainWindow : Window, ICanvasInvalidationService
+public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>, IRecipient<DialogSavedMessage>
 {
     private const float ZoomIncrement = 0.5f;
 
@@ -30,7 +33,7 @@ public partial class MainWindow : Window, ICanvasInvalidationService
     {
         InitializeComponent();
 
-        MainViewModel = new MainViewModel(new FilesService(), this);
+        MainViewModel = new MainViewModel(new FilesService());
 
         DataContext = this;
 
@@ -49,28 +52,19 @@ public partial class MainWindow : Window, ICanvasInvalidationService
 
         OnSelectedDialogEditorChanged();
         OnVisualStyleChanged();
+
+        WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
     private void OnVisualStyleChanged()
     {
         // TODO: implement atlas and metadata changing
-        // DialogRenderer.ObjectRenderer = MainViewModel.DialogEditorSettingsViewModel.VisualStyle switch
-        // {
-        //     "windows-10" => new Windows10ObjectRenderer(),
-        //     "nineslice" => new StyledObjectRenderer(),
-        //     _ => throw new ArgumentException()
-        // };
     }
 
     private void OnSelectedDialogEditorChanged()
     {
         _skElement = TabControl.FindElementByName<SKElement>("SkElement");
-        (this as ICanvasInvalidationService).Invalidate();
-    }
-
-    void ICanvasInvalidationService.Invalidate()
-    {
-        _skElement?.InvalidateVisual();
+        WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
     }
 
     private void SkElement_OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
@@ -134,5 +128,22 @@ public partial class MainWindow : Window, ICanvasInvalidationService
             ZoomInButton_OnClick(sender, null);
         else
             ZoomOutButton_OnClick(sender, null);
+    }
+
+    private void Save_OnClick(object sender, RoutedEventArgs e)
+    {
+        var dialogEditorViewModel = ((FrameworkElement)sender).DataContext as DialogEditorViewModel;
+
+        dialogEditorViewModel.SaveCommand.Execute(null);
+    }
+
+    public void Receive(CanvasInvalidationMessage message)
+    {
+        _skElement?.InvalidateVisual();
+    }
+
+    public void Receive(DialogSavedMessage message)
+    {
+        DialogLoader.ShowDialogFromRcString(message.Value.Resource, message.Value.Header);
     }
 }

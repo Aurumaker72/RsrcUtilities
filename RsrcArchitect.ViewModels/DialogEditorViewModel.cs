@@ -389,7 +389,7 @@ public partial class DialogEditorViewModel : ObservableObject
             new DefaultLayoutEngine().DoLayout(DialogViewModel.Dialog), DialogViewModel.Dialog);
         var generatedHeader = new CxxHeaderInformationGenerator().Generate(DialogViewModel.Dialog);
 
-        
+
         var resourceFile =
             await _filesService.TryPickSaveFileAsync("rsrc.rc", ("Resource File", new[] { "rc" }));
         var headerFile = await _filesService.TryPickSaveFileAsync("resource.h", ("C/C++ Header File", new[] { "h" }));
@@ -404,6 +404,8 @@ public partial class DialogEditorViewModel : ObservableObject
 
         headerStream.Write(Encoding.Default.GetBytes(generatedHeader));
         await headerStream.FlushAsync();
+
+        WeakReferenceMessenger.Default.Send(new DialogSavedMessage((serializedDialog, generatedHeader)));
     }
 
     #endregion

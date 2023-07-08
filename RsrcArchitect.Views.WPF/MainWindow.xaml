@@ -46,7 +46,7 @@
                         <ToolBarTray IsLocked="True">
                             <ToolBar Band="1" BandIndex="1">
                                 <Button
-                                    Command="{Binding SaveCommand}"
+                                    Click="Save_OnClick"
                                     Content="Save" />
                                 <Separator />
                                 <Button
