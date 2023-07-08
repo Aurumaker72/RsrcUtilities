@@ -12,7 +12,8 @@
    RsrcUtilities consists of RsrcCore and RsrcArchitect
 </p>
 <br>
-<img align="center" src="https://user-images.githubusercontent.com/48759429/222482582-2b253888-d5dd-45b2-a9af-2103aacc3dbb.png">
+<img align="center" src="https://github.com/Aurumaker72/RsrcUtilities/assets/48759429/1e8b18e5-433d-425a-bbe3-ef15ec164e38.png">
+
 
 # :zap: Quickstart 
 1. Build, then reference `RsrcCore`
