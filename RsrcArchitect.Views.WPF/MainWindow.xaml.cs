@@ -10,7 +10,6 @@ using RsrcArchitect.Views.WPF.Rendering;
 using RsrcArchitect.Views.WPF.Services;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
-using Wpf.Ui.Controls.Window;
 
 namespace RsrcArchitect.Views.WPF;
 
@@ -18,7 +17,7 @@ namespace RsrcArchitect.Views.WPF;
 ///     Interaction logic for MainWindow.xaml
 /// </summary>
 [INotifyPropertyChanged]
-public partial class MainWindow : FluentWindow, ICanvasInvalidationService
+public partial class MainWindow : Window, ICanvasInvalidationService
 {
     private const float ZoomIncrement = 0.5f;
 
