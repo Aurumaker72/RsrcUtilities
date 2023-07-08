@@ -50,29 +50,19 @@
                         <ToolBarTray IsLocked="True">
                             <ToolBar Band="1" BandIndex="1">
                                 <Button
-                                    Command="{Binding SaveCommand}">
-                                    <!-- <ui:SymbolIcon Symbol="Save24" /> -->
-                                </Button>
+                                    Command="{Binding SaveCommand}"
+                                    Content="Save"/>
                                 <Separator />
                                 <Button
-                                    Command="{Binding BringSelectedNodeToFrontCommand}">
-                                    <!-- <ui:SymbolIcon Symbol="PositionToFront24" /> -->
-                                </Button>
+                                    Command="{Binding BringSelectedNodeToFrontCommand}"
+                                    Content="Bring to front"/>
                                 <Button
-                                    Command="{Binding DeleteSelectedNodeCommand}">
-                                    <!-- <ui:SymbolIcon Symbol="Delete24" /> -->
-                                </Button>
+                                    Command="{Binding DeleteSelectedNodeCommand}"
+                                    Content="Delete"/>
                                 <Separator />
                                 <Button
-                                    Click="PositioningModeButton_OnClick">
-                                    <!-- <ui:SymbolIcon -->
-                                    <!--     Symbol="{Binding ElementName=Window, Path=MainViewModel.DialogEditorSettingsViewModel.PositioningMode, Converter={StaticResource PositioningModeToSymbolConverter}}" /> -->
-                                </Button>
-                                <ComboBox
-                                    SelectedValue="{Binding ElementName=Window, Path=MainViewModel.DialogEditorSettingsViewModel.VisualStyle, Mode=TwoWay}"
-                                    SelectedValuePath="Tag">
-                                    <ComboBoxItem Tag="todo">todo</ComboBoxItem>
-                                </ComboBox>
+                                    Click="PositioningModeButton_OnClick"
+                                    Content="{Binding ElementName=Window, Path=MainViewModel.DialogEditorSettingsViewModel.PositioningMode}"/>
                             </ToolBar>
                         </ToolBarTray>
                         <Grid Grid.Row="1">
