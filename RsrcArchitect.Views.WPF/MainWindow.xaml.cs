@@ -7,7 +7,6 @@ using RsrcArchitect.Services;
 using RsrcArchitect.ViewModels;
 using RsrcArchitect.Views.WPF.Extensions;
 using RsrcArchitect.Views.WPF.Rendering;
-using RsrcArchitect.Views.WPF.Rendering.ControlRenderers;
 using RsrcArchitect.Views.WPF.Services;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
@@ -55,12 +54,13 @@ public partial class MainWindow : FluentWindow, ICanvasInvalidationService
 
     private void OnVisualStyleChanged()
     {
-        DialogRenderer.ObjectRenderer = MainViewModel.DialogEditorSettingsViewModel.VisualStyle switch
-        {
-            "windows-10" => new Windows10ObjectRenderer(),
-            "nineslice" => new NinesliceObjectRenderer(),
-            _ => throw new ArgumentException()
-        };
+        // TODO: implement atlas and metadata changing
+        // DialogRenderer.ObjectRenderer = MainViewModel.DialogEditorSettingsViewModel.VisualStyle switch
+        // {
+        //     "windows-10" => new Windows10ObjectRenderer(),
+        //     "nineslice" => new StyledObjectRenderer(),
+        //     _ => throw new ArgumentException()
+        // };
     }
 
     private void OnSelectedDialogEditorChanged()

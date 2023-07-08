@@ -1,12 +1,12 @@
 ﻿using RsrcArchitect.ViewModels;
-using RsrcArchitect.Views.WPF.Rendering.ControlRenderers;
 using SkiaSharp;
 
 namespace RsrcArchitect.Views.WPF.Rendering;
 
 public class DialogRenderer
 {
-    public IObjectRenderer ObjectRenderer { get; set; } = new Windows10ObjectRenderer();
+    private static StyledObjectRenderer _styledObjectRenderer = new();
+    
     
     public void Render(DialogEditorSettingsViewModel dialogEditorSettingsViewModel, DialogEditorViewModel dialogEditorViewModel, SKCanvas canvas)
     {
@@ -19,19 +19,19 @@ public class DialogRenderer
         
         canvas.Clear();
 
-        ObjectRenderer.Render(canvas, dialogEditorViewModel.DialogViewModel);
+        _styledObjectRenderer.Render(canvas, dialogEditorViewModel.DialogViewModel);
         
         foreach (var (control, rectangle) in controlRectangles)
         {
             canvas.Save();
             canvas.Translate(rectangle.X, rectangle.Y);
             
-            ObjectRenderer.Render(canvas, control, rectangle);
+            _styledObjectRenderer.Render(canvas, control, rectangle);
             
             canvas.Restore();
         }
         
-        ObjectRenderer.RenderDecorations(canvas, dialogEditorViewModel, dialogEditorSettingsViewModel);
+        _styledObjectRenderer.RenderDecorations(canvas, dialogEditorViewModel, dialogEditorSettingsViewModel);
     }
     
 }

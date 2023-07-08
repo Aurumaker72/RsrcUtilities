@@ -8,14 +8,19 @@ namespace RsrcCore.Controls;
 public abstract class Control
 {
     /// <summary>
+    ///     Whether the control is interactable
+    /// </summary>
+    public bool IsEnabled = true;
+
+    /// <summary>
     ///     The internal padding, which children are equilateraly offset by
     /// </summary>
-    public Vector2Int Padding;
+    public Vector2Int Padding { get; set; }
 
     /// <summary>
     ///     The logical rectangle, relative in (X, Y) to the parent
     /// </summary>
-    public Rectangle Rectangle;
+    public Rectangle Rectangle { get; set; }
 
     /// <summary>
     ///     The unique identifier

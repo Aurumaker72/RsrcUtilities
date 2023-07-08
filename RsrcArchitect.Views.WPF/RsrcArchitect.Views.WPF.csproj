@@ -32,6 +32,12 @@
     <ItemGroup>
       <None Remove="Assets\logo.png" />
       <Resource Include="Assets\logo.png" />
+      <None Update="Assets\windows-11.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Assets\windows-10.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
