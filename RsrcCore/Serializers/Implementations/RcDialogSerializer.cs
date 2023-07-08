@@ -13,12 +13,104 @@ namespace RsrcCore.Serializers.Implementations;
 /// </summary>
 public class RcDialogSerializer : IDialogSerializer
 {
+    /// <summary>
+    /// Whether a compilable rc file should be generated
+    /// </summary>
+    public bool GenerateCompilable { get; set; }
+
     /// <inheritdoc />
     [Pure]
     public string Serialize(Dictionary<Control, Rectangle> flattenedControls, Dialog dialog)
     {
         // deep-copy the dialog and all of its contents, because we overwrite it with nonsense in the layout pass
-        return DoSerialize(flattenedControls, dialog.Copy());
+        var result = DoSerialize(flattenedControls, dialog.Copy());
+
+        if (!GenerateCompilable)
+        {
+            return result;
+        }
+
+        // we also include metadata and windows.h includes
+
+        return $"""
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+{result}
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+""";
     }
 
     /// <inheritdoc />
@@ -182,11 +274,11 @@ public class RcDialogSerializer : IDialogSerializer
                     {
                         comboBoxStyles.Add("CBS_SORT");
                     }
-                    
+
                     var line = $"COMBOBOX {control.Identifier}, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}";
                     if (comboBoxStyles.Count > 0) line += $", {string.Join(" | ", comboBoxStyles)}";
                     stringBuilder.AppendLine(line);
-                    
+
                     break;
                 }
                 default:

@@ -15,10 +15,10 @@ namespace RsrcCore.Generators.Interfaces;
 public interface IInformationGenerator
 {
     /// <summary>
-    ///     Generates additional information for the <paramref name="controls" />
+    ///     Generates additional information for the <paramref name="dialog" />
     /// </summary>
-    /// <param name="controls">The controls to generate a snippet for</param>
+    /// <param name="dialog">The dialog to generate a snippet for</param>
     /// <returns>The generated resource header snippet</returns>
     [Pure]
-    string Generate(IEnumerable<Control> controls);
+    string Generate(Dialog dialog);
 }

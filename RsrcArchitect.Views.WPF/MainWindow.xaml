@@ -30,12 +30,8 @@
             <TabControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type viewModels:DialogEditorViewModel}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding FriendlyName}" Margin="5"
-                                   VerticalAlignment="Center" />
-                        <Button Margin="0" Padding="5" VerticalAlignment="Center" BorderThickness="0"
-                                Command="{Binding CloseCommand}">
-                            Close
-                        </Button>
+                        <TextBlock Text="{Binding FriendlyName}" />
+                        <Button Command="{Binding CloseCommand}" Content="X" />
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
@@ -51,18 +47,18 @@
                             <ToolBar Band="1" BandIndex="1">
                                 <Button
                                     Command="{Binding SaveCommand}"
-                                    Content="Save"/>
+                                    Content="Save" />
                                 <Separator />
                                 <Button
                                     Command="{Binding BringSelectedNodeToFrontCommand}"
-                                    Content="Bring to front"/>
+                                    Content="Bring to front" />
                                 <Button
                                     Command="{Binding DeleteSelectedNodeCommand}"
-                                    Content="Delete"/>
+                                    Content="Delete" />
                                 <Separator />
                                 <Button
                                     Click="PositioningModeButton_OnClick"
-                                    Content="{Binding ElementName=Window, Path=MainViewModel.DialogEditorSettingsViewModel.PositioningMode}"/>
+                                    Content="{Binding ElementName=Window, Path=MainViewModel.DialogEditorSettingsViewModel.PositioningMode}" />
                             </ToolBar>
                         </ToolBarTray>
                         <Grid Grid.Row="1">

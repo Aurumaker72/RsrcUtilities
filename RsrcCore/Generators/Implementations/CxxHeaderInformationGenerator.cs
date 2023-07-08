@@ -13,15 +13,18 @@ public class CxxHeaderInformationGenerator : IInformationGenerator
 {
     /// <inheritdoc />
     [Pure]
-    public string Generate(IEnumerable<Control> controls)
+    public string Generate(Dialog dialog)
     {
         StringBuilder resourceStringBuilder = new();
 
-        var identifiers = controls.Where(x => x is not Panel).Select(x => x.Identifier).ToImmutableList();
+        var identifiers = dialog.Root.Flatten().Where(x => x is not Panel).Select(x => x.Identifier).ToList();
 
+        identifiers.Insert(0, dialog.Identifier);
+        
         var identifierIndex = 2000;
         if (identifiers.Count != identifiers.Distinct().Count())
             throw new Exception("Non-distinct identifiers in controls list are not allowed");
+        
         foreach (var identifier in identifiers)
         {
             resourceStringBuilder.AppendLine($"#define {identifier} {identifierIndex}");

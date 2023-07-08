@@ -382,12 +382,16 @@ public partial class DialogEditorViewModel : ObservableObject
     [RelayCommand]
     private async Task Save()
     {
-        var serializedDialog = new RcDialogSerializer().Serialize(
+        var serializedDialog = new RcDialogSerializer()
+        {
+            GenerateCompilable = true
+        }.Serialize(
             new DefaultLayoutEngine().DoLayout(DialogViewModel.Dialog), DialogViewModel.Dialog);
-        var generatedHeader = new CxxHeaderInformationGenerator().Generate(DialogViewModel.Dialog.Root.Flatten());
+        var generatedHeader = new CxxHeaderInformationGenerator().Generate(DialogViewModel.Dialog);
 
+        
         var resourceFile =
-            await _filesService.TryPickSaveFileAsync("rsrc_snippet.rc", ("Resource File", new[] { "rc" }));
+            await _filesService.TryPickSaveFileAsync("rsrc.rc", ("Resource File", new[] { "rc" }));
         var headerFile = await _filesService.TryPickSaveFileAsync("resource.h", ("C/C++ Header File", new[] { "h" }));
 
         if (resourceFile == null || headerFile == null) return;
