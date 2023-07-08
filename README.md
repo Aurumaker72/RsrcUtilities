@@ -6,14 +6,18 @@
   RsrcUtilities
 </h1>
 <p align="center">
-  .NET library for rc file interaction
+   .NET utility suite for working with the rc format 
 </p>
-
+<p align="center">
+   RsrcUtilities consists of RsrcCore and RsrcArchitect
+</p>
+<br>
 <img align="center" src="https://user-images.githubusercontent.com/48759429/222482582-2b253888-d5dd-45b2-a9af-2103aacc3dbb.png">
 
 # :zap: Quickstart 
- **Step 1:** Build, then reference all `RsrcUtilities` assemblies in your project<br/>
- **Step 2:** Create a `Dialog` object
+1. Build, then reference `RsrcCore`
+
+2. Create a `Dialog` object
 ```cs
 var dialog = new Dialog
 {
@@ -22,32 +26,33 @@ var dialog = new Dialog
     Height = 100
 };
 ```
- **Step 3:** Initialize the `Dialog`'s root node to a control
+3. Initialize the `Dialog`'s root node to a control
  ```cs
 dialog.Root = new TreeNode<Control>(new Panel
 {
-    Rectangle = new Rectangle(0, 0, 0, 0),
-    HorizontalAlignment = HorizontalAlignments.Stretch,
-    VerticalAlignment = VerticalAlignments.Stretch
+    Rectangle = Rectangle.Empty,
+    HorizontalAlignment = Alignments.Fill,
+    VerticalAlignment = Alignments.Fill
 });
 ```
-**Step 4:** Add any controls you desire
+4. Add any controls you desire
 ```cs
 dialog.Root.AddChild(new CheckBox()
 {
-    Identifier = "IDC_SOME_NAME",
-    Caption = "Hi",
+    Identifier = "IDC_EXAMPLE",
+    Caption = "Hello World!",
     Rectangle = new Rectangle(0, 0, 80, 40),
-    HorizontalAlignment = HorizontalAlignments.Center,
-    VerticalAlignment = VerticalAlignments.Center
+    HorizontalAlignment = Alignments.Center,
+    VerticalAlignment = Alignments.Center
 });
+
 ```
-**Step 5:** Serialize it to the format of your liking
+5. Serialize it to the format of your liking
 ```cs
 new RcDialogSerializer().Serialize(new DefaultLayoutEngine().DoLayout(dialog), dialog);
 ```
 
-**(Optional) Step 6:** Generate additional information in the format of your liking
+6. Generate additional information in the format of your liking
 ```cs
 new CxxHeaderResourceGenerator().Generate(dialog.Root);
 ```
