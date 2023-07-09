@@ -410,19 +410,18 @@ public partial class DialogEditorViewModel : ObservableObject
     private async Task SaveUgui()
     {
         var lua = new UguiDialogSerializer().Serialize(new DefaultLayoutEngine().DoLayout(DialogViewModel.Dialog), DialogViewModel.Dialog);
-        WeakReferenceMessenger.Default.Send(new NotificationMessage(lua));
         
-        // var luaFile =
-        //     await _filesService.TryPickSaveFileAsync("ugui.lua", ("Lua Script File", new[] { "lua" }));
-        //
-        // if (luaFile == null)
-        // {
-        //     return;
-        // }
-        //
-        // await using var stream = await luaFile.OpenStreamForWriteAsync();
-        // stream.Write(Encoding.Default.GetBytes(serializedDialog));
-        // await stream.FlushAsync();
+        var luaFile =
+            await _filesService.TryPickSaveFileAsync("ugui.lua", ("Lua Script File", new[] { "lua" }));
+        
+        if (luaFile == null)
+        {
+            return;
+        }
+        
+        await using var stream = await luaFile.OpenStreamForWriteAsync();
+        stream.Write(Encoding.Default.GetBytes(lua));
+        await stream.FlushAsync();
     }
     
     #endregion
