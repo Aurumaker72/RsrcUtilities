@@ -1,5 +1,6 @@
-RegisterClassEx
+RegisterClass
 MessageBox
+CreateWindow
 CreateWindowEx
 ShowWindow
 UpdateWindow
