@@ -22,6 +22,11 @@
         <Menu>
             <MenuItem Header="_File">
                 <MenuItem Header="_New Project" Command="{Binding MainViewModel.CreateProjectCommand}" />
+                <Separator/>
+                <MenuItem Header="_Save As">
+                        <MenuItem Header="_Resource File" Command="{Binding MainViewModel.SelectedDialogEditorViewModel.SaveRcCommand}"/>
+                        <MenuItem Header="_Ugui Script" Command="{Binding MainViewModel.SelectedDialogEditorViewModel.SaveUguiCommand}"/>
+                    </MenuItem>
             </MenuItem>
         </Menu>
 
@@ -45,10 +50,6 @@
                         </Grid.RowDefinitions>
                         <ToolBarTray IsLocked="True">
                             <ToolBar Band="1" BandIndex="1">
-                                <Button
-                                    Command="{Binding SaveCommand}"
-                                    Content="Save" />
-                                <Separator />
                                 <Button
                                     Command="{Binding BringSelectedNodeToFrontCommand}"
                                     Content="Bring to front" />

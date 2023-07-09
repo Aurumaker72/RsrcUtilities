@@ -380,14 +380,14 @@ public partial class DialogEditorViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task Save()
+    private async Task SaveRc()
     {
-        var serializedDialog = new RcDialogSerializer()
+        var rc = new RcDialogSerializer()
         {
             GenerateCompilable = true
         }.Serialize(
             new DefaultLayoutEngine().DoLayout(DialogViewModel.Dialog), DialogViewModel.Dialog);
-        var generatedHeader = new CxxHeaderInformationGenerator().Generate(DialogViewModel.Dialog);
+        var header = new CxxHeaderInformationGenerator().Generate(DialogViewModel.Dialog);
 
 
         var resourceFile =
@@ -399,12 +399,32 @@ public partial class DialogEditorViewModel : ObservableObject
         await using var resourceStream = await resourceFile.OpenStreamForWriteAsync();
         await using var headerStream = await headerFile.OpenStreamForWriteAsync();
 
-        resourceStream.Write(Encoding.Default.GetBytes(serializedDialog));
+        resourceStream.Write(Encoding.Default.GetBytes(rc));
         await resourceStream.FlushAsync();
 
-        headerStream.Write(Encoding.Default.GetBytes(generatedHeader));
+        headerStream.Write(Encoding.Default.GetBytes(header));
         await headerStream.FlushAsync();
     }
+
+    [RelayCommand]
+    private async Task SaveUgui()
+    {
+        var lua = new UguiDialogSerializer().Serialize(new DefaultLayoutEngine().DoLayout(DialogViewModel.Dialog), DialogViewModel.Dialog);
+        WeakReferenceMessenger.Default.Send(new NotificationMessage(lua));
+        
+        // var luaFile =
+        //     await _filesService.TryPickSaveFileAsync("ugui.lua", ("Lua Script File", new[] { "lua" }));
+        //
+        // if (luaFile == null)
+        // {
+        //     return;
+        // }
+        //
+        // await using var stream = await luaFile.OpenStreamForWriteAsync();
+        // stream.Write(Encoding.Default.GetBytes(serializedDialog));
+        // await stream.FlushAsync();
+    }
+    
     #endregion
 
 

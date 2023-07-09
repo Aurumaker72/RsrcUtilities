@@ -22,7 +22,7 @@ namespace RsrcArchitect.Views.WPF;
 ///     Interaction logic for MainWindow.xaml
 /// </summary>
 [INotifyPropertyChanged]
-public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>
+public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>, IRecipient<NotificationMessage>
 {
     private const float ZoomIncrement = 0.5f;
 
@@ -147,5 +147,10 @@ public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>
             DialogLoader.ShowDialogFromRcString(dialogEditorViewModel.DialogViewModel);
         });
         thread.Start();
+    }
+
+    public void Receive(NotificationMessage message)
+    {
+        MessageBox.Show(message.Value);
     }
 }
