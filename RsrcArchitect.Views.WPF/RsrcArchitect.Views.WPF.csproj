@@ -5,7 +5,6 @@
         <TargetFramework>net7.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
-        <UseWindowsForms>true</UseWindowsForms>
         <RootNamespace>RsrcArchitect.Views.WPF</RootNamespace>
         <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
