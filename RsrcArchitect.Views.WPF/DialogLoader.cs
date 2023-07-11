@@ -24,16 +24,20 @@ public static class DialogLoader
 
     private static unsafe void CreateControl(HWND dialogHwnd, Control control, Rectangle rectangle)
     {
+        WINDOW_STYLE style = WINDOW_STYLE.WS_VISIBLE | WINDOW_STYLE.WS_CHILD;
+        if (!control.IsEnabled)
+        {
+            style |= WINDOW_STYLE.WS_DISABLED;
+        }
+        
         if (control is Button button)
         {
             PInvoke.CreateWindowEx(0, "BUTTON".ToPcwstr(), button.Caption.ToPcwstr(),
-                WINDOW_STYLE.WS_VISIBLE | WINDOW_STYLE.WS_CHILD, rectangle.X, rectangle.Y, rectangle.Width,
+                style, rectangle.X, rectangle.Y, rectangle.Width,
                 rectangle.Height, dialogHwnd, HMENU.Null, _instance);
         }
         else if (control is TextBox textBox)
         {
-            var style = WINDOW_STYLE.WS_VISIBLE | WINDOW_STYLE.WS_CHILD;
-
             if (!textBox.IsWriteable) style |= (WINDOW_STYLE)ES_READONLY;
             if (textBox.AllowHorizontalScroll) style |= (WINDOW_STYLE)ES_AUTOHSCROLL;
 
@@ -44,28 +48,28 @@ public static class DialogLoader
         else if (control is CheckBox checkBox)
         {
             PInvoke.CreateWindowEx(0, "BUTTON".ToPcwstr(), checkBox.Caption.ToPcwstr(),
-                WINDOW_STYLE.WS_VISIBLE | WINDOW_STYLE.WS_CHILD | (WINDOW_STYLE)BS_AUTOCHECKBOX, rectangle.X,
+                style | (WINDOW_STYLE)BS_AUTOCHECKBOX, rectangle.X,
                 rectangle.Y, rectangle.Width,
                 rectangle.Height, dialogHwnd, HMENU.Null, _instance);
         }
         else if (control is GroupBox groupBox)
         {
             PInvoke.CreateWindowEx(0, "BUTTON".ToPcwstr(), groupBox.Caption.ToPcwstr(),
-                WINDOW_STYLE.WS_VISIBLE | WINDOW_STYLE.WS_CHILD | (WINDOW_STYLE)BS_GROUPBOX, rectangle.X, rectangle.Y,
+                style | (WINDOW_STYLE)BS_GROUPBOX, rectangle.X, rectangle.Y,
                 rectangle.Width,
                 rectangle.Height, dialogHwnd, HMENU.Null, _instance);
         }
         else if (control is ComboBox comboBox)
         {
             PInvoke.CreateWindowEx(0, "ComboBox".ToPcwstr(), "?".ToPcwstr(),
-                WINDOW_STYLE.WS_VISIBLE | WINDOW_STYLE.WS_CHILD | (WINDOW_STYLE)CBS_DROPDOWN | (WINDOW_STYLE)CBS_DROPDOWNLIST, rectangle.X, rectangle.Y,
+                style | (WINDOW_STYLE)CBS_DROPDOWN | (WINDOW_STYLE)CBS_DROPDOWNLIST, rectangle.X, rectangle.Y,
                 rectangle.Width,
                 rectangle.Height, dialogHwnd, HMENU.Null, _instance);
         }
         else if (control is Label label)
         {
             PInvoke.CreateWindowEx(0, "STATIC".ToPcwstr(), label.Caption.ToPcwstr(),
-                WINDOW_STYLE.WS_VISIBLE | WINDOW_STYLE.WS_CHILD, rectangle.X, rectangle.Y, rectangle.Width,
+                style, rectangle.X, rectangle.Y, rectangle.Width,
                 rectangle.Height, dialogHwnd, HMENU.Null, _instance);
         }
     }
@@ -78,12 +82,12 @@ public static class DialogLoader
         {
             lpfnWndProc = PInvoke.DefWindowProc,
             hInstance = _instance,
-            lpszClassName = ClassName.ToPcwstr()
+            lpszClassName = ClassName.ToPcwstr(),
+            style = WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW
         };
         PInvoke.RegisterClass(in wc);
-
-
-        var hwnd = PInvoke.CreateWindowEx(0,
+        
+        var hwnd = PInvoke.CreateWindowEx(WINDOW_EX_STYLE.WS_EX_OVERLAPPEDWINDOW,
             ClassName.ToPcwstr(),
             dialogViewModel.Caption.ToPcwstr(),
             (WINDOW_STYLE)(0x00000000L | 0x00C00000L | 0x00080000L | 0x00040000L | 0x00020000L | 0x00010000L),

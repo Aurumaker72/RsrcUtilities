@@ -22,11 +22,13 @@
         <Menu>
             <MenuItem Header="_File">
                 <MenuItem Header="_New Project" Command="{Binding MainViewModel.CreateProjectCommand}" />
-                <Separator/>
+                <Separator />
                 <MenuItem Header="_Save As">
-                        <MenuItem Header="_Resource File" Command="{Binding MainViewModel.SelectedDialogEditorViewModel.SaveRcCommand}"/>
-                        <MenuItem Header="_Ugui Script" Command="{Binding MainViewModel.SelectedDialogEditorViewModel.SaveUguiCommand}"/>
-                    </MenuItem>
+                    <MenuItem Header="_Resource File"
+                              Command="{Binding MainViewModel.SelectedDialogEditorViewModel.SaveRcCommand}" />
+                    <MenuItem Header="_Ugui Script"
+                              Command="{Binding MainViewModel.SelectedDialogEditorViewModel.SaveUguiCommand}" />
+                </MenuItem>
             </MenuItem>
         </Menu>
 
@@ -56,7 +58,7 @@
                                 <Button
                                     Command="{Binding DeleteSelectedNodeCommand}"
                                     Content="Delete" />
-                                <Button Click="Preview_OnClick" Content="Preview"/>
+                                <Button Click="Preview_OnClick" Content="Preview" />
                                 <Separator />
                                 <Button
                                     Click="PositioningModeButton_OnClick"
@@ -119,42 +121,41 @@
                                                                     <RowDefinition Height="Auto" />
                                                                     <RowDefinition Height="Auto" />
                                                                     <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
                                                                 </Grid.RowDefinitions>
 
-                                                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                                                <CheckBox Grid.Row="0" Grid.Column="0"
+                                                                          Grid.ColumnSpan="2" IsChecked="{Binding SelectedControlViewModel.IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="Enabled" />
+
+                                                                <TextBlock Grid.Row="1" Grid.Column="0"
                                                                            Text="Identifier" VerticalAlignment="Center"
                                                                            HorizontalAlignment="Left" />
-                                                                <TextBox Grid.Row="0" Grid.Column="1"
-                                                                         Text="{Binding SelectedControlViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                         Margin="{StaticResource SmallVerticalMargin}" />
-
-                                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="X"
-                                                                           VerticalAlignment="Center"
-                                                                           HorizontalAlignment="Left" />
                                                                 <TextBox Grid.Row="1" Grid.Column="1"
-                                                                         Text="{Binding SelectedControlViewModel.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                         Margin="{StaticResource SmallVerticalMargin}" />
+                                                                         Text="{Binding SelectedControlViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Y"
+                                                                <TextBlock Grid.Row="2" Grid.Column="0" Text="X"
                                                                            VerticalAlignment="Center"
                                                                            HorizontalAlignment="Left" />
                                                                 <TextBox Grid.Row="2" Grid.Column="1"
-                                                                         Text="{Binding SelectedControlViewModel.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                         Margin="{StaticResource SmallVerticalMargin}" />
+                                                                         Text="{Binding SelectedControlViewModel.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Width"
+                                                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Y"
                                                                            VerticalAlignment="Center"
                                                                            HorizontalAlignment="Left" />
                                                                 <TextBox Grid.Row="3" Grid.Column="1"
-                                                                         Text="{Binding SelectedControlViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                         Margin="{StaticResource SmallVerticalMargin}" />
+                                                                         Text="{Binding SelectedControlViewModel.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Height"
+                                                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Width"
                                                                            VerticalAlignment="Center"
                                                                            HorizontalAlignment="Left" />
                                                                 <TextBox Grid.Row="4" Grid.Column="1"
-                                                                         Text="{Binding SelectedControlViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                         Margin="{StaticResource SmallVerticalMargin}" />
+                                                                         Text="{Binding SelectedControlViewModel.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Height"
+                                                                           VerticalAlignment="Center"
+                                                                           HorizontalAlignment="Left" />
+                                                                <TextBox Grid.Row="5" Grid.Column="1"
+                                                                         Text="{Binding SelectedControlViewModel.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                                             </Grid>
                                                         </StackPanel>

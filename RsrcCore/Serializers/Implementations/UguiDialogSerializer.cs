@@ -11,9 +11,6 @@ namespace RsrcCore.Serializers.Implementations;
 /// </summary>
 public class UguiDialogSerializer : IDialogSerializer
 {
-
-    
-    
     public string Serialize(Dictionary<Control, Rectangle> flattenedControls, Dialog dialog)
     {
         StringBuilder stringBuilder = new();
@@ -26,7 +23,7 @@ public class UguiDialogSerializer : IDialogSerializer
                 stringBuilder.AppendLine($@"
                     Mupen_lua_ugui.button({{
                           uid = {i},
-                          is_enabled = true,
+                          is_enabled = {key.IsEnabled.ToString(CultureInfo.InvariantCulture).ToLower()},
                           rectangle = {{ x = {value.X}, y = {value.Y}, width = {value.Width}, height = {value.Height} }},
                           text = ""{button.Caption}"",
                     }})
@@ -36,7 +33,7 @@ public class UguiDialogSerializer : IDialogSerializer
                 stringBuilder.AppendLine($@"
                     Mupen_lua_ugui.textbox({{
                           uid = {i},
-                          is_enabled = {textBox.IsEnabled.ToString(CultureInfo.InvariantCulture).ToLower()},
+                          is_enabled = {(key.IsEnabled || !textBox.IsWriteable).ToString(CultureInfo.InvariantCulture).ToLower()},
                           rectangle = {{ x = {value.X}, y = {value.Y}, width = {value.Width}, height = {value.Height} }},
                           text = """",
                     }})
@@ -47,7 +44,7 @@ public class UguiDialogSerializer : IDialogSerializer
                 stringBuilder.AppendLine($@"
                     Mupen_lua_ugui.toggle_button({{
                           uid = {i},
-                          is_enabled = true,
+                          is_enabled = {key.IsEnabled.ToString(CultureInfo.InvariantCulture).ToLower()},
                           rectangle = {{ x = {value.X}, y = {value.Y}, width = {value.Width}, height = {value.Height} }},
                           text = ""{checkBox.Caption}"",
                           is_checked = false,
@@ -59,7 +56,7 @@ public class UguiDialogSerializer : IDialogSerializer
                 stringBuilder.AppendLine($@"
                     Mupen_lua_ugui.combobox({{
                           uid = {i},
-                          is_enabled = true,
+                          is_enabled = {key.IsEnabled.ToString(CultureInfo.InvariantCulture).ToLower()},
                           rectangle = {{ x = {value.X}, y = {value.Y}, width = {value.Width}, height = {value.Height} }},
                           items = {{}},
                           selected_index = 0,

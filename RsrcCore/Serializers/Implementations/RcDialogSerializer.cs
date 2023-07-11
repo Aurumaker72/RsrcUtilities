@@ -146,11 +146,11 @@ public class RcDialogSerializer : IDialogSerializer
             {
                 case Button button:
                     stringBuilder.AppendLine(
-                        $"CONTROL \"{button.Caption}\", {control.Identifier}, \"Button\", WS_TABSTOP, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}");
+                        $"CONTROL \"{button.Caption}\", {control.Identifier}, \"Button\", WS_TABSTOP {(control.IsEnabled ? "" : "| WS_DISABLED")}, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}");
                     break;
                 case CheckBox checkBox:
                     stringBuilder.AppendLine(
-                        $"CONTROL \"{checkBox.Caption}\", {control.Identifier}, \"Button\", BS_AUTOCHECKBOX | WS_TABSTOP, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}");
+                        $"CONTROL \"{checkBox.Caption}\", {control.Identifier}, \"Button\", BS_AUTOCHECKBOX | WS_TABSTOP {(control.IsEnabled ? "" : "| WS_DISABLED")}, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}");
                     break;
                 case TextBox textBox:
                 {
@@ -158,6 +158,7 @@ public class RcDialogSerializer : IDialogSerializer
                     if (textBox.InputFilter.HasFlag(TextBox.InputFilters.Numbers)) textBoxStyles.Add("ES_NUMBER");
                     if (!textBox.IsWriteable) textBoxStyles.Add("ES_READONLY");
                     if (textBox.AllowHorizontalScroll) textBoxStyles.Add("ES_AUTOHSCROLL");
+                    if (!control.IsEnabled) textBoxStyles.Add("WS_DISABLED");
 
                     var textBoxLine =
                         $"EDITTEXT {control.Identifier}, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}";
@@ -174,9 +175,14 @@ public class RcDialogSerializer : IDialogSerializer
                 case GroupBox groupBox:
                 {
                     // GROUPBOX        "Static",IDC_STATIC,179,42,75,103
-                    stringBuilder.AppendLine(
-                        $"GROUPBOX \"{groupBox.Caption}\", {control.Identifier}, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}");
+                    List<string> comboBoxStyles = new();
+                    if (!control.IsEnabled) comboBoxStyles.Add("WS_DISABLED");
 
+                    var comboBoxLine =
+                        $"GROUPBOX \"{control.Identifier}\", {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}";
+                    if (comboBoxStyles.Count > 0) comboBoxLine += $", {string.Join(" | ", comboBoxStyles)}";
+                    stringBuilder.AppendLine(comboBoxLine);
+                    
                     break;
                 }
                 case Label label:
@@ -200,6 +206,7 @@ public class RcDialogSerializer : IDialogSerializer
                     {
                         comboBoxStyles.Add("CBS_SORT");
                     }
+                    if (!control.IsEnabled) comboBoxStyles.Add("WS_DISABLED");
 
                     var line = $"COMBOBOX {control.Identifier}, {rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}";
                     if (comboBoxStyles.Count > 0) line += $", {string.Join(" | ", comboBoxStyles)}";

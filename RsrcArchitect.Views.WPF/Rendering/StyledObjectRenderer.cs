@@ -10,9 +10,14 @@ namespace RsrcArchitect.Views.WPF.Rendering;
 
 internal record struct Ninepatch(Rectangle Source, Rectangle Center);
 
-internal record struct VisualStyle(SKImage Image, SKPaint TextPaint, SKPaint InvertedTextPaint, SKFont Font, Ninepatch Titlebar, Ninepatch Background,
-    Ninepatch Raised, Ninepatch Edit,
-    Ninepatch GroupBox, Rectangle CheckBox);
+internal record struct Sprite(Rectangle Source);
+
+internal record struct VisualStateful<T>(T Enabled, T Disabled);
+
+internal record struct VisualStyle(SKImage Image, SKPaint TextPaint, SKPaint InvertedTextPaint, SKFont Font,
+    Ninepatch Titlebar, Ninepatch Background,
+    VisualStateful<Ninepatch> Raised, VisualStateful<Ninepatch> Edit,
+    Ninepatch GroupBox, VisualStateful<Sprite> CheckBox);
 
 public class StyledObjectRenderer
 {
@@ -25,7 +30,7 @@ public class StyledObjectRenderer
     {
         _visualStyle = new()
         {
-            Image = SKImage.FromEncodedData("Assets/windows-10.png"),
+            Image = SKImage.FromEncodedData("Assets/windows-11.png"),
             TextPaint = new()
             {
                 Color = SKColors.Black,
@@ -58,20 +63,40 @@ public class StyledObjectRenderer
             },
             Raised = new()
             {
-                Source = new(1, 1, 11, 9),
-                Center = new(6, 5, 1, 1)
+                Enabled = new Ninepatch()
+                {
+                    Source = new(1, 1, 11, 9),
+                    Center = new(6, 5, 1, 1)
+                },
+                Disabled = new Ninepatch()
+                {
+                    Source = new(1, 34, 11, 9),
+                    Center = new(6, 38, 1, 1)
+                },
             },
             Edit = new()
             {
-                Source = new(20, 1, 5, 5),
-                Center = new(22, 3, 1, 1)
+                Enabled = new Ninepatch()
+                {
+                    Source = new(20, 1, 5, 5),
+                    Center = new(22, 3, 1, 1)
+                },
+                Disabled = new Ninepatch()
+                {
+                    Source = new(20, 16, 5, 5),
+                    Center = new(22, 18, 1, 1)
+                },
             },
             GroupBox = new()
             {
                 Source = new(36, 5, 3, 3),
                 Center = new(37, 6, 1, 1)
             },
-            CheckBox = new Rectangle(0, 327, 52, 52)
+            CheckBox = new()
+            {
+                Enabled = new Sprite(new(0, 327, 52, 52)),
+                Disabled = new Sprite(new(0, 899, 52, 52)),
+            }
         };
     }
 
@@ -82,30 +107,42 @@ public class StyledObjectRenderer
             Math.Abs(centerRectangle.Y - sourceRectangle.Y));
 
         var topLeft = SKRect.Create(sourceRectangle.X, sourceRectangle.Y, cornerSize.X, cornerSize.Y);
-        var bottomLeft = SKRect.Create(sourceRectangle.X, sourceRectangle.Bottom - cornerSize.Y, cornerSize.X, cornerSize.Y);
-        var topRight = SKRect.Create(sourceRectangle.Right - cornerSize.X, sourceRectangle.Y, cornerSize.X, cornerSize.Y);
-        var bottomRight = SKRect.Create(sourceRectangle.Right - cornerSize.X, sourceRectangle.Bottom - cornerSize.Y, cornerSize.X, cornerSize.Y);
-        var left = SKRect.Create(sourceRectangle.X, centerRectangle.Y, cornerSize.X, sourceRectangle.Height - cornerSize.Y * 2);
-        var right = SKRect.Create(sourceRectangle.Right - cornerSize.X, centerRectangle.Y, cornerSize.X, sourceRectangle.Height - cornerSize.Y * 2);
+        var bottomLeft = SKRect.Create(sourceRectangle.X, sourceRectangle.Bottom - cornerSize.Y, cornerSize.X,
+            cornerSize.Y);
+        var topRight = SKRect.Create(sourceRectangle.Right - cornerSize.X, sourceRectangle.Y, cornerSize.X,
+            cornerSize.Y);
+        var bottomRight = SKRect.Create(sourceRectangle.Right - cornerSize.X, sourceRectangle.Bottom - cornerSize.Y,
+            cornerSize.X, cornerSize.Y);
+        var left = SKRect.Create(sourceRectangle.X, centerRectangle.Y, cornerSize.X,
+            sourceRectangle.Height - cornerSize.Y * 2);
+        var right = SKRect.Create(sourceRectangle.Right - cornerSize.X, centerRectangle.Y, cornerSize.X,
+            sourceRectangle.Height - cornerSize.Y * 2);
         var top = SKRect.Create(centerRectangle.X, sourceRectangle.Y, centerRectangle.Width, cornerSize.Y);
-        var bottom = SKRect.Create(centerRectangle.X, sourceRectangle.Bottom - cornerSize.Y, centerRectangle.Width, cornerSize.Y);
+        var bottom = SKRect.Create(centerRectangle.X, sourceRectangle.Bottom - cornerSize.Y, centerRectangle.Width,
+            cornerSize.Y);
         var center = SKRect.Create(centerRectangle.X, centerRectangle.Y, centerRectangle.Width, centerRectangle.Height);
 
-        canvas.DrawImage(image, topLeft, SKRect.Create(destinationRectangle.Left, destinationRectangle.Top, cornerSize.X, cornerSize.Y));
+        canvas.DrawImage(image, topLeft,
+            SKRect.Create(destinationRectangle.Left, destinationRectangle.Top, cornerSize.X, cornerSize.Y));
         canvas.DrawImage(image, topRight,
-            SKRect.Create(destinationRectangle.Right - cornerSize.X, destinationRectangle.Top, cornerSize.X, cornerSize.Y));
+            SKRect.Create(destinationRectangle.Right - cornerSize.X, destinationRectangle.Top, cornerSize.X,
+                cornerSize.Y));
         canvas.DrawImage(image, bottomLeft,
-            SKRect.Create(destinationRectangle.Left, destinationRectangle.Bottom - cornerSize.Y, cornerSize.X, cornerSize.Y));
+            SKRect.Create(destinationRectangle.Left, destinationRectangle.Bottom - cornerSize.Y, cornerSize.X,
+                cornerSize.Y));
         canvas.DrawImage(image, bottomRight,
-            SKRect.Create(destinationRectangle.Right - cornerSize.X, destinationRectangle.Bottom - cornerSize.Y, cornerSize.X, cornerSize.Y));
+            SKRect.Create(destinationRectangle.Right - cornerSize.X, destinationRectangle.Bottom - cornerSize.Y,
+                cornerSize.X, cornerSize.Y));
         canvas.DrawImage(image, left,
             SKRect.Create(destinationRectangle.Left, destinationRectangle.Top + cornerSize.Y, cornerSize.X,
                 destinationRectangle.Bottom - cornerSize.Y * 2));
         canvas.DrawImage(image, right,
-            SKRect.Create(destinationRectangle.Right - cornerSize.X, destinationRectangle.Top + cornerSize.Y, cornerSize.X,
+            SKRect.Create(destinationRectangle.Right - cornerSize.X, destinationRectangle.Top + cornerSize.Y,
+                cornerSize.X,
                 destinationRectangle.Bottom - cornerSize.Y * 2));
         canvas.DrawImage(image, top,
-            SKRect.Create(destinationRectangle.Left + cornerSize.X, destinationRectangle.Top, destinationRectangle.Right - cornerSize.X * 2,
+            SKRect.Create(destinationRectangle.Left + cornerSize.X, destinationRectangle.Top,
+                destinationRectangle.Right - cornerSize.X * 2,
                 cornerSize.Y));
         canvas.DrawImage(image, bottom,
             SKRect.Create(destinationRectangle.Left + cornerSize.X, destinationRectangle.Bottom - cornerSize.Y,
@@ -125,43 +162,56 @@ public class StyledObjectRenderer
     public void Render(SKCanvas canvas, Control control, Rectangle visualBounds)
     {
         var skRectangle = SKRect.Create(0, 0, visualBounds.Width, visualBounds.Height);
+        Ninepatch ninepatch;
+        Sprite sprite;
 
         switch (control)
         {
             case Button button:
-                DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.Raised.Source, _visualStyle.Raised.Center,
+                ninepatch = control.IsEnabled ? _visualStyle.Raised.Enabled : _visualStyle.Raised.Disabled;
+                DrawImageNinePatch(canvas, _visualStyle.Image, ninepatch.Source, ninepatch.Center,
                     SKRect.Create(0, 0, visualBounds.Width, visualBounds.Height));
                 canvas.DrawText(button.Caption,
                     skRectangle.MidX - SKGetTextSize(_visualStyle.TextPaint, button.Caption).Width / 2,
-                    skRectangle.MidY + SKGetTextSize(_visualStyle.TextPaint, button.Caption).Height / 2, _visualStyle.Font, _visualStyle.TextPaint);
+                    skRectangle.MidY + SKGetTextSize(_visualStyle.TextPaint, button.Caption).Height / 2,
+                    _visualStyle.Font, _visualStyle.TextPaint);
                 break;
             case TextBox textBox:
-                DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.Edit.Source, _visualStyle.Edit.Center,
+                ninepatch = control.IsEnabled ? _visualStyle.Edit.Enabled : _visualStyle.Edit.Disabled;
+
+                DrawImageNinePatch(canvas, _visualStyle.Image, ninepatch.Source, ninepatch.Center,
                     SKRect.Create(0, 0, visualBounds.Width, visualBounds.Height));
                 break;
             case ComboBox comboBox:
-                DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.Raised.Source, _visualStyle.Raised.Center,
+                ninepatch = control.IsEnabled ? _visualStyle.Raised.Enabled : _visualStyle.Raised.Disabled;
+
+                DrawImageNinePatch(canvas, _visualStyle.Image, ninepatch.Source, ninepatch.Center,
                     SKRect.Create(0, 0, visualBounds.Width, visualBounds.Height));
                 break;
             case GroupBox groupBox:
-                DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.GroupBox.Source, _visualStyle.GroupBox.Center,
+                DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.GroupBox.Source,
+                    _visualStyle.GroupBox.Center,
                     SKRect.Create(0, 0, visualBounds.Width, visualBounds.Height));
                 canvas.DrawText(groupBox.Caption,
                     new SKPoint(10.0f,
                         SKGetTextSize(_visualStyle.TextPaint, groupBox.Caption).Height / 2), _visualStyle.TextPaint);
                 break;
             case CheckBox checkBox:
+                sprite = control.IsEnabled ? _visualStyle.CheckBox.Enabled : _visualStyle.CheckBox.Disabled;
                 canvas.DrawImage(_visualStyle.Image,
-                    SKRect.Create(_visualStyle.CheckBox.X, _visualStyle.CheckBox.Y, _visualStyle.CheckBox.Width, _visualStyle.CheckBox.Height),
+                    SKRect.Create(sprite.Source.X, sprite.Source.Y, sprite.Source.Width,
+                        sprite.Source.Height),
                     SKRect.Create(0, skRectangle.MidY - 6, 13, 13));
 
                 canvas.DrawText(checkBox.Caption,
                     new SKPoint(20.0f,
-                        skRectangle.MidY + SKGetTextSize(_visualStyle.TextPaint, checkBox.Caption).Height / 2), _visualStyle.TextPaint);
+                        skRectangle.MidY + SKGetTextSize(_visualStyle.TextPaint, checkBox.Caption).Height / 2),
+                    _visualStyle.TextPaint);
                 break;
             case Label label:
                 canvas.DrawText(label.Caption, 0,
-                    skRectangle.MidY + SKGetTextSize(_visualStyle.TextPaint, label.Caption).Height / 2, _visualStyle.Font, _visualStyle.TextPaint);
+                    skRectangle.MidY + SKGetTextSize(_visualStyle.TextPaint, label.Caption).Height / 2,
+                    _visualStyle.Font, _visualStyle.TextPaint);
                 break;
             default:
                 canvas.DrawRect(skRectangle,

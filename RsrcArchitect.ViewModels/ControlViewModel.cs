@@ -19,6 +19,17 @@ public abstract class ControlViewModel : ObservableObject
 
     public Rectangle Rectangle => Control.Rectangle;
 
+    public bool IsEnabled
+    {
+        get => Control.IsEnabled;
+        set
+        {
+            Control.IsEnabled = value;
+            OnPropertyChanged();
+            WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
+        }
+    }
+    
     public string Identifier
     {
         get => Control.Identifier;
