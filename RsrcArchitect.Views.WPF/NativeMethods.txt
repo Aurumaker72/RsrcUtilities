@@ -13,4 +13,8 @@ CloseWindow
 DestroyWindow
 GetModuleHandle
 DefWindowProc
-WS_OVERLAPPEDWINDOW
+DialogBoxIndirectParam
+EndDialog
+SendMessage
+GetStockObject
+SetWindowText
