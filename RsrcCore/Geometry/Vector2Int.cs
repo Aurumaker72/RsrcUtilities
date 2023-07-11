@@ -16,4 +16,6 @@ public readonly record struct Vector2Int(int X, int Y)
     {
         return new Vector2Int(left.X + right.X, left.Y + right.Y);
     }
+    
+    
 }

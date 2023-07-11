@@ -60,7 +60,7 @@
                                 <Separator />
                                 <Button
                                     Click="PositioningModeButton_OnClick"
-                                    Content="{Binding ElementName=Window, Path=MainViewModel.DialogEditorSettingsViewModel.PositioningMode}" />
+                                    Content="{Binding ElementName=Window, Path=MainViewModel.DialogEditorSettingsViewModel.Positioning}" />
                             </ToolBar>
                         </ToolBarTray>
                         <Grid Grid.Row="1">

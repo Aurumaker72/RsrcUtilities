@@ -19,13 +19,13 @@ public class StyledObjectRenderer
     private VisualStyle _visualStyle;
     private SKPoint[]? _gridPoints;
     private Rectangle _previousDialogRectangle = Rectangle.Empty;
-    private float _previousSnapThreshold;
+    private float _previousGridSize;
 
     public StyledObjectRenderer()
     {
         _visualStyle = new()
         {
-            Image = SKImage.FromEncodedData("Assets/windows-11.png"),
+            Image = SKImage.FromEncodedData("Assets/windows-10.png"),
             TextPaint = new()
             {
                 Color = SKColors.Black,
@@ -197,7 +197,7 @@ public class StyledObjectRenderer
                 dialogEditorViewModel.DialogViewModel.Height)
             ||
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            dialogEditorSettingsViewModel.SnapThreshold != _previousSnapThreshold)
+            dialogEditorSettingsViewModel.GridSize != _previousGridSize)
             _gridPoints = null;
 
 
@@ -207,24 +207,24 @@ public class StyledObjectRenderer
             var points = new List<SKPoint>();
             for (var x = 0;
                  x < dialogEditorViewModel.DialogViewModel.Width /
-                 dialogEditorSettingsViewModel.SnapThreshold + 1;
+                 dialogEditorSettingsViewModel.GridSize + 1;
                  x++)
             for (var y = 0;
                  y < dialogEditorViewModel.DialogViewModel.Height /
-                 dialogEditorSettingsViewModel.SnapThreshold + 1;
+                 dialogEditorSettingsViewModel.GridSize + 1;
                  y++)
-                points.Add(new SKPoint(x * dialogEditorSettingsViewModel.SnapThreshold,
-                    y * dialogEditorSettingsViewModel.SnapThreshold));
+                points.Add(new SKPoint(x * dialogEditorSettingsViewModel.GridSize,
+                    y * dialogEditorSettingsViewModel.GridSize));
             _gridPoints = points.ToArray();
         }
 
-        if (dialogEditorSettingsViewModel.PositioningMode == PositioningModes.Grid)
+        if (dialogEditorSettingsViewModel.Positioning == Positioning.Grid)
             // draw the grid points, now that we're sure they exist
             canvas.DrawPoints(SKPointMode.Points, _gridPoints, _visualStyle.TextPaint);
 
         _previousDialogRectangle = new Rectangle(0, 0, dialogEditorViewModel.DialogViewModel.Width,
             dialogEditorViewModel.DialogViewModel.Height);
-        _previousSnapThreshold = dialogEditorSettingsViewModel.SnapThreshold;
+        _previousGridSize = dialogEditorSettingsViewModel.GridSize;
 
         if (dialogEditorViewModel.SelectedControlViewModel == null) return;
 
@@ -264,9 +264,8 @@ public class StyledObjectRenderer
             new(rectangle.MidX, rectangle.Bottom)
         }, new SKPaint
         {
-            StrokeWidth = dialogEditorSettingsViewModel.SnapThreshold,
-            Color = new SKColor(90, 90, 90),
-            IsAntialias = true
+            StrokeWidth = dialogEditorSettingsViewModel.GridSize,
+            Color = SKColors.Black.WithAlpha(80)
         });
     }
 }

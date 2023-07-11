@@ -106,8 +106,8 @@ public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>,
 
     private void PositioningModeButton_OnClick(object sender, RoutedEventArgs e)
     {
-        MainViewModel.DialogEditorSettingsViewModel.PositioningMode =
-            MainViewModel.DialogEditorSettingsViewModel.PositioningMode.Next();
+        MainViewModel.DialogEditorSettingsViewModel.Positioning =
+            MainViewModel.DialogEditorSettingsViewModel.Positioning.Next();
     }
 
     private void ZoomOutButton_OnClick(object sender, RoutedEventArgs e)

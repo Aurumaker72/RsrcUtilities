@@ -22,13 +22,15 @@ public partial class DialogEditorViewModel : ObservableObject
     private readonly IFilesService _filesService;
     private readonly DialogEditorSettingsViewModel _dialogEditorSettingsViewModel;
 
-    private Grips? _currentGrip;
-    private Rectangle _gripStartControlRectangle;
-    private Vector2 _gripStartPointerPosition;
-    private Vector2 _dragStartPointerPosition;
-    private Vector2 _dragStartTranslation;
+    private Transformation _transformation = Transformation.None;
+    private Sizing _sizing = Sizing.Empty;
+
+    private Rectangle _transformationStartRectangle;
+    private Vector2 _transformationStartPointerPosition;
+    private Vector2 _panStartPointerPosition;
+    private Vector2 _panStartTranslation;
     private float _scale = 1f;
-    private bool _isDragging;
+    private bool _isPanning;
     private TreeNode<Control>? _selectedNode;
 
     public DialogEditorViewModel(Dialog dialog,
@@ -93,54 +95,46 @@ public partial class DialogEditorViewModel : ObservableObject
 
     #region Private Methods
 
-    private Grips? GetGrip(Control control, Vector2 position)
+    private (Transformation transformation, Sizing sizing) GetTransformationOperationCandidate(Control control,
+        Vector2 position)
     {
-        // grip distance is the same as snap threshold
+        var relative = position - control.Rectangle.ToVector2();
 
-        if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.X, control.Rectangle.Y)) < _dialogEditorSettingsViewModel.SnapThreshold)
-            return Grips.TopLeft;
-        if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.Right, control.Rectangle.Y)) <
-            _dialogEditorSettingsViewModel.SnapThreshold)
-            return Grips.TopRight;
-        if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.X, control.Rectangle.Bottom)) <
-            _dialogEditorSettingsViewModel.SnapThreshold)
-            return Grips.BottomLeft;
-        if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.Right, control.Rectangle.Bottom)) <
-            _dialogEditorSettingsViewModel.SnapThreshold)
-            return Grips.BottomRight;
-        if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.X, control.Rectangle.CenterY)) <
-            _dialogEditorSettingsViewModel.SnapThreshold)
-            return Grips.Left;
-        if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.CenterX, control.Rectangle.Y)) <
-            _dialogEditorSettingsViewModel.SnapThreshold)
-            return Grips.Top;
-        if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.CenterX, control.Rectangle.Bottom)) <
-            _dialogEditorSettingsViewModel.SnapThreshold)
-            return Grips.Bottom;
-        if (Vector2.Distance(position,
-                new Vector2(control.Rectangle.Right, control.Rectangle.CenterY)) <
-            _dialogEditorSettingsViewModel.SnapThreshold)
-            return Grips.Right;
-        if (control.Rectangle.Contains(new Vector2Int(position)))
-            return Grips.Move;
-        return null;
+        var transformation = Transformation.Size;
+        var sizing = Sizing.Empty;
+
+        sizing = sizing with { Left = Math.Abs(relative.X - 0) < _dialogEditorSettingsViewModel.GripSize };
+        sizing = sizing with { Top = Math.Abs(relative.Y - 0) < _dialogEditorSettingsViewModel.GripSize };
+        sizing = sizing with
+        {
+            Right = Math.Abs(relative.X - control.Rectangle.Width) < _dialogEditorSettingsViewModel.GripSize
+        };
+        sizing = sizing with
+        {
+            Bottom = Math.Abs(relative.Y - control.Rectangle.Height) < _dialogEditorSettingsViewModel.GripSize
+        };
+
+        if (sizing.IsEmpty)
+        {
+            transformation = Transformation.Move;
+        }
+
+        if (!control.Rectangle.Inflate(_dialogEditorSettingsViewModel.GripSize).Contains(new(position)))
+        {
+            transformation = Transformation.None;
+        }
+
+        return (transformation, sizing);
     }
 
     // process a target control's rectangle
     private Rectangle ProcessRectangle(IEnumerable<TreeNode<Control>> controls, Control targetControl)
     {
-        switch (_dialogEditorSettingsViewModel.PositioningMode)
+        switch (_dialogEditorSettingsViewModel.Positioning)
         {
-            case PositioningModes.Freeform:
+            case Positioning.Freeform:
                 return targetControl.Rectangle;
-            case PositioningModes.Grid:
+            case Positioning.Grid:
 
                 int Snap(int value, float to)
                 {
@@ -148,11 +142,11 @@ public partial class DialogEditorViewModel : ObservableObject
                 }
 
 
-                return new Rectangle(Snap(targetControl.Rectangle.X, _dialogEditorSettingsViewModel.SnapThreshold),
-                    Snap(targetControl.Rectangle.Y, _dialogEditorSettingsViewModel.SnapThreshold),
-                    Snap(targetControl.Rectangle.Width, _dialogEditorSettingsViewModel.SnapThreshold),
-                    Snap(targetControl.Rectangle.Height, _dialogEditorSettingsViewModel.SnapThreshold));
-            case PositioningModes.Snap:
+                return new Rectangle(Snap(targetControl.Rectangle.X, _dialogEditorSettingsViewModel.GridSize),
+                    Snap(targetControl.Rectangle.Y, _dialogEditorSettingsViewModel.GridSize),
+                    Snap(targetControl.Rectangle.Width, _dialogEditorSettingsViewModel.GridSize),
+                    Snap(targetControl.Rectangle.Height, _dialogEditorSettingsViewModel.GridSize));
+            case Positioning.Snap:
 
                 // TODO: optimize by utilizing a LUT instead?
 
@@ -163,14 +157,14 @@ public partial class DialogEditorViewModel : ObservableObject
                 foreach (var node in controls.Where(x => !x.Data.Identifier.Equals(targetControl.Identifier)))
                 {
                     if (!hasSnappedX && Math.Abs(node.Data.Rectangle.X - targetControl.Rectangle.X) <
-                        _dialogEditorSettingsViewModel.SnapThreshold)
+                        _dialogEditorSettingsViewModel.GridSize)
                     {
                         targetControl.Rectangle = targetControl.Rectangle with { X = node.Data.Rectangle.X };
                         hasSnappedX = true;
                     }
 
                     if (!hasSnappedX && Math.Abs(node.Data.Rectangle.Right - targetControl.Rectangle.Right) <
-                        _dialogEditorSettingsViewModel.SnapThreshold)
+                        _dialogEditorSettingsViewModel.GridSize)
                     {
                         targetControl.Rectangle = targetControl.Rectangle with
                         {
@@ -180,14 +174,14 @@ public partial class DialogEditorViewModel : ObservableObject
                     }
 
                     if (!hasSnappedY && Math.Abs(node.Data.Rectangle.Y - targetControl.Rectangle.Y) <
-                        _dialogEditorSettingsViewModel.SnapThreshold)
+                        _dialogEditorSettingsViewModel.GridSize)
                     {
                         targetControl.Rectangle = targetControl.Rectangle with { Y = node.Data.Rectangle.Y };
                         hasSnappedY = true;
                     }
 
                     if (!hasSnappedY && Math.Abs(node.Data.Rectangle.Bottom - targetControl.Rectangle.Bottom) <
-                        _dialogEditorSettingsViewModel.SnapThreshold)
+                        _dialogEditorSettingsViewModel.GridSize)
                     {
                         targetControl.Rectangle = targetControl.Rectangle with
                         {
@@ -233,7 +227,9 @@ public partial class DialogEditorViewModel : ObservableObject
 
         // do grip-test first, then store if it hits
         var isGripHit = false;
-        if (SelectedNode != null) isGripHit = GetGrip(SelectedNode.Data, dialogPosition) != null;
+        if (SelectedNode != null)
+            isGripHit = GetTransformationOperationCandidate(SelectedNode.Data, dialogPosition).transformation !=
+                        Transformation.None;
 
         // if no grip hits, we know we aren't starting to resize or move a control,
         // thus we can select a new one
@@ -241,17 +237,17 @@ public partial class DialogEditorViewModel : ObservableObject
 
         if (SelectedNode != null)
         {
-            _currentGrip = GetGrip(SelectedNode.Data, dialogPosition);
-            _gripStartControlRectangle = SelectedNode.Data.Rectangle;
-            _gripStartPointerPosition = dialogPosition;
+            (_transformation, _sizing) = GetTransformationOperationCandidate(SelectedNode.Data, dialogPosition);
+            _transformationStartRectangle = SelectedNode.Data.Rectangle;
+            _transformationStartPointerPosition = dialogPosition;
         }
         else
         {
             // no node caught but stil clicked,
             // so start translating the camera
-            _isDragging = true;
-            _dragStartPointerPosition = position;
-            _dragStartTranslation = Translation;
+            _isPanning = true;
+            _panStartPointerPosition = position;
+            _panStartTranslation = Translation;
         }
 
         WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
@@ -260,16 +256,17 @@ public partial class DialogEditorViewModel : ObservableObject
     [RelayCommand]
     private void PointerRelease()
     {
-        _isDragging = false;
-        _currentGrip = null;
+        _isPanning = false;
+        _transformation = Transformation.None;
+        _sizing = Sizing.Empty;
     }
 
     [RelayCommand]
     private void PointerMove(Vector2 position)
     {
-        if (_isDragging)
+        if (_isPanning)
         {
-            Translation = _dragStartTranslation + (position - _dragStartPointerPosition);
+            Translation = _panStartTranslation + (position - _panStartPointerPosition);
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
             return;
         }
@@ -279,80 +276,45 @@ public partial class DialogEditorViewModel : ObservableObject
 
         position = RelativePositionToDialog(position);
 
-        switch (_currentGrip)
+        switch (_transformation)
         {
-            case Grips.TopLeft:
-                position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
-                position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
-                SelectedControlViewModel.X = (int)position.X;
-                SelectedControlViewModel.Y = (int)position.Y;
-                SelectedControlViewModel.Width = (int)(_gripStartControlRectangle.Width +
-                                                       (_gripStartPointerPosition.X - position.X));
-                SelectedControlViewModel.Height = (int)(_gripStartControlRectangle.Height +
-                                                        (_gripStartPointerPosition.Y - position.Y));
-                break;
-            case Grips.BottomLeft:
-                position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
+            case Transformation.Size:
+                if (_sizing.Left)
+                {
+                    position.X = Math.Min(position.X, _transformationStartRectangle.Right);
+                    SelectedControlViewModel.X = (int)position.X;
+                    SelectedControlViewModel.Width =
+                        _transformationStartRectangle.Right - SelectedControlViewModel.X;
+                }
 
-                SelectedControlViewModel.X = (int)position.X;
-                SelectedControlViewModel.Width =
-                    (int)(_gripStartControlRectangle.Width + (_gripStartPointerPosition.X - position.X));
-                SelectedControlViewModel.Height = (int)Math.Max(0,
-                    _gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
+                if (_sizing.Top)
+                {
+                    position.Y = Math.Min(position.Y, _transformationStartRectangle.Bottom);
+                    SelectedControlViewModel.Y = (int)position.Y;
+                    SelectedControlViewModel.Height =
+                        _transformationStartRectangle.Bottom - SelectedControlViewModel.Y;
+                }
 
-                break;
-            case Grips.BottomRight:
-                position.X = Math.Max(position.X, _gripStartControlRectangle.X);
-                position.Y = Math.Max(position.Y, _gripStartControlRectangle.Y);
+                if (_sizing.Right)
+                {
+                    position.X = Math.Max(position.X, _transformationStartRectangle.X);
+                    SelectedControlViewModel.Width = (int)(_transformationStartRectangle.Width +
+                                                           (position.X - _transformationStartRectangle.Right));
+                }
 
-                SelectedControlViewModel.Width =
-                    (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
-                SelectedControlViewModel.Height =
-                    (int)(_gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
-                break;
-            case Grips.TopRight:
-                position.X = Math.Max(position.X, _gripStartControlRectangle.X);
-                position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
-
-                SelectedControlViewModel.Y = (int)position.Y;
-                SelectedControlViewModel.Width =
-                    (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
-                SelectedControlViewModel.Height =
-                    (int)(_gripStartControlRectangle.Height + (_gripStartPointerPosition.Y - position.Y));
-                break;
-            case Grips.Left:
-                position.X = Math.Min(position.X, _gripStartControlRectangle.Right);
-
-                SelectedControlViewModel.X = (int)position.X;
-                SelectedControlViewModel.Width = (int)(_gripStartControlRectangle.Width +
-                                                       (_gripStartPointerPosition.X - position.X));
-                break;
-            case Grips.Right:
-                position.X = Math.Max(position.X, _gripStartControlRectangle.X);
-                SelectedControlViewModel.Width =
-                    (int)(_gripStartControlRectangle.Width + (position.X - _gripStartPointerPosition.X));
-                break;
-            case Grips.Bottom:
-                position.Y = Math.Max(position.Y, _gripStartControlRectangle.Y);
-
-                SelectedControlViewModel.Height =
-                    (int)(_gripStartControlRectangle.Height + (position.Y - _gripStartPointerPosition.Y));
+                if (_sizing.Bottom)
+                {
+                    position.Y = Math.Max(position.Y, _transformationStartRectangle.Y);
+                    SelectedControlViewModel.Height = (int)(_transformationStartRectangle.Height +
+                                                            (position.Y - _transformationStartRectangle.Bottom));
+                }
 
                 break;
-            case Grips.Top:
-                position.Y = Math.Min(position.Y, _gripStartControlRectangle.Bottom);
-
-                SelectedControlViewModel.Y = (int)position.Y;
-                SelectedControlViewModel.Height = (int)(_gripStartControlRectangle.Height +
-                                                        (_gripStartPointerPosition.Y - position.Y));
-                break;
-            case Grips.Move:
+            case Transformation.Move:
                 SelectedControlViewModel.X =
-                    (int)(_gripStartControlRectangle.X + (position.X - _gripStartPointerPosition.X));
+                    (int)(_transformationStartRectangle.X + (position.X - _transformationStartPointerPosition.X));
                 SelectedControlViewModel.Y =
-                    (int)(_gripStartControlRectangle.Y + (position.Y - _gripStartPointerPosition.Y));
-                break;
-            case null:
+                    (int)(_transformationStartRectangle.Y + (position.Y - _transformationStartPointerPosition.Y));
                 break;
         }
 
@@ -409,21 +371,22 @@ public partial class DialogEditorViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveUgui()
     {
-        var lua = new UguiDialogSerializer().Serialize(new DefaultLayoutEngine().DoLayout(DialogViewModel.Dialog), DialogViewModel.Dialog);
-        
+        var lua = new UguiDialogSerializer().Serialize(new DefaultLayoutEngine().DoLayout(DialogViewModel.Dialog),
+            DialogViewModel.Dialog);
+
         var luaFile =
             await _filesService.TryPickSaveFileAsync("ugui.lua", ("Lua Script File", new[] { "lua" }));
-        
+
         if (luaFile == null)
         {
             return;
         }
-        
+
         await using var stream = await luaFile.OpenStreamForWriteAsync();
         stream.Write(Encoding.Default.GetBytes(lua));
         await stream.FlushAsync();
     }
-    
+
     #endregion
 
 

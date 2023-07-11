@@ -3,7 +3,7 @@
 /// <summary>
 /// Modes of control transformations
 /// </summary>
-public enum PositioningModes
+public enum Positioning
 {
     /// <summary>
     /// Translation and scaling is performed with pixel-precision
