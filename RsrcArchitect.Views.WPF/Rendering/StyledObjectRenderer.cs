@@ -17,85 +17,95 @@ internal record struct VisualStateful<T>(T Enabled, T Disabled);
 internal record struct VisualStyle(SKImage Image, SKPaint TextPaint, SKPaint InvertedTextPaint, SKFont Font,
     Ninepatch Titlebar, Ninepatch Background,
     VisualStateful<Ninepatch> Raised, VisualStateful<Ninepatch> Edit,
-    Ninepatch GroupBox, VisualStateful<Sprite> CheckBox);
+    Ninepatch GroupBox, VisualStateful<Sprite> CheckBox, Ninepatch Selection, Ninepatch SelectionCorner);
 
 public class StyledObjectRenderer
 {
-    private VisualStyle _visualStyle;
+    private readonly VisualStyle _visualStyle;
     private SKPoint[]? _gridPoints;
     private Rectangle _previousDialogRectangle = Rectangle.Empty;
     private float _previousGridSize;
 
     public StyledObjectRenderer()
     {
-        _visualStyle = new()
+        _visualStyle = new VisualStyle
         {
             Image = SKImage.FromEncodedData("Assets/windows-11.png"),
-            TextPaint = new()
+            TextPaint = new SKPaint
             {
                 Color = SKColors.Black,
                 IsAntialias = true,
                 Typeface = SKTypeface.FromFamilyName("MS Shell Dlg 2"),
                 TextSize = 14
             },
-            InvertedTextPaint = new()
+            InvertedTextPaint = new SKPaint
             {
                 Color = SKColors.White,
                 IsAntialias = true,
                 Typeface = SKTypeface.FromFamilyName("MS Shell Dlg 2"),
                 TextSize = 14
             },
-            Font = new()
+            Font = new SKFont
             {
                 Edging = SKFontEdging.SubpixelAntialias,
                 Typeface = SKTypeface.FromFamilyName("MS Shell Dlg 2"),
                 Size = 14
             },
-            Titlebar = new()
+            Titlebar = new Ninepatch
             {
-                Source = new(49, 22, 9, 9),
-                Center = new(53, 26, 1, 1)
+                Source = new Rectangle(49, 22, 9, 9),
+                Center = new Rectangle(53, 26, 1, 1)
             },
-            Background = new()
+            Background = new Ninepatch
             {
-                Source = new(60, 22, 9, 9),
-                Center = new(64, 26, 1, 1)
+                Source = new Rectangle(60, 22, 9, 9),
+                Center = new Rectangle(64, 26, 1, 1)
             },
-            Raised = new()
+            Raised = new VisualStateful<Ninepatch>
             {
-                Enabled = new Ninepatch()
+                Enabled = new Ninepatch
                 {
-                    Source = new(1, 1, 11, 9),
-                    Center = new(6, 5, 1, 1)
+                    Source = new Rectangle(1, 1, 11, 9),
+                    Center = new Rectangle(6, 5, 1, 1)
                 },
-                Disabled = new Ninepatch()
+                Disabled = new Ninepatch
                 {
-                    Source = new(1, 34, 11, 9),
-                    Center = new(6, 38, 1, 1)
-                },
+                    Source = new Rectangle(1, 34, 11, 9),
+                    Center = new Rectangle(6, 38, 1, 1)
+                }
             },
-            Edit = new()
+            Edit = new VisualStateful<Ninepatch>
             {
-                Enabled = new Ninepatch()
+                Enabled = new Ninepatch
                 {
-                    Source = new(20, 1, 5, 5),
-                    Center = new(22, 3, 1, 1)
+                    Source = new Rectangle(20, 1, 5, 5),
+                    Center = new Rectangle(22, 3, 1, 1)
                 },
-                Disabled = new Ninepatch()
+                Disabled = new Ninepatch
                 {
-                    Source = new(20, 16, 5, 5),
-                    Center = new(22, 18, 1, 1)
-                },
+                    Source = new Rectangle(20, 16, 5, 5),
+                    Center = new Rectangle(22, 18, 1, 1)
+                }
             },
-            GroupBox = new()
+            GroupBox = new Ninepatch
             {
-                Source = new(36, 5, 3, 3),
-                Center = new(37, 6, 1, 1)
+                Source = new Rectangle(36, 5, 3, 3),
+                Center = new Rectangle(37, 6, 1, 1)
             },
-            CheckBox = new()
+            CheckBox = new VisualStateful<Sprite>
             {
-                Enabled = new Sprite(new(0, 327, 52, 52)),
-                Disabled = new Sprite(new(0, 899, 52, 52)),
+                Enabled = new Sprite(new Rectangle(0, 327, 52, 52)),
+                Disabled = new Sprite(new Rectangle(0, 899, 52, 52))
+            },
+            Selection = new Ninepatch
+            {
+                Source = new Rectangle(20, 35, 11, 9),
+                Center = new Rectangle(21, 36, 9, 7)
+            },
+            SelectionCorner = new Ninepatch
+            {
+                Source = new Rectangle(20, 28, 5, 5),
+                Center = new Rectangle(22, 30, 1, 1)
             }
         };
     }
@@ -278,8 +288,9 @@ public class StyledObjectRenderer
 
         if (dialogEditorViewModel.SelectedControlViewModel == null) return;
 
-        // draw selection rectangle
-        var rectangle = SKRect.Create(0, 0,
+
+        // drawing the selection-related graphics
+        var selectionRectangle = SKRect.Create(0, 0,
             dialogEditorViewModel.SelectedControlViewModel.Rectangle.Width,
             dialogEditorViewModel.SelectedControlViewModel.Rectangle.Height);
 
@@ -287,35 +298,31 @@ public class StyledObjectRenderer
             dialogEditorViewModel.SelectedControlViewModel.Rectangle.X,
             dialogEditorViewModel.SelectedControlViewModel.Rectangle.Y);
 
-        canvas.DrawRect(rectangle,
-            new SKPaint
-            {
-                Style = SKPaintStyle.Fill,
-                Color = new SKColor(201, 224, 247, 128)
-            });
+        // draw the selection rectangle
+        DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.Selection.Source, _visualStyle.Selection.Center,
+            selectionRectangle);
 
-        canvas.DrawRect(rectangle,
-            new SKPaint
-            {
-                Style = SKPaintStyle.Stroke,
-                Color = new SKColor(98, 162, 228)
-            });
-
-        // draw cached grid points
-        canvas.DrawPoints(SKPointMode.Points, new SKPoint[]
+        // and the corner points
+        var cornerPoints = new SKPoint[]
         {
             new(0, 0),
-            new(0, rectangle.Height),
-            new(rectangle.Width, 0),
-            new(rectangle.Width, rectangle.Height),
-            new(rectangle.MidX, 0),
-            new(0, rectangle.MidY),
-            new(rectangle.Right, rectangle.MidY),
-            new(rectangle.MidX, rectangle.Bottom)
-        }, new SKPaint
+            new(selectionRectangle.Width, selectionRectangle.Height),
+            new(0, selectionRectangle.Height),
+            new(selectionRectangle.Width, 0),
+            new(selectionRectangle.Width / 2, 0),
+            new(0, selectionRectangle.Height / 2),
+            new(selectionRectangle.Width / 2, selectionRectangle.Height),
+            new(selectionRectangle.Width, selectionRectangle.Height / 2),
+        };
+        canvas.Translate(- dialogEditorSettingsViewModel.GripSize / 2f, - dialogEditorSettingsViewModel.GripSize / 2f);
+        foreach (var point in cornerPoints)
         {
-            StrokeWidth = dialogEditorSettingsViewModel.GridSize,
-            Color = SKColors.Black.WithAlpha(80)
-        });
+            canvas.Translate(point.X, point.Y);
+            DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.SelectionCorner.Source,
+                _visualStyle.SelectionCorner.Center, SKRect.Create(0, 0, dialogEditorSettingsViewModel.GripSize, dialogEditorSettingsViewModel.GripSize));
+            canvas.Translate(-point.X, -point.Y);
+        }
+        canvas.Translate(dialogEditorSettingsViewModel.GripSize / 2f, dialogEditorSettingsViewModel.GripSize / 2f);
+
     }
 }
