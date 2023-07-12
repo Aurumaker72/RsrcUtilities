@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="RsrcArchitect.Views.WPF.UserControls.ControlInspector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:RsrcArchitect.ViewModels;assembly=RsrcArchitect.ViewModels"
+             xmlns:geometry="clr-namespace:RsrcCore.Geometry;assembly=RsrcCore"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance viewModels:ControlViewModel}">
+    <!-- VM purity is broken at line 7, but there's no way im duplicating those types in the vm layer -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <CheckBox Grid.Row="0" Grid.Column="0"
+                  Grid.ColumnSpan="2"
+                  IsChecked="{Binding IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  Content="Enabled" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Text="Identifier" VerticalAlignment="Center"
+                   HorizontalAlignment="Left" />
+        <TextBox Grid.Row="1" Grid.Column="1"
+                 Text="{Binding Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="X"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Left" />
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 Text="{Binding X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Y"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Left" />
+        <TextBox Grid.Row="3" Grid.Column="1"
+                 Text="{Binding Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Width"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Left" />
+        <TextBox Grid.Row="4" Grid.Column="1"
+                 Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Height"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Left" />
+        <TextBox Grid.Row="5" Grid.Column="1"
+                 Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        
+    </Grid>
+
+</UserControl>

@@ -7,10 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <Thickness x:Key="SmallMargin">5</Thickness>
-                    <Thickness x:Key="SmallVerticalMargin">0 5 0 0</Thickness>
-                    
-                    <converters:PositioningModeToSymbolConverter x:Key="PositioningModeToSymbolConverter"/>
+                    <converters:EnumToCollectionConverter x:Key="EnumToCollectionConverter"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

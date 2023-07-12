@@ -122,7 +122,6 @@ public static class DialogLoader
                     PInvoke.SendMessage(controlHwnd, WM_SETFONT, new WPARAM((nuint)defaultFont.Value), new LPARAM(1));
                 }
                 PInvoke.SetWindowText(hwnd, dialogViewModel.Caption.ToPcwstr());
-
             }
 
             if (msg == WM_CLOSE)
