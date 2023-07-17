@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using RsrcArchitect.Views.WPF.Services;
 
 namespace RsrcArchitect.Views.WPF;
 
@@ -7,4 +8,6 @@ namespace RsrcArchitect.Views.WPF;
 /// </summary>
 public partial class App : Application
 {
+    internal static readonly FilesService FilesService = new FilesService();
+
 }

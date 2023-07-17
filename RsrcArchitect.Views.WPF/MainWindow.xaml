@@ -30,6 +30,8 @@
                     <MenuItem Header="_Ugui Script"
                               Command="{Binding MainViewModel.SelectedDialogEditorViewModel.SaveUguiCommand}" />
                 </MenuItem>
+                <MenuItem Header="Set _Visual Style..." Click="SetVisualStyle_Click" />
+
             </MenuItem>
         </Menu>
 

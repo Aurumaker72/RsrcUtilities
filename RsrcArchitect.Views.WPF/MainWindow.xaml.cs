@@ -24,7 +24,7 @@ namespace RsrcArchitect.Views.WPF;
 [INotifyPropertyChanged]
 public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>, IRecipient<NotificationMessage>
 {
-    private const float ZoomIncrement = 0.5f;
+    private const float ZoomIncrement = 0.25f;
 
     private SKElement? _skElement;
 
@@ -35,7 +35,7 @@ public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>,
     {
         InitializeComponent();
 
-        MainViewModel = new MainViewModel(new FilesService());
+        MainViewModel = new MainViewModel(App.FilesService);
 
         DataContext = this;
 
@@ -152,5 +152,15 @@ public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>,
     public void Receive(NotificationMessage message)
     {
         MessageBox.Show(message.Value);
+    }
+
+    private async void SetVisualStyle_Click(object sender, RoutedEventArgs e)
+    {
+        var path = await App.FilesService.TryPickOpenFileAsync(new[] { "png" });
+        if (path == null)
+        {
+            return;
+        }
+        DialogRenderer.StyledObjectRenderer.LoadAtlas(path);
     }
 }

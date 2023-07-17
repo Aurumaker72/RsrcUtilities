@@ -21,7 +21,7 @@ internal record struct VisualStyle(SKImage Image, SKPaint TextPaint, SKPaint Inv
 
 public class StyledObjectRenderer
 {
-    private readonly VisualStyle _visualStyle;
+    private VisualStyle _visualStyle;
     private SKPoint[]? _gridPoints;
     private Rectangle _previousDialogRectangle = Rectangle.Empty;
     private float _previousGridSize;
@@ -100,7 +100,7 @@ public class StyledObjectRenderer
             Selection = new Ninepatch
             {
                 Source = new Rectangle(20, 35, 11, 9),
-                Center = new Rectangle(21, 36, 9, 7)
+                Center = new Rectangle(25, 39, 1, 1)
             },
             SelectionCorner = new Ninepatch
             {
@@ -108,6 +108,12 @@ public class StyledObjectRenderer
                 Center = new Rectangle(22, 30, 1, 1)
             }
         };
+    }
+
+    public void LoadAtlas(string path)
+    {
+        _visualStyle.Image.Dispose();
+        _visualStyle = _visualStyle with { Image = SKImage.FromEncodedData(path) };
     }
 
     private void DrawImageNinePatch(SKCanvas canvas, SKImage image, Rectangle sourceRectangle,
@@ -314,15 +320,16 @@ public class StyledObjectRenderer
             new(selectionRectangle.Width / 2, selectionRectangle.Height),
             new(selectionRectangle.Width, selectionRectangle.Height / 2),
         };
-        canvas.Translate(- dialogEditorSettingsViewModel.GripSize / 2f, - dialogEditorSettingsViewModel.GripSize / 2f);
+        canvas.Translate(-dialogEditorSettingsViewModel.GripSize / 2f, -dialogEditorSettingsViewModel.GripSize / 2f);
         foreach (var point in cornerPoints)
         {
             canvas.Translate(point.X, point.Y);
             DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.SelectionCorner.Source,
-                _visualStyle.SelectionCorner.Center, SKRect.Create(0, 0, dialogEditorSettingsViewModel.GripSize, dialogEditorSettingsViewModel.GripSize));
+                _visualStyle.SelectionCorner.Center,
+                SKRect.Create(0, 0, dialogEditorSettingsViewModel.GripSize, dialogEditorSettingsViewModel.GripSize));
             canvas.Translate(-point.X, -point.Y);
         }
-        canvas.Translate(dialogEditorSettingsViewModel.GripSize / 2f, dialogEditorSettingsViewModel.GripSize / 2f);
 
+        canvas.Translate(dialogEditorSettingsViewModel.GripSize / 2f, dialogEditorSettingsViewModel.GripSize / 2f);
     }
 }

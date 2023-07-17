@@ -65,7 +65,6 @@ public partial class DialogEditorViewModel : ObservableObject
             OnPropertyChanged(nameof(IsNodeSelected));
             DeleteSelectedNodeCommand.NotifyCanExecuteChanged();
             BringSelectedNodeToFrontCommand.NotifyCanExecuteChanged();
-            // TODO: cache the viewmodels, since creation creates garbage
             SelectedControlViewModel = value != null
                 ? ControlViewModelFactory.Create(value.Data,
                     s =>
@@ -385,10 +384,10 @@ public partial class DialogEditorViewModel : ObservableObject
     internal void AddControl(Control control)
     {
         // generate randomized unique identifier because we can't have duplicate identifiers
-        control.Identifier = StringHelper.GetRandomAlphabeticString(16);
+        control.Identifier += StringHelper.GetRandomAlphabeticString(16);
 
-        // place it roughly in the middle
-        var size = new Vector2Int(90, 25);
+        // place it at the top-left with an approximately appropriate size
+        var size = new Vector2Int(90, 23);
         control.Rectangle = new Rectangle(0, 0, size.X, size.Y);
 
         // add it to the root node, then queue an invalidation

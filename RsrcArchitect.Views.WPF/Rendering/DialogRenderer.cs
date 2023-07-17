@@ -5,8 +5,7 @@ namespace RsrcArchitect.Views.WPF.Rendering;
 
 public class DialogRenderer
 {
-    private static StyledObjectRenderer _styledObjectRenderer = new();
-    
+    public readonly StyledObjectRenderer StyledObjectRenderer = new();
     
     public void Render(DialogEditorSettingsViewModel dialogEditorSettingsViewModel, DialogEditorViewModel dialogEditorViewModel, SKCanvas canvas)
     {
@@ -19,19 +18,19 @@ public class DialogRenderer
         
         canvas.Clear();
 
-        _styledObjectRenderer.Render(canvas, dialogEditorViewModel.DialogViewModel);
+        StyledObjectRenderer.Render(canvas, dialogEditorViewModel.DialogViewModel);
         
         foreach (var (control, rectangle) in controlRectangles)
         {
             canvas.Save();
             canvas.Translate(rectangle.X, rectangle.Y);
             
-            _styledObjectRenderer.Render(canvas, control, rectangle);
+            StyledObjectRenderer.Render(canvas, control, rectangle);
             
             canvas.Restore();
         }
         
-        _styledObjectRenderer.RenderDecorations(canvas, dialogEditorViewModel, dialogEditorSettingsViewModel);
+        StyledObjectRenderer.RenderDecorations(canvas, dialogEditorViewModel, dialogEditorSettingsViewModel);
     }
     
 }
