@@ -30,7 +30,7 @@ public class StyledObjectRenderer
     {
         _visualStyle = new VisualStyle
         {
-            Image = SKImage.FromEncodedData("Assets/windows-11.png"),
+            Image = SKImage.FromEncodedData("Assets/windows-10.png"),
             TextPaint = new SKPaint
             {
                 Color = SKColors.Black,

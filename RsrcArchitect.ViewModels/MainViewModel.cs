@@ -11,19 +11,19 @@ namespace RsrcArchitect.ViewModels;
 
 public partial class MainViewModel : ObservableObject, IRecipient<DialogEditorViewModelClosingMessage>
 {
-    private readonly IFilesService _filesService;
+    private readonly IFilePickerService _filePickerService;
 
     public ObservableCollection<DialogEditorViewModel> DialogEditorViewModels { get; } = new();
     public DialogEditorSettingsViewModel DialogEditorSettingsViewModel { get; } = new();
 
     [ObservableProperty] private DialogEditorViewModel? _selectedDialogEditorViewModel = null;
 
-    public MainViewModel(IFilesService filesService)
+    public MainViewModel(IFilePickerService filePickerService)
     {
-        _filesService = filesService;
+        _filePickerService = filePickerService;
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
-    
+
     [RelayCommand]
     private void CreateProject()
     {
@@ -33,7 +33,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<DialogEditorVi
             Width = 600,
             Height = 400,
             Root = new TreeNode<Control>(new Panel())
-        }, _filesService, "New Dialog Project", DialogEditorSettingsViewModel));
+        }, "New Dialog Project", DialogEditorSettingsViewModel, _filePickerService));
     }
 
     void IRecipient<DialogEditorViewModelClosingMessage>.Receive(DialogEditorViewModelClosingMessage message)

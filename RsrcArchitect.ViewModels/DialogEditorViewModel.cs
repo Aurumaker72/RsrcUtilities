@@ -19,7 +19,7 @@ namespace RsrcArchitect.ViewModels;
 
 public partial class DialogEditorViewModel : ObservableObject
 {
-    private readonly IFilesService _filesService;
+    private readonly IFilePickerService _filePickerService;
     private readonly DialogEditorSettingsViewModel _dialogEditorSettingsViewModel;
 
     private Transformation _transformation = Transformation.None;
@@ -33,12 +33,12 @@ public partial class DialogEditorViewModel : ObservableObject
     private bool _isPanning;
     private TreeNode<Control>? _selectedNode;
 
-    public DialogEditorViewModel(Dialog dialog,
-        IFilesService filesService, string friendlyName, DialogEditorSettingsViewModel dialogEditorSettingsViewModel)
+    public DialogEditorViewModel(Dialog dialog, string friendlyName,
+        DialogEditorSettingsViewModel dialogEditorSettingsViewModel, IFilePickerService filePickerService)
     {
-        _filesService = filesService;
         FriendlyName = friendlyName;
         _dialogEditorSettingsViewModel = dialogEditorSettingsViewModel;
+        _filePickerService = filePickerService;
         DialogViewModel = new DialogViewModel(dialog);
         ToolboxItemViewModels = new List<ToolboxItemViewModel>
         {
@@ -351,21 +351,15 @@ public partial class DialogEditorViewModel : ObservableObject
             new DefaultLayoutEngine().DoLayout(DialogViewModel.Dialog), DialogViewModel.Dialog);
         var header = new CxxHeaderInformationGenerator().Generate(DialogViewModel.Dialog);
 
-
         var resourceFile =
-            await _filesService.TryPickSaveFileAsync("rsrc.rc", ("Resource File", new[] { "rc" }));
-        var headerFile = await _filesService.TryPickSaveFileAsync("resource.h", ("C/C++ Header File", new[] { "h" }));
+            await _filePickerService.TryPickSaveFileAsync("rsrc.rc", ("Resource File", new[] { "rc" }));
+        var headerFile =
+            await _filePickerService.TryPickSaveFileAsync("resource.h", ("C/C++ Header File", new[] { "h" }));
 
         if (resourceFile == null || headerFile == null) return;
 
-        await using var resourceStream = await resourceFile.OpenStreamForWriteAsync();
-        await using var headerStream = await headerFile.OpenStreamForWriteAsync();
-
-        resourceStream.Write(Encoding.Default.GetBytes(rc));
-        await resourceStream.FlushAsync();
-
-        headerStream.Write(Encoding.Default.GetBytes(header));
-        await headerStream.FlushAsync();
+        await File.WriteAllTextAsync(resourceFile, rc);
+        await File.WriteAllTextAsync(headerFile, header);
     }
 
     [RelayCommand]
@@ -375,16 +369,14 @@ public partial class DialogEditorViewModel : ObservableObject
             DialogViewModel.Dialog);
 
         var luaFile =
-            await _filesService.TryPickSaveFileAsync("ugui.lua", ("Lua Script File", new[] { "lua" }));
+            await _filePickerService.TryPickSaveFileAsync("ugui.lua", ("Lua Script File", new[] { "lua" }));
 
         if (luaFile == null)
         {
             return;
         }
 
-        await using var stream = await luaFile.OpenStreamForWriteAsync();
-        stream.Write(Encoding.Default.GetBytes(lua));
-        await stream.FlushAsync();
+        await File.WriteAllTextAsync(luaFile, lua);
     }
 
     #endregion
