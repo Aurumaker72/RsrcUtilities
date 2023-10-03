@@ -7,6 +7,7 @@ using RsrcArchitect.Services;
 using RsrcArchitect.ViewModels.Factories;
 using RsrcArchitect.ViewModels.Helpers;
 using RsrcArchitect.ViewModels.Messages;
+using RsrcArchitect.ViewModels.Positioners;
 using RsrcArchitect.ViewModels.Types;
 using RsrcCore;
 using RsrcCore.Controls;
@@ -24,7 +25,7 @@ public partial class DialogEditorViewModel : ObservableObject
 
     private Transformation _transformation = Transformation.None;
     private Sizing _sizing = Sizing.Empty;
-
+    
     private Rectangle _transformationStartRectangle;
     private Vector2 _transformationStartPointerPosition;
     private Vector2 _panStartPointerPosition;
@@ -124,76 +125,6 @@ public partial class DialogEditorViewModel : ObservableObject
         }
 
         return (transformation, sizing);
-    }
-
-    // process a target control's rectangle
-    private Rectangle ProcessRectangle(IEnumerable<TreeNode<Control>> controls, Control targetControl)
-    {
-        switch (_dialogEditorSettingsViewModel.Positioning)
-        {
-            case Positioning.Freeform:
-                return targetControl.Rectangle;
-            case Positioning.Grid:
-
-                int Snap(int value, float to)
-                {
-                    return (int)(Math.Round(value / to) * to);
-                }
-
-
-                return new Rectangle(Snap(targetControl.Rectangle.X, _dialogEditorSettingsViewModel.GridSize),
-                    Snap(targetControl.Rectangle.Y, _dialogEditorSettingsViewModel.GridSize),
-                    Snap(targetControl.Rectangle.Width, _dialogEditorSettingsViewModel.GridSize),
-                    Snap(targetControl.Rectangle.Height, _dialogEditorSettingsViewModel.GridSize));
-            case Positioning.Snap:
-
-                // TODO: optimize by utilizing a LUT instead?
-
-                var hasSnappedX = false;
-                var hasSnappedY = false;
-
-                // enumerate all other controls
-                foreach (var node in controls.Where(x => !x.Data.Identifier.Equals(targetControl.Identifier)))
-                {
-                    if (!hasSnappedX && Math.Abs(node.Data.Rectangle.X - targetControl.Rectangle.X) <
-                        _dialogEditorSettingsViewModel.GridSize)
-                    {
-                        targetControl.Rectangle = targetControl.Rectangle with { X = node.Data.Rectangle.X };
-                        hasSnappedX = true;
-                    }
-
-                    if (!hasSnappedX && Math.Abs(node.Data.Rectangle.Right - targetControl.Rectangle.Right) <
-                        _dialogEditorSettingsViewModel.GridSize)
-                    {
-                        targetControl.Rectangle = targetControl.Rectangle with
-                        {
-                            X = node.Data.Rectangle.Right - targetControl.Rectangle.Width
-                        };
-                        hasSnappedX = true;
-                    }
-
-                    if (!hasSnappedY && Math.Abs(node.Data.Rectangle.Y - targetControl.Rectangle.Y) <
-                        _dialogEditorSettingsViewModel.GridSize)
-                    {
-                        targetControl.Rectangle = targetControl.Rectangle with { Y = node.Data.Rectangle.Y };
-                        hasSnappedY = true;
-                    }
-
-                    if (!hasSnappedY && Math.Abs(node.Data.Rectangle.Bottom - targetControl.Rectangle.Bottom) <
-                        _dialogEditorSettingsViewModel.GridSize)
-                    {
-                        targetControl.Rectangle = targetControl.Rectangle with
-                        {
-                            Y = node.Data.Rectangle.Bottom - targetControl.Rectangle.Height
-                        };
-                        hasSnappedY = true;
-                    }
-                }
-
-                return targetControl.Rectangle;
-            default:
-                throw new NotImplementedException();
-        }
     }
 
     private TreeNode<Control>? GetControlNodeAtPosition(Vector2 position)
@@ -317,7 +248,7 @@ public partial class DialogEditorViewModel : ObservableObject
                 break;
         }
 
-        var processedRectangle = ProcessRectangle(DialogViewModel.Dialog.Root, SelectedControlViewModel.Control);
+        var processedRectangle = _dialogEditorSettingsViewModel.Positioner.Transform(DialogViewModel.Dialog.Root, SelectedControlViewModel.Control);
         SelectedControlViewModel.X = processedRectangle.X;
         SelectedControlViewModel.Y = processedRectangle.Y;
         SelectedControlViewModel.Width = processedRectangle.Width;

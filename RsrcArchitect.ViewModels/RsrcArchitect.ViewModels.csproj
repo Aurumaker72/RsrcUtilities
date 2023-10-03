@@ -17,4 +17,5 @@
         <ProjectReference Include="..\RsrcCore\RsrcCore.csproj" />
     </ItemGroup>
 
+
 </Project>
