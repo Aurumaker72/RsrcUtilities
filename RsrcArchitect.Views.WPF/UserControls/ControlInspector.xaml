@@ -23,14 +23,10 @@
         </Grid.RowDefinitions>
 
         <CheckBox Grid.Row="0" Grid.Column="0"
-                  Grid.ColumnSpan="2"
                   IsChecked="{Binding IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                   Content="Enabled" />
 
-        <TextBlock Grid.Row="1" Grid.Column="0"
-                   Text="Identifier" VerticalAlignment="Center"
-                   HorizontalAlignment="Left" />
-        <TextBox Grid.Row="1" Grid.Column="1"
+        <TextBox Grid.Row="0" Grid.Column="1"
                  Text="{Binding Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
         <TextBlock Grid.Row="2" Grid.Column="0" Text="X"

@@ -8,6 +8,7 @@
         xmlns:wpf="clr-namespace:RsrcArchitect.Views.WPF"
         xmlns:viewModels="clr-namespace:RsrcArchitect.ViewModels;assembly=RsrcArchitect.ViewModels"
         xmlns:userControls="clr-namespace:RsrcArchitect.Views.WPF.UserControls"
+        xmlns:controls1="clr-namespace:RsrcArchitect.Views.WPF.UserControls.Controls"
         mc:Ignorable="d"
         x:Name="Window"
         Title="RsrcArchitect" Height="450" Width="800"
@@ -111,7 +112,8 @@
                                                 <Setter Property="Content">
                                                     <Setter.Value>
                                                         <StackPanel Orientation="Vertical">
-                                                            <userControls:ControlInspector DataContext="{Binding SelectedControlViewModel}"/>
+                                                            <userControls:ControlInspector
+                                                                DataContext="{Binding SelectedControlViewModel}" />
                                                         </StackPanel>
                                                     </Setter.Value>
                                                 </Setter>
@@ -161,7 +163,7 @@
                                                                                VerticalAlignment="Center"
                                                                                HorizontalAlignment="Center" />
                                                                     <TextBox Grid.Row="0" Grid.Column="1"
-                                                                             Text="{Binding DialogViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                             Text="{Binding DialogViewModel.Identifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                                                     <TextBlock Grid.Row="1" Grid.Column="0"
                                                                                Text="Caption"
@@ -193,126 +195,27 @@
                                         <ContentControl.Resources>
 
                                             <DataTemplate DataType="{x:Type controls:ButtonViewModel}">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="0.5*" />
-                                                        <ColumnDefinition Width="*" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-
-
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                                    <TextBox Grid.Row="0" Grid.Column="1"
-                                                             Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                                </Grid>
+                                                <controls1:ButtonInspector />
                                             </DataTemplate>
 
-
                                             <DataTemplate DataType="{x:Type controls:CheckBoxViewModel}">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="0.5*" />
-                                                        <ColumnDefinition Width="*" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-
-
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                                    <TextBox Grid.Row="0" Grid.Column="1"
-                                                             Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                                                </Grid>
+                                                <controls1:CheckBoxInspector />
                                             </DataTemplate>
 
                                             <DataTemplate DataType="{x:Type controls:GroupBoxViewModel}">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="0.5*" />
-                                                        <ColumnDefinition Width="*" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-
-
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                                    <TextBox Grid.Row="0" Grid.Column="1"
-                                                             Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                                </Grid>
+                                                <controls1:GroupBoxInspector />
                                             </DataTemplate>
 
                                             <DataTemplate DataType="{x:Type controls:TextBoxViewModel}">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="0.5*" />
-                                                        <ColumnDefinition Width="*" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-
-
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Is Writable"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                                    <TextBox Grid.Row="0" Grid.Column="1"
-                                                             Text="{Binding IsWritable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                                    <TextBlock Grid.Row="1" Grid.Column="0"
-                                                               Text="Allows Horizontal Scrolling"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                                    <TextBox Grid.Row="1" Grid.Column="1"
-                                                             Text="{Binding AllowHorizontalScroll, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                                </Grid>
+                                                <controls1:TextBoxInspector />
                                             </DataTemplate>
-
-
+                                            
                                             <DataTemplate DataType="{x:Type controls:ComboBoxViewModel}">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="0.5*" />
-                                                        <ColumnDefinition Width="*" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-
-
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Is Sorted"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                                    <TextBox Grid.Row="0" Grid.Column="1"
-                                                             Text="{Binding IsSorted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                                                </Grid>
+                                                <controls1:ComboBoxInspector />
                                             </DataTemplate>
-
-
+                                            
                                             <DataTemplate DataType="{x:Type controls:LabelViewModel}">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="0.5*" />
-                                                        <ColumnDefinition Width="*" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-
-
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Caption"
-                                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                                    <TextBox Grid.Row="0" Grid.Column="1"
-                                                             Text="{Binding Caption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                                </Grid>
+                                                <controls1:LabelInspector />
                                             </DataTemplate>
 
                                         </ContentControl.Resources>
