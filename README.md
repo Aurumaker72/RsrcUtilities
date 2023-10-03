@@ -80,9 +80,11 @@ The creation of infrastructure to facilitate the design of `rc` user interfaces 
 - Intuitive camera
   - Click-drag
   - Mouse-wheel zoom
-- High-precision control renderer
-  - Windows 10
-  - Windows 11
+- Customizable control renderer
+  - Test with your own visual styles
+  - Bundled: 
+    - Windows 10
+    - Windows 11
 - Smart selection system
   - Reliably select the intended element
 - Z-Ordering system
