@@ -65,17 +65,34 @@ public class RcDialogSerializer : IDialogSerializer
         dialog.Caption = lines[2].Substring(captionHint.Length + 1, lines[2].Length - captionHint.Length - 2);
 
 
-        var controlLines = lines[new Range(new Index(5), new Index(1, true))].Select(x => x.Trim());
+        var controlLines = lines[5..^2].Select(x => x.Trim());
 
         foreach (var controlLine in controlLines)
         {
             // different control classes have different order of properties, so we need to work conditionally
             var controlClass = controlLine.Split(" ")[0];
             
-            if (controlClass == "PUSHBUTTON")
+            
+            // properties section always begins at first non-space char after class name
+            int propertySectionBeginIndex = -1;
+            bool encounteredSpace = false;
+            for (int i = 0; i < controlLine.Length; i++)
             {
-                var propertiesStartIndex = controlLine.IndexOf("\"", StringComparison.Ordinal);
-                var controlProperties = controlLine[propertiesStartIndex..];
+                if (encounteredSpace && controlLine[i] != ' ')
+                {
+                    propertySectionBeginIndex = i;
+                    break;
+                }
+                if (controlLine[i] == ' ')
+                {
+                    encounteredSpace = true;
+                }
+            }
+
+            var controlProperties = controlLine[propertySectionBeginIndex..];
+            
+            if (controlClass == "PUSHBUTTON" || controlClass == "DEFPUSHBUTTON" || controlClass == "LTEXT")
+            {
                 var captionEndIndex = controlProperties.IndexOf('"', 1);
                 var caption = controlProperties[1..captionEndIndex];
 
@@ -88,11 +105,43 @@ public class RcDialogSerializer : IDialogSerializer
                 var width = int.Parse(restProperties[4]);
                 var height = int.Parse(restProperties[5]);
 
-                dialog.Root.AddChild(new Button()
+                if (controlClass == "LTEXT")
+                {
+                    dialog.Root.AddChild(new Label
+                    {
+                        Identifier = identifier,
+                        Rectangle = new Rectangle(x, y, width, height),
+                        Caption = caption
+                    });
+                }
+                else
+                {
+                    dialog.Root.AddChild(new Button
+                    {
+                        Identifier = identifier,
+                        Rectangle = new Rectangle(x, y, width, height),
+                        Caption = caption
+                    });
+                }
+                
+            }
+            
+            if (controlClass == "EDITTEXT")
+            {
+                var restProperties = controlProperties.Split(",");
+
+                var identifier = restProperties[0];
+                var x = int.Parse(restProperties[1]);
+                var y = int.Parse(restProperties[2]);
+                var width = int.Parse(restProperties[3]);
+                var height = int.Parse(restProperties[4]);
+                // what do we do with the styles tho
+                var styles = restProperties[5];
+                
+                dialog.Root.AddChild(new TextBox
                 {
                     Identifier = identifier,
                     Rectangle = new Rectangle(x, y, width, height),
-                    Caption = caption
                 });
             }
         }
