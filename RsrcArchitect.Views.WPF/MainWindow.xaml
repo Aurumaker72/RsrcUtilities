@@ -24,6 +24,7 @@
         <Menu>
             <MenuItem Header="_File">
                 <MenuItem Header="_New Project" Command="{Binding MainViewModel.CreateProjectCommand}" />
+                <MenuItem Header="_Open" Command="{Binding MainViewModel.OpenCommand}" />
                 <Separator />
                 <MenuItem Header="_Save As">
                     <MenuItem Header="_Resource File"

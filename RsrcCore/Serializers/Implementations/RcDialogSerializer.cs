@@ -1,5 +1,8 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using RsrcCore.Controls;
 using RsrcCore.Extensions;
@@ -43,62 +46,60 @@ public class RcDialogSerializer : IDialogSerializer
     [Pure]
     public Dialog Deserialize(string serialized)
     {
-        var dialog = new Dialog();
+        var dialog = new Dialog()
+        {
+            Root = new TreeNode<Control>(new Panel())
+        };
 
         var lines = serialized.Split(Environment.NewLine);
-        var tokens = Tokenize(lines);
 
-        throw new NotImplementedException();
-    }
+        // IDD_DIALOG DIALOGEX 0, 0, 342, 342
+        var prelude = lines[0].Replace(",", "").Split(" ");
+        dialog.Identifier = prelude[0];
+        dialog.Width = int.Parse(prelude[4]);
+        dialog.Height = int.Parse(prelude[5]);
 
-    private IEnumerable<Token> Tokenize(IEnumerable<string> lines)
-    {
-        List<Token> tokens = new();
+        // CAPTION "Play Movie"
+        const string captionHint = "CAPTION ";
+        // we chop off one additional character on each side to remove the quotes
+        dialog.Caption = lines[2].Substring(captionHint.Length + 1, lines[2].Length - captionHint.Length - 2);
 
-        var enumerable = lines as string[] ?? lines.ToArray();
 
-        var preludes = Regex.Replace(enumerable.ElementAt(0).Replace(',', ' '), @"\s+", " ").Split(' ');
+        var controlLines = lines[new Range(new Index(5), new Index(1, true))].Select(x => x.Trim());
 
-        tokens.Add(new Token(Token.Types.Identifier, preludes[0]));
-        tokens.Add(new Token(Token.Types.Keyword, preludes[1]));
-        tokens.Add(new Token(Token.Types.LiteralNumber, preludes[2]));
-        tokens.Add(new Token(Token.Types.LiteralNumber, preludes[3]));
-        tokens.Add(new Token(Token.Types.LiteralNumber, preludes[4]));
-        tokens.Add(new Token(Token.Types.LiteralNumber, preludes[5]));
-
-        var styles = enumerable.ElementAt(1).Replace("| ", "").Split(' ');
-
-        tokens.Add(new Token(Token.Types.Keyword, styles[0]));
-        tokens.AddRange(styles[1..].Select(style => new Token(Token.Types.BuiltinType, style)));
-
-        var captions = enumerable.ElementAt(2).Replace("\"", "").Split(' ');
-        tokens.Add(new Token(Token.Types.Keyword, captions[0]));
-        tokens.Add(new Token(Token.Types.LiteralString, captions[1]));
-
-        var fonts = enumerable.ElementAt(3).Replace("\"", "").Split(' ');
-        tokens.Add(new Token(Token.Types.Keyword, captions[0]));
-        tokens.Add(new Token(Token.Types.LiteralNumber, captions[1]));
-        tokens.Add(new Token(Token.Types.LiteralString, captions[2]));
-        tokens.Add(new Token(Token.Types.LiteralNumber, captions[3]));
-        tokens.Add(new Token(Token.Types.LiteralNumber, captions[4]));
-        tokens.Add(new Token(Token.Types.LiteralNumber, captions[5]));
-
-        var begin = enumerable.ElementAt(4);
-        tokens.Add(new Token(Token.Types.Keyword, begin));
-
-        var controls = enumerable[new Range(4, enumerable.Length - 1)];
-        foreach (var control in controls)
+        foreach (var controlLine in controlLines)
         {
-            var parameters = enumerable.ElementAt(3).Replace("\"", "").Split(' ');
-            tokens.Add(new Token(Token.Types.Keyword, captions[0]));
+            // different control classes have different order of properties, so we need to work conditionally
+            var controlClass = controlLine.Split(" ")[0];
+            
+            if (controlClass == "PUSHBUTTON")
+            {
+                var propertiesStartIndex = controlLine.IndexOf("\"", StringComparison.Ordinal);
+                var controlProperties = controlLine[propertiesStartIndex..];
+                var captionEndIndex = controlProperties.IndexOf('"', 1);
+                var caption = controlProperties[1..captionEndIndex];
+
+                var rest = controlProperties[captionEndIndex..];
+                var restProperties = rest.Split(",");
+
+                var identifier = restProperties[1];
+                var x = int.Parse(restProperties[2]);
+                var y = int.Parse(restProperties[3]);
+                var width = int.Parse(restProperties[4]);
+                var height = int.Parse(restProperties[5]);
+
+                dialog.Root.AddChild(new Button()
+                {
+                    Identifier = identifier,
+                    Rectangle = new Rectangle(x, y, width, height),
+                    Caption = caption
+                });
+            }
         }
-
-
-        var end = enumerable.ElementAt(enumerable.Length - 1);
-        tokens.Add(new Token(Token.Types.Keyword, end));
-
-        return tokens;
+        
+        return dialog;
     }
+
 
     private static string DoSerialize(Dictionary<Control, Rectangle> flattenedControls, Dialog dialog)
     {
@@ -241,6 +242,11 @@ public class RcDialogSerializer : IDialogSerializer
         {
             Type = type;
             Text = text;
+        }
+
+        public override string ToString()
+        {
+            return $"{Type}: {Text}";
         }
     }
 }
