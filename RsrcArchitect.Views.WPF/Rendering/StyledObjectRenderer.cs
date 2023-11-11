@@ -36,20 +36,20 @@ public class StyledObjectRenderer
                 Color = SKColors.Black,
                 IsAntialias = true,
                 Typeface = SKTypeface.FromFamilyName("MS Shell Dlg 2"),
-                TextSize = 14
+                TextSize = 8
             },
             InvertedTextPaint = new SKPaint
             {
                 Color = SKColors.White,
                 IsAntialias = true,
                 Typeface = SKTypeface.FromFamilyName("MS Shell Dlg 2"),
-                TextSize = 14
+                TextSize = 8
             },
             Font = new SKFont
             {
                 Edging = SKFontEdging.SubpixelAntialias,
                 Typeface = SKTypeface.FromFamilyName("MS Shell Dlg 2"),
-                Size = 14
+                Size = 8
             },
             Titlebar = new Ninepatch
             {
