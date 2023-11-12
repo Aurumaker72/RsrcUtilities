@@ -1,5 +1,6 @@
-﻿using System.Numerics;
-using System.Text;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Numerics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -7,7 +8,6 @@ using RsrcArchitect.Services;
 using RsrcArchitect.ViewModels.Factories;
 using RsrcArchitect.ViewModels.Helpers;
 using RsrcArchitect.ViewModels.Messages;
-using RsrcArchitect.ViewModels.Positioners;
 using RsrcArchitect.ViewModels.Types;
 using RsrcCore;
 using RsrcCore.Controls;
@@ -25,14 +25,13 @@ public partial class DialogEditorViewModel : ObservableObject
 
     private Transformation _transformation = Transformation.None;
     private Sizing _sizing = Sizing.Empty;
-    
-    private Rectangle _transformationStartRectangle;
+
+    private List<Rectangle> _transformationStartRectangles = new();
     private Vector2 _transformationStartPointerPosition;
     private Vector2 _panStartPointerPosition;
     private Vector2 _panStartTranslation;
     private float _scale = 1f;
     private bool _isPanning;
-    private TreeNode<Control>? _selectedNode;
 
     public DialogEditorViewModel(Dialog dialog, string friendlyName,
         DialogEditorSettingsViewModel dialogEditorSettingsViewModel, IFilePickerService filePickerService)
@@ -50,6 +49,22 @@ public partial class DialogEditorViewModel : ObservableObject
             new(this, "combobox", () => new ComboBox()),
             new(this, "label", () => new Label())
         };
+        SelectedNodes.CollectionChanged += (sender, args) =>
+        {
+            OnPropertyChanged(nameof(HasSelection));
+            DeleteSelectedNodeCommand.NotifyCanExecuteChanged();
+            BringSelectedNodeToFrontCommand.NotifyCanExecuteChanged();
+            SelectedControlViewModels.Clear();
+            foreach (var node in SelectedNodes)
+            {
+                SelectedControlViewModels.Add(ControlViewModelFactory.Create(node.Data,
+                    s =>
+                    {
+                        return DialogViewModel.Dialog.Root.Flatten().Any(x =>
+                            x.Identifier.Equals(s, StringComparison.InvariantCultureIgnoreCase));
+                    }));
+            }
+        };
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
@@ -57,26 +72,7 @@ public partial class DialogEditorViewModel : ObservableObject
     public DialogViewModel DialogViewModel { get; }
     public string FriendlyName { get; }
 
-    private TreeNode<Control>? SelectedNode
-    {
-        get => _selectedNode;
-        set
-        {
-            SetProperty(ref _selectedNode, value);
-            OnPropertyChanged(nameof(IsNodeSelected));
-            DeleteSelectedNodeCommand.NotifyCanExecuteChanged();
-            BringSelectedNodeToFrontCommand.NotifyCanExecuteChanged();
-            SelectedControlViewModel = value != null
-                ? ControlViewModelFactory.Create(value.Data,
-                    s =>
-                    {
-                        return DialogViewModel.Dialog.Root.Flatten().Any(x =>
-                            x.Identifier.Equals(s, StringComparison.InvariantCultureIgnoreCase));
-                    })
-                : null;
-            OnPropertyChanged(nameof(SelectedControlViewModel));
-        }
-    }
+    public ObservableCollection<TreeNode<Control>> SelectedNodes { get; } = new();
 
     public float Scale
     {
@@ -88,44 +84,12 @@ public partial class DialogEditorViewModel : ObservableObject
         }
     }
 
-    public bool IsNodeSelected => SelectedNode != null;
-    public ControlViewModel? SelectedControlViewModel { get; private set; }
+    public bool HasSelection => SelectedControlViewModels.Count > 0;
+    public ObservableCollection<ControlViewModel> SelectedControlViewModels { get; } = new();
     public Vector2 Translation { get; private set; } = Vector2.Zero;
 
 
     #region Private Methods
-
-    private (Transformation transformation, Sizing sizing) GetTransformationOperationCandidate(Control control,
-        Vector2 position)
-    {
-        var relative = position - control.Rectangle.ToVector2();
-
-        var transformation = Transformation.Size;
-        var sizing = Sizing.Empty;
-
-        sizing = sizing with { Left = Math.Abs(relative.X - 0) < _dialogEditorSettingsViewModel.GripSize };
-        sizing = sizing with { Top = Math.Abs(relative.Y - 0) < _dialogEditorSettingsViewModel.GripSize };
-        sizing = sizing with
-        {
-            Right = Math.Abs(relative.X - control.Rectangle.Width) < _dialogEditorSettingsViewModel.GripSize
-        };
-        sizing = sizing with
-        {
-            Bottom = Math.Abs(relative.Y - control.Rectangle.Height) < _dialogEditorSettingsViewModel.GripSize
-        };
-
-        if (sizing.IsEmpty)
-        {
-            transformation = Transformation.Move;
-        }
-
-        if (!control.Rectangle.Inflate(_dialogEditorSettingsViewModel.GripSize).Contains(new(position)))
-        {
-            transformation = Transformation.None;
-        }
-
-        return (transformation, sizing);
-    }
 
     private TreeNode<Control>? GetControlNodeAtPosition(Vector2 position)
     {
@@ -157,24 +121,43 @@ public partial class DialogEditorViewModel : ObservableObject
 
         // do grip-test first, then store if it hits
         var isGripHit = false;
-        if (SelectedNode != null)
-            isGripHit = GetTransformationOperationCandidate(SelectedNode.Data, dialogPosition).transformation !=
-                        Transformation.None;
+        (Transformation transformation, Sizing sizing) transformationOperation = (Transformation.None, Sizing.Empty);
+        if (SelectedNodes.Count > 0)
+        {
+            // if any candidate hits, we grabbed a control's grip
+            transformationOperation = SelectedNodes
+                .Select(x =>
+                    TransformationHelper.GetCandidate(x.Data, dialogPosition, _dialogEditorSettingsViewModel.GripSize))
+                .FirstOrDefault(x => x.Item1 != Transformation.None, (Transformation.None, Sizing.Empty));
+
+            isGripHit = transformationOperation.transformation != Transformation.None;
+        }
 
         // if no grip hits, we know we aren't starting to resize or move a control,
         // thus we can select a new one
-        if (!isGripHit) SelectedNode = GetControlNodeAtPosition(dialogPosition);
-
-        if (SelectedNode != null)
+        if (!isGripHit)
         {
-            (_transformation, _sizing) = GetTransformationOperationCandidate(SelectedNode.Data, dialogPosition);
-            _transformationStartRectangle = SelectedNode.Data.Rectangle;
+            Debug.Print("No grip hit");
+            var newSelectedNode = GetControlNodeAtPosition(dialogPosition);
+            SelectedNodes.Clear();
+            if (newSelectedNode != null)
+            {
+                SelectedNodes.Add(GetControlNodeAtPosition(dialogPosition));
+            }
+        }
+
+        if (SelectedNodes.Count > 0)
+        {
+            Debug.Print("Start control transformation");
+            (_transformation, _sizing) = (transformationOperation.transformation, transformationOperation.sizing);
+            _transformationStartRectangles = SelectedNodes.Select(x => x.Data.Rectangle).ToList();
             _transformationStartPointerPosition = dialogPosition;
         }
         else
         {
             // no node caught but stil clicked,
             // so start translating the camera
+            Debug.Print("Start pan");
             _isPanning = true;
             _panStartPointerPosition = position;
             _panStartTranslation = Translation;
@@ -200,74 +183,81 @@ public partial class DialogEditorViewModel : ObservableObject
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
             return;
         }
-
-
-        if (SelectedControlViewModel == null) return;
+        
+        if (SelectedNodes.Count == 0) return;
 
         position = RelativePositionToDialog(position);
 
-        switch (_transformation)
+        int i = 0;
+        foreach (var controlViewModel in SelectedControlViewModels)
         {
-            case Transformation.Size:
-                if (_sizing.Left)
-                {
-                    position.X = Math.Min(position.X, _transformationStartRectangle.Right);
-                    SelectedControlViewModel.X = (int)position.X;
-                    SelectedControlViewModel.Width =
-                        _transformationStartRectangle.Right - SelectedControlViewModel.X;
-                }
+            var transformationStartRectangle = _transformationStartRectangles[i];
+            switch (_transformation)
+            {
+                case Transformation.Size:
+                    if (_sizing.Left)
+                    {
+                        position.X = Math.Min(position.X, transformationStartRectangle.Right);
+                        controlViewModel.X = (int)position.X;
+                        controlViewModel.Width =
+                            transformationStartRectangle.Right - controlViewModel.X;
+                    }
 
-                if (_sizing.Top)
-                {
-                    position.Y = Math.Min(position.Y, _transformationStartRectangle.Bottom);
-                    SelectedControlViewModel.Y = (int)position.Y;
-                    SelectedControlViewModel.Height =
-                        _transformationStartRectangle.Bottom - SelectedControlViewModel.Y;
-                }
+                    if (_sizing.Top)
+                    {
+                        position.Y = Math.Min(position.Y, transformationStartRectangle.Bottom);
+                        controlViewModel.Y = (int)position.Y;
+                        controlViewModel.Height =
+                            transformationStartRectangle.Bottom - controlViewModel.Y;
+                    }
 
-                if (_sizing.Right)
-                {
-                    position.X = Math.Max(position.X, _transformationStartRectangle.X);
-                    SelectedControlViewModel.Width = (int)(_transformationStartRectangle.Width +
-                                                           (position.X - _transformationStartRectangle.Right));
-                }
+                    if (_sizing.Right)
+                    {
+                        position.X = Math.Max(position.X, transformationStartRectangle.X);
+                        controlViewModel.Width = (int)(transformationStartRectangle.Width +
+                                                       (position.X - transformationStartRectangle.Right));
+                    }
 
-                if (_sizing.Bottom)
-                {
-                    position.Y = Math.Max(position.Y, _transformationStartRectangle.Y);
-                    SelectedControlViewModel.Height = (int)(_transformationStartRectangle.Height +
-                                                            (position.Y - _transformationStartRectangle.Bottom));
-                }
+                    if (_sizing.Bottom)
+                    {
+                        position.Y = Math.Max(position.Y, transformationStartRectangle.Y);
+                        controlViewModel.Height = (int)(transformationStartRectangle.Height +
+                                                        (position.Y - transformationStartRectangle.Bottom));
+                    }
 
-                break;
-            case Transformation.Move:
-                SelectedControlViewModel.X =
-                    (int)(_transformationStartRectangle.X + (position.X - _transformationStartPointerPosition.X));
-                SelectedControlViewModel.Y =
-                    (int)(_transformationStartRectangle.Y + (position.Y - _transformationStartPointerPosition.Y));
-                break;
+                    break;
+                case Transformation.Move:
+                    controlViewModel.X =
+                        (int)(transformationStartRectangle.X + (position.X - _transformationStartPointerPosition.X));
+                    controlViewModel.Y =
+                        (int)(transformationStartRectangle.Y + (position.Y - _transformationStartPointerPosition.Y));
+                    break;
+            }
+
+            var processedRectangle =
+                _dialogEditorSettingsViewModel.Positioner.Transform(DialogViewModel.Dialog.Root,
+                    controlViewModel.Control);
+            controlViewModel.X = processedRectangle.X;
+            controlViewModel.Y = processedRectangle.Y;
+            controlViewModel.Width = processedRectangle.Width;
+            controlViewModel.Height = processedRectangle.Height;
+            i++;
         }
-
-        var processedRectangle = _dialogEditorSettingsViewModel.Positioner.Transform(DialogViewModel.Dialog.Root, SelectedControlViewModel.Control);
-        SelectedControlViewModel.X = processedRectangle.X;
-        SelectedControlViewModel.Y = processedRectangle.Y;
-        SelectedControlViewModel.Width = processedRectangle.Width;
-        SelectedControlViewModel.Height = processedRectangle.Height;
     }
 
-    [RelayCommand(CanExecute = nameof(IsNodeSelected))]
+    [RelayCommand(CanExecute = nameof(HasSelection))]
     private void DeleteSelectedNode()
     {
-        DialogViewModel.Dialog.Root.Children.Remove(SelectedNode!);
-        SelectedNode = null;
+        // DialogViewModel.Dialog.Root.Children.Remove(SelectedNodes!);
+        // SelectedNode = null;
         WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
     }
 
-    [RelayCommand(CanExecute = nameof(IsNodeSelected))]
+    [RelayCommand(CanExecute = nameof(HasSelection))]
     private void BringSelectedNodeToFront()
     {
-        DialogViewModel.Dialog.Root.Children.Remove(SelectedNode!);
-        DialogViewModel.Dialog.Root.Children.Add(SelectedNode!);
+        // DialogViewModel.Dialog.Root.Children.Remove(SelectedNode!);
+        // DialogViewModel.Dialog.Root.Children.Add(SelectedNode!);
         WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
     }
 
@@ -291,24 +281,7 @@ public partial class DialogEditorViewModel : ObservableObject
         await File.WriteAllTextAsync(resourceFile, rc);
         await File.WriteAllTextAsync(headerFile, header);
     }
-
-    [RelayCommand]
-    private async Task SaveUgui()
-    {
-        var lua = new UguiDialogSerializer().Serialize(new DefaultLayoutEngine().DoLayout(DialogViewModel.Dialog),
-            DialogViewModel.Dialog);
-
-        var luaFile =
-            await _filePickerService.TryPickSaveFileAsync("ugui.lua", ("Lua Script File", new[] { "lua" }));
-
-        if (luaFile == null)
-        {
-            return;
-        }
-
-        await File.WriteAllTextAsync(luaFile, lua);
-    }
-
+    
     #endregion
 
 

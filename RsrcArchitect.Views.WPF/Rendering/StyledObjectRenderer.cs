@@ -292,44 +292,47 @@ public class StyledObjectRenderer
             dialogEditorViewModel.DialogViewModel.Height);
         _previousGridSize = dialogEditorSettingsViewModel.GridSize;
 
-        if (dialogEditorViewModel.SelectedControlViewModel == null) return;
+        if (dialogEditorViewModel.SelectedControlViewModels.Count == 0) return;
 
-
-        // drawing the selection-related graphics
-        var selectionRectangle = SKRect.Create(0, 0,
-            dialogEditorViewModel.SelectedControlViewModel.Rectangle.Width,
-            dialogEditorViewModel.SelectedControlViewModel.Rectangle.Height);
-
-        canvas.Translate(
-            dialogEditorViewModel.SelectedControlViewModel.Rectangle.X,
-            dialogEditorViewModel.SelectedControlViewModel.Rectangle.Y);
-
-        // draw the selection rectangle
-        DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.Selection.Source, _visualStyle.Selection.Center,
-            selectionRectangle);
-
-        // and the corner points
-        var cornerPoints = new SKPoint[]
+        foreach (var selectedControlViewModel in dialogEditorViewModel.SelectedControlViewModels)
         {
-            new(0, 0),
-            new(selectionRectangle.Width, selectionRectangle.Height),
-            new(0, selectionRectangle.Height),
-            new(selectionRectangle.Width, 0),
-            new(selectionRectangle.Width / 2, 0),
-            new(0, selectionRectangle.Height / 2),
-            new(selectionRectangle.Width / 2, selectionRectangle.Height),
-            new(selectionRectangle.Width, selectionRectangle.Height / 2),
-        };
-        canvas.Translate(-dialogEditorSettingsViewModel.GripSize / 2f, -dialogEditorSettingsViewModel.GripSize / 2f);
-        foreach (var point in cornerPoints)
-        {
-            canvas.Translate(point.X, point.Y);
-            DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.SelectionCorner.Source,
-                _visualStyle.SelectionCorner.Center,
-                SKRect.Create(0, 0, dialogEditorSettingsViewModel.GripSize, dialogEditorSettingsViewModel.GripSize));
-            canvas.Translate(-point.X, -point.Y);
+            // drawing the selection-related graphics
+            var selectionRectangle = SKRect.Create(0, 0,
+                selectedControlViewModel.Rectangle.Width,
+                selectedControlViewModel.Rectangle.Height);
+
+            canvas.Translate(
+                selectedControlViewModel.Rectangle.X,
+                selectedControlViewModel.Rectangle.Y);
+
+            // draw the selection rectangle
+            DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.Selection.Source, _visualStyle.Selection.Center,
+                selectionRectangle);
+
+            // and the corner points
+            var cornerPoints = new SKPoint[]
+            {
+                new(0, 0),
+                new(selectionRectangle.Width, selectionRectangle.Height),
+                new(0, selectionRectangle.Height),
+                new(selectionRectangle.Width, 0),
+                new(selectionRectangle.Width / 2, 0),
+                new(0, selectionRectangle.Height / 2),
+                new(selectionRectangle.Width / 2, selectionRectangle.Height),
+                new(selectionRectangle.Width, selectionRectangle.Height / 2),
+            };
+            canvas.Translate(-dialogEditorSettingsViewModel.GripSize / 2f, -dialogEditorSettingsViewModel.GripSize / 2f);
+            foreach (var point in cornerPoints)
+            {
+                canvas.Translate(point.X, point.Y);
+                DrawImageNinePatch(canvas, _visualStyle.Image, _visualStyle.SelectionCorner.Source,
+                    _visualStyle.SelectionCorner.Center,
+                    SKRect.Create(0, 0, dialogEditorSettingsViewModel.GripSize, dialogEditorSettingsViewModel.GripSize));
+                canvas.Translate(-point.X, -point.Y);
+            }
+
+            canvas.Translate(dialogEditorSettingsViewModel.GripSize / 2f, dialogEditorSettingsViewModel.GripSize / 2f);
         }
-
-        canvas.Translate(dialogEditorSettingsViewModel.GripSize / 2f, dialogEditorSettingsViewModel.GripSize / 2f);
+        
     }
 }
