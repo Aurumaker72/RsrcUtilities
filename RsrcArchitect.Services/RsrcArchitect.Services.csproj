@@ -7,4 +7,8 @@
         <RootNamespace>RsrcArchitect.Services</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\RsrcArchitect.ViewModels.Types\RsrcArchitect.ViewModels.Types.csproj" />
+    </ItemGroup>
+
 </Project>

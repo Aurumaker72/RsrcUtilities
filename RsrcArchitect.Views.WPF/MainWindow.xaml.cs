@@ -22,7 +22,7 @@ namespace RsrcArchitect.Views.WPF;
 ///     Interaction logic for MainWindow.xaml
 /// </summary>
 [INotifyPropertyChanged]
-public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>, IRecipient<NotificationMessage>
+public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>, IRecipient<NotificationMessage>, IInputService
 {
     private const float ZoomIncrement = 0.25f;
 
@@ -35,7 +35,7 @@ public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>,
     {
         InitializeComponent();
 
-        MainViewModel = new MainViewModel(App.FilesService);
+        MainViewModel = new MainViewModel(App.FilesService, this);
 
         DataContext = this;
 
@@ -163,4 +163,6 @@ public partial class MainWindow : Window, IRecipient<CanvasInvalidationMessage>,
         }
         DialogRenderer.StyledObjectRenderer.LoadAtlas(path);
     }
+
+    public bool IsKeyHeld(ViewModels.Types.Key key) => Keyboard.IsKeyDown((System.Windows.Input.Key)key);
 }

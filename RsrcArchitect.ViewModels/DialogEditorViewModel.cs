@@ -21,6 +21,7 @@ namespace RsrcArchitect.ViewModels;
 public partial class DialogEditorViewModel : ObservableObject
 {
     private readonly IFilePickerService _filePickerService;
+    private readonly IInputService _inputService;
     private readonly DialogEditorSettingsViewModel _dialogEditorSettingsViewModel;
 
     private TransformationOperation _transformationOperation = TransformationOperation.Empty;
@@ -33,11 +34,13 @@ public partial class DialogEditorViewModel : ObservableObject
     private bool _isPanning;
 
     public DialogEditorViewModel(Dialog dialog, string friendlyName,
-        DialogEditorSettingsViewModel dialogEditorSettingsViewModel, IFilePickerService filePickerService)
+        DialogEditorSettingsViewModel dialogEditorSettingsViewModel, IFilePickerService filePickerService, IInputService inputService)
     {
         FriendlyName = friendlyName;
         _dialogEditorSettingsViewModel = dialogEditorSettingsViewModel;
         _filePickerService = filePickerService;
+        _inputService = inputService;
+        
         DialogViewModel = new DialogViewModel(dialog);
         ToolboxItemViewModels = new List<ToolboxItemViewModel>
         {

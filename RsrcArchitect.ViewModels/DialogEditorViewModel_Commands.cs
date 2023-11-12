@@ -44,7 +44,11 @@ public partial class DialogEditorViewModel
         {
             Debug.Print("No grip hit");
             var newSelectedNode = GetControlNodeAtPosition(dialogPosition);
-            SelectedNodes.Clear();
+            if (!_inputService.IsKeyHeld(Key.LeftShift))
+            {
+                SelectedNodes.Clear();
+            }
+
             if (newSelectedNode != null)
             {
                 SelectedNodes.Add(newSelectedNode);
@@ -87,7 +91,7 @@ public partial class DialogEditorViewModel
             WeakReferenceMessenger.Default.Send(new CanvasInvalidationMessage(0));
             return;
         }
-        
+
         if (SelectedNodes.Count == 0) return;
 
         position = RelativePositionToDialog(position);

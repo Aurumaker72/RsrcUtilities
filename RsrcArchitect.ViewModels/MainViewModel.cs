@@ -13,15 +13,17 @@ namespace RsrcArchitect.ViewModels;
 public partial class MainViewModel : ObservableObject, IRecipient<DialogEditorViewModelClosingMessage>
 {
     private readonly IFilePickerService _filePickerService;
-
+    private readonly IInputService _inputService;
+    
     public ObservableCollection<DialogEditorViewModel> DialogEditorViewModels { get; } = new();
     public DialogEditorSettingsViewModel DialogEditorSettingsViewModel { get; } = new();
 
     [ObservableProperty] private DialogEditorViewModel? _selectedDialogEditorViewModel = null;
 
-    public MainViewModel(IFilePickerService filePickerService)
+    public MainViewModel(IFilePickerService filePickerService, IInputService inputService)
     {
         _filePickerService = filePickerService;
+        _inputService = inputService;
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
@@ -34,7 +36,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<DialogEditorVi
             Width = 600,
             Height = 400,
             Root = new TreeNode<Control>(new Panel())
-        }, "New Dialog Project", DialogEditorSettingsViewModel, _filePickerService));
+        }, "New Dialog Project", DialogEditorSettingsViewModel, _filePickerService, _inputService));
     }
 
     [RelayCommand]
@@ -122,7 +124,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<DialogEditorVi
                                                           END
 
                                                           """);
-        DialogEditorViewModels.Add(new DialogEditorViewModel(dialog, "New Dialog Project", DialogEditorSettingsViewModel, _filePickerService));
+        DialogEditorViewModels.Add(new DialogEditorViewModel(dialog, "New Dialog Project", DialogEditorSettingsViewModel, _filePickerService, _inputService));
         // var result = await _filePickerService.TryPickOpenFileAsync(new[] { ".rc" });
         //
         // if (result == null)

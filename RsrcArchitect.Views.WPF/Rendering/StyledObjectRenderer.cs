@@ -301,6 +301,7 @@ public class StyledObjectRenderer
                 selectedControlViewModel.Rectangle.Width,
                 selectedControlViewModel.Rectangle.Height);
 
+            canvas.Save();
             canvas.Translate(
                 selectedControlViewModel.Rectangle.X,
                 selectedControlViewModel.Rectangle.Y);
@@ -331,7 +332,7 @@ public class StyledObjectRenderer
                 canvas.Translate(-point.X, -point.Y);
             }
 
-            canvas.Translate(dialogEditorSettingsViewModel.GripSize / 2f, dialogEditorSettingsViewModel.GripSize / 2f);
+            canvas.Restore();
         }
         
     }
