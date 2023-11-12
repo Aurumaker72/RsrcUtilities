@@ -23,8 +23,7 @@ public partial class DialogEditorViewModel : ObservableObject
     private readonly IFilePickerService _filePickerService;
     private readonly DialogEditorSettingsViewModel _dialogEditorSettingsViewModel;
 
-    private Transformation _transformation = Transformation.None;
-    private Sizing _sizing = Sizing.Empty;
+    private TransformationOperation _transformationOperation = TransformationOperation.Empty;
 
     private List<Rectangle> _transformationStartRectangles = new();
     private Vector2 _transformationStartPointerPosition;

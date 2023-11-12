@@ -5,7 +5,7 @@ namespace RsrcCore.Geometry;
 /// <summary>
 ///     Represents a rectangle by its position and dimensions
 /// </summary>
-public readonly record struct Rectangle(int X, int Y, int Width, int Height)
+public record struct Rectangle(int X, int Y, int Width, int Height)
 {
     public static Rectangle Empty => new(0, 0, 0, 0);
 

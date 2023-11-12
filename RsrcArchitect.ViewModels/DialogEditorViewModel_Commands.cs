@@ -26,16 +26,16 @@ public partial class DialogEditorViewModel
 
         // do grip-test first, then store if it hits
         var isGripHit = false;
-        (Transformation transformation, Sizing sizing) transformationOperation = (Transformation.None, Sizing.Empty);
+        TransformationOperation transformationOperation = TransformationOperation.Empty;
         if (SelectedNodes.Count > 0)
         {
             // if any candidate hits, we grabbed a control's grip
             transformationOperation = SelectedNodes
                 .Select(x =>
                     TransformationHelper.GetCandidate(x.Data, dialogPosition, _dialogEditorSettingsViewModel.GripSize))
-                .FirstOrDefault(x => x.Item1 != Transformation.None, (Transformation.None, Sizing.Empty));
+                .FirstOrDefault(x => x.Transformation != Transformation.None, TransformationOperation.Empty);
 
-            isGripHit = transformationOperation.transformation != Transformation.None;
+            isGripHit = transformationOperation.Transformation != Transformation.None;
         }
 
         // if no grip hits, we know we aren't starting to resize or move a control,
@@ -54,7 +54,7 @@ public partial class DialogEditorViewModel
         if (SelectedNodes.Count > 0)
         {
             Debug.Print("Start control transformation");
-            (_transformation, _sizing) = (transformationOperation.transformation, transformationOperation.sizing);
+            _transformationOperation = transformationOperation;
             _transformationStartRectangles = SelectedNodes.Select(x => x.Data.Rectangle).ToList();
             _transformationStartPointerPosition = dialogPosition;
         }
@@ -75,8 +75,7 @@ public partial class DialogEditorViewModel
     private void PointerRelease()
     {
         _isPanning = false;
-        _transformation = Transformation.None;
-        _sizing = Sizing.Empty;
+        _transformationOperation = TransformationOperation.Empty;
     }
 
     [RelayCommand]
@@ -97,10 +96,10 @@ public partial class DialogEditorViewModel
         foreach (var controlViewModel in SelectedControlViewModels)
         {
             var transformationStartRectangle = _transformationStartRectangles[i];
-            switch (_transformation)
+            switch (_transformationOperation.Transformation)
             {
                 case Transformation.Size:
-                    if (_sizing.Left)
+                    if (_transformationOperation.Sizing.Left)
                     {
                         position.X = Math.Min(position.X, transformationStartRectangle.Right);
                         controlViewModel.X = (int)position.X;
@@ -108,7 +107,7 @@ public partial class DialogEditorViewModel
                             transformationStartRectangle.Right - controlViewModel.X;
                     }
 
-                    if (_sizing.Top)
+                    if (_transformationOperation.Sizing.Top)
                     {
                         position.Y = Math.Min(position.Y, transformationStartRectangle.Bottom);
                         controlViewModel.Y = (int)position.Y;
@@ -116,14 +115,14 @@ public partial class DialogEditorViewModel
                             transformationStartRectangle.Bottom - controlViewModel.Y;
                     }
 
-                    if (_sizing.Right)
+                    if (_transformationOperation.Sizing.Right)
                     {
                         position.X = Math.Max(position.X, transformationStartRectangle.X);
                         controlViewModel.Width = (int)(transformationStartRectangle.Width +
                                                        (position.X - transformationStartRectangle.Right));
                     }
 
-                    if (_sizing.Bottom)
+                    if (_transformationOperation.Sizing.Bottom)
                     {
                         position.Y = Math.Max(position.Y, transformationStartRectangle.Y);
                         controlViewModel.Height = (int)(transformationStartRectangle.Height +

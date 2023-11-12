@@ -7,8 +7,7 @@ namespace RsrcArchitect.ViewModels.Helpers;
 
 internal static class TransformationHelper
 {
-    public static (Transformation transformation, Sizing sizing) GetCandidate(Control control,
-        Vector2 position, int gripSize)
+    public static TransformationOperation GetCandidate(Control control, Vector2 position, int gripSize)
     {
         var relative = position - control.Rectangle.ToVector2();
 
@@ -26,16 +25,11 @@ internal static class TransformationHelper
             Bottom = Math.Abs(relative.Y - control.Rectangle.Height) < gripSize
         };
 
-        if (sizing.IsEmpty)
-        {
-            transformation = Transformation.Move;
-        }
+        if (sizing.IsEmpty) transformation = Transformation.Move;
 
         if (!control.Rectangle.Inflate(gripSize).Contains(new Vector2Int(position)))
-        {
             transformation = Transformation.None;
-        }
 
-        return (transformation, sizing);
+        return new TransformationOperation(transformation, sizing);
     }
 }

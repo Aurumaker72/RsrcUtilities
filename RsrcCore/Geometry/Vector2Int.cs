@@ -6,7 +6,7 @@ namespace RsrcCore.Geometry;
 /// <summary>
 ///     Represents a 2-dimensional vector with integer coordinates
 /// </summary>
-public readonly record struct Vector2Int(int X, int Y)
+public record struct Vector2Int(int X, int Y)
 {
     public Vector2Int(Vector2 vector2) : this((int)vector2.X, (int)vector2.Y)
     {
